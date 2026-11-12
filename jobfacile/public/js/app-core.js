@@ -534,8 +534,7 @@ function initGoogleButton() {
         target.innerHTML = '';
         google.accounts.id.renderButton(target, {
             theme: document.documentElement.classList.contains('dark') ? 'filled_black' : 'outline',
-            // largeur avec marge : le cadre Google déborde un peu à droite
-            size: 'large', shape: 'pill', width: Math.max(220, Math.min(340, (target.clientWidth || 340) - 24)), locale: 'fr',
+            size: 'large', shape: 'pill', width: Math.max(220, Math.min(380, (target.clientWidth || 340) - 4)), locale: 'fr',
             text: isRegisterMode ? 'signup_with' : 'continue_with'
         });
     });
@@ -655,13 +654,24 @@ function searchSkills(query) {
         }
         lastSkillResults = results;
         dropdown.innerHTML = results.map((item, i) => `
-            <div class="suggestion-item" onclick="addSkillTag(lastSkillResults[${i}].name)">
+            <div class="suggestion-item" onclick="pickSkillResult(${i})">
                 <span class="font-semibold">${esc(item.name)}</span>
                 <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full whitespace-nowrap">${esc(item.type)}</span>
             </div>
         `).join('');
         dropdown.classList.remove('hidden');
     }, 200);
+}
+
+// Un diplôme choisi dans la recherche va dans « Diplômes & formations » ; le reste devient une compétence
+function pickSkillResult(i) {
+    const item = lastSkillResults[i];
+    if (!item) return;
+    if (item.type !== 'Diplôme') return addSkillTag(item.name);
+    if (!userEducation.some(e => e.degree === item.name)) { userEducation.push({ degree: item.name, school: '', year: '' }); renderEducationFields(); }
+    document.getElementById('skill-search-input').value = '';
+    document.getElementById('skills-dropdown').classList.add('hidden');
+    showNotification('Diplôme ajouté dans « Diplômes & formations ».', 'success');
 }
 
 function addSkillTag(skill) {
@@ -707,7 +717,20 @@ function renderExperienceFields() {
 
 function addEducationField() { userEducation.push({ degree: '', school: '', year: '' }); renderEducationFields(); }
 function removeEducationField(i) { userEducation.splice(i, 1); renderEducationFields(); }
+// Suggestions du champ « Diplôme » (Bac STI2D, BTS, CAP…), chargées une seule fois
+let diplomesLoaded = false;
+function loadDiplomesList() {
+    if (diplomesLoaded) return;
+    diplomesLoaded = true;
+    fetch('/api/diplomes').then(r => r.json()).then(list => {
+        const dl = document.createElement('datalist');
+        dl.id = 'diplomes-list';
+        dl.innerHTML = list.map(d => `<option value="${esc(d)}"></option>`).join('');
+        document.body.appendChild(dl);
+    }).catch(() => { diplomesLoaded = false; });
+}
 function renderEducationFields() {
+    loadDiplomesList();
     const container = document.getElementById('education-container');
     container.innerHTML = userEducation.map((edu, i) => `
         <div class="bubble-in p-4 bg-slate-50 rounded-xl border border-slate-200 relative">
@@ -716,7 +739,7 @@ function renderEducationFields() {
                 <button type="button" onclick="removeEducationField(${i})" class="text-xs font-semibold text-rose-500 hover:text-rose-700 px-2 py-1 rounded-lg hover:bg-rose-50 transition">Supprimer</button>
             </div>
             <div class="grid sm:grid-cols-3 gap-2">
-                <input type="text" placeholder="Diplôme" value="${esc(edu.degree)}" oninput="userEducation[${i}].degree=this.value" class="field field-sm bg-white">
+                <input type="text" placeholder="Diplôme" list="diplomes-list" value="${esc(edu.degree)}" oninput="userEducation[${i}].degree=this.value" class="field field-sm bg-white">
                 <input type="text" placeholder="École" value="${esc(edu.school)}" oninput="userEducation[${i}].school=this.value" class="field field-sm bg-white">
                 <input type="text" placeholder="Année" value="${esc(edu.year)}" oninput="userEducation[${i}].year=this.value" class="field field-sm bg-white">
             </div>

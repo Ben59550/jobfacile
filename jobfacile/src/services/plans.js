@@ -4,9 +4,9 @@ const { getUsers, saveUsers } = require('../db');
 
 // Quotas gratuits, par mois calendaire. Modifiables ici.
 const FREE_LIMITS = {
-    docs: 5,        // CV, lettres, relances rédigés par l'IA
-    analyses: 5,    // analyse du CV, test ATS, compétences manquantes, bilan d'entretien
-    interview: 40   // messages du simulateur d'entretien (environ 4 entretiens)
+    docs: 3,        // CV, lettres, relances rédigés par l'IA
+    analyses: 2,    // analyse du CV, test ATS, compétences manquantes, bilan d'entretien
+    interview: 20   // messages du simulateur d'entretien (environ 2 entretiens)
 };
 const KIND_LABELS = {
     docs: 'documents rédigés par l’IA',

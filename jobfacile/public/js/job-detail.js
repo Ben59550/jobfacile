@@ -31,8 +31,48 @@ function computeMatch(j) {
     const titleStems = [...new Set(tokens(j.title).map(stem))];
     const titleRatio = titleStems.length ? titleStems.filter(t => profileStems.has(t)).length / titleStems.length : 0;
     const skillRatio = skills.length ? Math.min(1, matched.length / Math.min(skills.length, 4)) : 0;
-    const raw = 0.55 * skillRatio + 0.45 * titleRatio;
-    return { score: Math.min(99, Math.round(100 * raw)), matched };
+    let raw = 0.55 * skillRatio + 0.45 * titleRatio;
+    // Diplôme et permis demandés par l'offre, comparés au profil
+    const notes = [];
+    const myLevel = Math.max(0, ...edus.map(diplomaLevel));
+    if (j.diploma && j.diploma.level) {
+        const need = LEVEL_NAMES[j.diploma.level] || j.diploma.label;
+        if (!myLevel) notes.push({ ok: null, text: `Diplôme ${j.diploma.required ? 'exigé' : 'souhaité'} : ${need} (ajoutez vos diplômes au profil pour le comparer)` });
+        else if (myLevel >= j.diploma.level) { raw += 0.1; notes.push({ ok: true, text: `Diplôme : ${need} demandé, vous avez le niveau ${LEVEL_NAMES[myLevel]}` }); }
+        else { raw *= j.diploma.required ? 0.6 : 0.85; notes.push({ ok: false, text: `Diplôme ${j.diploma.required ? 'exigé' : 'souhaité'} : ${need} (votre niveau : ${LEVEL_NAMES[myLevel]})` }); }
+    }
+    if (Array.isArray(j.permis) && j.permis.length) {
+        const mine = myPermis([...skills, ...edus]);
+        for (const p of j.permis) {
+            const has = mine.has(p.code) || (p.code === 'B' && [...mine].some(c => /^(C|D|BE|CE|DE)/.test(c)));
+            if (has) { raw += 0.05; notes.push({ ok: true, text: `Permis ${p.code} : vous l’avez` }); }
+            else { if (p.required) raw *= 0.7; notes.push({ ok: false, text: `Permis ${p.code} ${p.required ? 'exigé' : 'souhaité'} : absent de votre profil` }); }
+        }
+    }
+    return { score: Math.max(0, Math.min(99, Math.round(100 * raw))), matched, notes };
+}
+
+// Niveau d'un diplôme du profil sur l'échelle européenne (0 = inconnu : pas de pénalité)
+const LEVEL_NAMES = { 2: 'Brevet', 3: 'CAP/BEP', 4: 'Bac', 5: 'Bac+2', 6: 'Bac+3', 7: 'Bac+5', 8: 'Doctorat' };
+function diplomaLevel(degree) {
+    const t = foldTxt(degree);
+    if (/doctorat|\bphd\b|\bhdr\b|docteur|bac\s*\+\s*8/.test(t)) return 8;
+    if (/master|ingenieur|\bmba\b|mastere|\bmsc\b|\bdscg\b|expertise comptable|grande ecole|\biep\b|sciences po|\bcapa\b|agregation|architecte|sage-femme|kinesitherapeute|desjeps|cafdes|bac\s*\+\s*5/.test(t)) return 7;
+    if (/licence|\bbut\b|bachelor|\bdcg\b|infirmier|educateur specialise|educateur de jeunes enfants|assistant de service social|deass|ergotherapeute|psychomotricien|manipulateur|orthophon|capes|capet|caplp|crpe|caferuis|dn made|bac\s*\+\s*[34]/.test(t)) return 6;
+    if (/\bbts\b|\bdut\b|deust|\bdeug\b|dejeps|bac\s*\+\s*2|cesf|technicien superieur|titre professionnel (gestionnaire|technicien superieur|concepteur|administrateur|developpeur|comptable)/.test(t)) return 5;
+    if (/\bbac\b|baccalaureat|daeu|bpjeps|\bbp\b|brevet professionnel|\bbma\b|moniteur-educateur|titre professionnel (secretaire|assistant(?! de vie)|technicien|conseiller|negociateur|responsable|manager)/.test(t)) return 4;
+    if (/\bcap\b|\bbep\b|\bmc\b|mention complementaire|aide-soignant|auxiliaire de puericulture|accompagnant educatif|ambulancier|titre professionnel/.test(t)) return 3;
+    if (/brevet des colleges|\bdnb\b|\bcfg\b/.test(t)) return 2;
+    return 0;
+}
+// Permis de conduire cités dans le profil (« Permis B », « permis C et CE »…)
+function myPermis(texts) {
+    const out = new Set();
+    for (const s of texts) {
+        const m = String(s || '').match(/permis\s+((?:[A-E]{1,2}1?(?:\s*(?:,|et|\/|-)\s*)?)+)/i);
+        if (m) m[1].split(/[\s,\/-]+|et/i).map(x => x.trim().toUpperCase()).filter(x => /^[A-E]{1,2}1?$/.test(x)).forEach(x => out.add(x));
+    }
+    return out;
 }
 function matchBadge(m, size = 'sm') {
     // Sur les cartes, on n'affiche le score que s'il veut dire quelque chose
@@ -130,6 +170,7 @@ function openJobModal(id) {
                 <div class="min-w-0">
                     <p class="font-bold text-slate-900 text-sm">${verdict}</p>
                     <p class="text-xs text-slate-500 mt-1">${m.matched.length ? 'Compétences en commun : ' + m.matched.map(esc).join(', ') : 'Aucune de vos compétences n’est citée dans l’annonce.'}</p>
+                    ${(m.notes || []).map(n => `<p class="text-xs mt-1 ${n.ok === true ? 'text-emerald-700' : n.ok === false ? 'text-rose-600' : 'text-slate-500'}">${n.ok === true ? '✅' : n.ok === false ? '⚠️' : '🎓'} ${esc(n.text)}</p>`).join('')}
                 </div>
             </div>`;
     }

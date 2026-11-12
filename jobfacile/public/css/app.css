@@ -9,14 +9,17 @@ html[data-color="indigo"] { --e-50: 238 242 255; --t-50: 240 249 255; --e-100: 2
 html { scroll-behavior: smooth; }
 /* Téléphones : la page ne doit jamais glisser de gauche à droite. « clip » (et non « hidden ») garde l'en-tête collant. */
 html, body { max-width: 100%; overflow-x: clip; }
+/* Pas de zoom à deux doigts ni double-tap sur mobile (la carte garde son propre zoom) */
+html { touch-action: pan-x pan-y; }
 img, video, iframe, canvas, svg, table { max-width: 100%; }
 ins.adsbygoogle { max-width: 100%; overflow: hidden; }
 html.is-premium .ad-slot, html.is-premium ins.adsbygoogle, html.is-premium .google-auto-placed { display: none !important; } /* abonnés Premium */
 /* Bouton Google : son cadre intégré est en mode clair. En mode sombre, le navigateur peindrait un fond blanc
    derrière (schémas de couleur différents) ; on aligne le schéma du cadre pour qu'il reste transparent. */
 #google-btn iframe, iframe[src*="accounts.google.com/gsi"] { color-scheme: light; background: transparent; }
-/* Bouton Google en pilule : bords du cadre arrondis aussi (sinon le côté droit peut finir tout droit) */
-#google-btn iframe { border-radius: 9999px; }
+/* Bouton Google : son cadre est 20 px plus large que le bouton (marges négatives) ; la règle max-width ci-dessus
+   le rognait, ce qui coupait le côté droit de la pilule. */
+#google-btn iframe { max-width: none !important; }
 /* Fenêtre Premium : contours et jauges bien visibles, en clair comme en sombre */
 .premium-usage { border: 2px solid #a7f3d0; }
 html.dark .premium-usage { border-color: rgb(var(--e-500) / .55); }

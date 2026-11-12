@@ -77,6 +77,27 @@ function relativeDate(iso) {
     return new Date(iso).toLocaleDateString('fr-FR');
 }
 
+// Niveau de diplôme sur l'échelle européenne (3 = CAP, 4 = Bac, 5 = Bac+2, 6 = Bac+3/4, 7 = Bac+5, 8 = doctorat)
+function levelFromLabel(label) {
+    const t = fold(label);
+    if (/doctorat|bac\s*\+\s*8/.test(t)) return 8;
+    if (/bac\s*\+\s*5/.test(t)) return 7;
+    if (/bac\s*\+\s*[34]/.test(t)) return 6;
+    if (/bac\s*\+\s*2/.test(t)) return 5;
+    if (/\bbac\b|baccalaureat/.test(t)) return 4;
+    if (/\bcap\b|\bbep\b/.test(t)) return 3;
+    return 0;
+}
+// Diplôme et permis demandés par une offre France Travail (exigence E = exigé, S = souhaité)
+function ftRequirements(o) {
+    const forms = (o.formations || []).map(f => ({ level: levelFromLabel(f.niveauLibelle), label: f.niveauLibelle || '', field: f.domaineLibelle || '', required: f.exigence === 'E' }))
+        .filter(f => f.level);
+    const diploma = forms.sort((a, b) => a.level - b.level)[0]; // le niveau le plus accessible demandé
+    const permis = (o.permis || []).map(p => ({ code: (String(p.libelle || '').match(/^\s*([A-E]{1,2}1?)\b/) || [])[1] || '', label: p.libelle || '', required: p.exigence === 'E' }))
+        .filter(p => p.code);
+    return { diploma: diploma || undefined, permis: permis.length ? permis : undefined };
+}
+
 function mapFtOffer(o) {
     const isAlt = o.alternance === true || o.natureContrat === 'Contrat apprentissage' || o.natureContrat === 'Cont. professionnalisation';
     const desc = String(o.description || '').replace(/\s+/g, ' ').trim();
@@ -97,6 +118,7 @@ function mapFtOffer(o) {
         fullDescription: desc.slice(0, 4000),
         lat: o.lieuTravail && o.lieuTravail.latitude, lng: o.lieuTravail && o.lieuTravail.longitude,
         rome: o.romeCode || undefined, // sert à interroger La bonne alternance sur les mêmes métiers
+        ...ftRequirements(o), // diplôme et permis demandés : servent au score de compatibilité
         url: `https://candidat.francetravail.fr/offres/recherche/detail/${encodeURIComponent(o.id)}`
     };
 }
@@ -432,6 +454,9 @@ function mapLbaJob(j) {
         description: cleanText(o.description),
         fullDescription: full.slice(0, 4000),
         lat: coords ? coords[1] : undefined, lng: coords ? coords[0] : undefined,
+        // Diplôme préparé en alternance : niveau d'entrée = un cran en dessous (ex. BTS préparé → Bac demandé)
+        diploma: o.target_diploma && Number(o.target_diploma.european) >= 4
+            ? { level: Number(o.target_diploma.european) - 1, label: 'Niveau d’entrée pour préparer : ' + (o.target_diploma.label || ''), required: false } : undefined,
         url: j.apply && j.apply.url
     };
 }

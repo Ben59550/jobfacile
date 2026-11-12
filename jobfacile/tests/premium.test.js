@@ -51,16 +51,17 @@ after(t.stop);
 beforeEach(() => { groqFails = false; stripeCalls = []; });
 
 describe('Formule gratuite : quotas du mois', () => {
-    test('5 documents IA gratuits, puis le 6e propose Premium (402)', async () => {
+    test('documents IA gratuits jusqu’au quota, puis Premium proposé (402)', async () => {
         const acc = await t.createVerifiedUser();
-        for (let i = 1; i <= 5; i++) assert.equal((await generate(acc.token)).status, 200, `document ${i}`);
+        const max = require('../src/services/plans').FREE_LIMITS.docs;
+        for (let i = 1; i <= max; i++) assert.equal((await generate(acc.token)).status, 200, `document ${i}`);
         const r = await generate(acc.token);
         assert.equal(r.status, 402);
         assert.equal(r.body.quota, true);
         assert.match(r.body.message, /Premium/);
         const me = await t.api('/api/me', { token: acc.token });
         assert.equal(me.body.user.plan.premium, false);
-        assert.equal(me.body.user.plan.usage.docs, 5);
+        assert.equal(me.body.user.plan.usage.docs, max);
     });
 
     test('un appel IA qui échoue n’est pas décompté', async () => {

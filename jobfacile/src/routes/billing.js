@@ -98,6 +98,7 @@ router.post('/api/premium/checkout', requireAuth, async (req, res) => {
         res.json({ success: true, url: session.url });
     } catch (e) {
         console.warn('⚠️  Stripe (paiement) :', e.message);
+        if (/No such price/i.test(e.message)) console.warn(`   → STRIPE_PRICE_ID ne correspond pas à la clé (${STRIPE_SECRET_KEY.slice(0, 8)}…) : un prix créé en mode test ne marche qu'avec une clé de test, un prix réel qu'avec une clé réelle (live).`);
         res.status(502).json({ success: false, message: 'Le paiement est momentanément indisponible. Réessayez plus tard.' });
     }
 });

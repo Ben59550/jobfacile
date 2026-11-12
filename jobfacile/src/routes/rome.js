@@ -6,6 +6,9 @@ const { DATA_DIR } = require('../config');
 const { ROME_FULL_REFERENTIAL } = require('../referentials');
 const { FT_CLIENT_ID, FT_CLIENT_SECRET } = require('../services/jobSearch');
 const { fold } = require('../utils');
+const { DIPLOMES, synonymsOf } = require('../data/diplomes');
+// Diplômes en tête : le ROME n'a pas les bacs généraux/technologiques ; en cas de doublon (ex. « Bac pro cuisine »), le type « Diplôme » l'emporte
+const DIPLOME_ITEMS = DIPLOMES.map(name => ({ name, type: 'Diplôme', extra: synonymsOf(name) }));
 
 // ---------- Référentiel ROME 4.0 complet (France Travail) ----------
 // Téléchargé une fois, gardé sur disque, rafraîchi tous les 30 jours. Recherche locale = instantanée.
@@ -17,12 +20,12 @@ let romeLoading = null;
 function buildRomeIndex(items) {
     const seen = new Set();
     const out = [];
-    for (const it of items) {
+    for (const it of [...DIPLOME_ITEMS, ...items]) {
         const name = String(it.name || '').trim();
         const k = fold(name);
         if (!name || seen.has(k)) continue;
         seen.add(k);
-        out.push({ name, type: it.type, f: k });
+        out.push({ name, type: it.type, f: it.extra ? k + ' ' + fold(it.extra) : k });
     }
     return out;
 }
@@ -89,7 +92,7 @@ router.get('/api/skills/search', (req, res) => {
     if (q.length < 2) return res.json([]);
     const index = romeIndex || buildRomeIndex(ROME_FULL_REFERENTIAL);
     const words = q.split(/\s+/).filter(Boolean);
-    const TYPE_RANK = { 'Métier': 0, 'Compétence': 1, 'Savoir': 2 };
+    const TYPE_RANK = { 'Métier': 0, 'Diplôme': 1, 'Compétence': 2, 'Savoir': 3 };
     const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const B = '[\\s/\'(),.-]';
     const exactWord = new RegExp(`(^|${B})${esc(q)}($|${B})`);
@@ -101,9 +104,12 @@ router.get('/api/skills/search', (req, res) => {
         const rank = it.f === q ? 0 : exactWord.test(it.f) ? 1 : it.f.startsWith(q) ? 2 : wordStart.test(it.f) ? 3 : 4;
         results.push({ it, rank });
     }
-    results.sort((a, b) => a.rank - b.rank || (TYPE_RANK[a.it.type] ?? 3) - (TYPE_RANK[b.it.type] ?? 3) || a.it.name.length - b.it.name.length);
+    results.sort((a, b) => a.rank - b.rank || (TYPE_RANK[a.it.type] ?? 3) - (TYPE_RANK[b.it.type] ?? 3) || a.it.name.includes(' – ') - b.it.name.includes(' – ') || a.it.name.length - b.it.name.length);
     res.json(results.slice(0, 30).map(({ it }) => ({ name: it.name, type: it.type })));
 });
+
+// Liste des diplômes pour les suggestions du champ « Diplôme »
+router.get('/api/diplomes', (req, res) => { res.set('Cache-Control', 'public, max-age=86400'); res.json(DIPLOMES); });
 
 module.exports = router;
 module.exports.loadRome = loadRome;
