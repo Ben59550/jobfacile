@@ -42,13 +42,13 @@ function renderPremium() {
         const used = Math.min(p.usage[k] || 0, p.limits[k]), max = p.limits[k], pct = Math.round(used / max * 100);
         return `<div>
             <div class="flex justify-between text-xs font-semibold text-slate-600 mb-1"><span>${USAGE_LABELS[k] || k}</span><span>${used} / ${max}</span></div>
-            <div class="h-2 rounded-full bg-slate-100 overflow-hidden"><div class="h-full rounded-full ${pct >= 100 ? 'bg-rose-500' : 'btn-primary'}" style="width:${pct}%"></div></div>
+            <div class="premium-track h-2.5 rounded-full overflow-hidden"><div class="h-full rounded-full ${pct >= 100 ? 'bg-rose-500' : 'btn-primary'}" style="width:${pct}%"></div></div>
         </div>`;
     }).join('');
     const closed = window._paymentsOpen === false;
     body.innerHTML = `
         <ul class="space-y-2">${PREMIUM_PERKS.map(([i, t, s]) => `<li class="flex items-center gap-3 text-sm text-slate-700"><span class="w-8 h-8 shrink-0 rounded-lg bg-amber-50 grid place-items-center">${i}</span><span class="flex-1">${t}</span>${s ? `<span class="text-xs font-bold text-emerald-700">${s}</span>` : ''}</li>`).join('')}</ul>
-        <div class="mt-5 rounded-2xl border border-slate-200 p-4 space-y-3">
+        <div class="premium-usage mt-5 rounded-2xl p-4 space-y-3">
             <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Votre formule gratuite ce mois-ci</p>
             ${usage}
             <p class="text-xs text-slate-500">Compteurs remis à zéro le 1er de chaque mois. La recherche d’offres, le suivi et le PDF restent gratuits et illimités.</p>

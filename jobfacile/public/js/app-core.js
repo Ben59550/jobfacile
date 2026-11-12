@@ -534,7 +534,8 @@ function initGoogleButton() {
         target.innerHTML = '';
         google.accounts.id.renderButton(target, {
             theme: document.documentElement.classList.contains('dark') ? 'filled_black' : 'outline',
-            size: 'large', shape: 'pill', width: Math.min(360, target.clientWidth || 320), locale: 'fr',
+            // largeur avec marge : le cadre Google déborde un peu à droite
+            size: 'large', shape: 'pill', width: Math.max(220, Math.min(340, (target.clientWidth || 340) - 24)), locale: 'fr',
             text: isRegisterMode ? 'signup_with' : 'continue_with'
         });
     });

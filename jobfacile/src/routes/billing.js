@@ -46,6 +46,22 @@ function applySubscription(user, sub) {
     };
 }
 
+// Page de paiement Stripe aux couleurs de JobFacile (vert émeraude, coins arrondis, nom et icône du site)
+function brandingParams() {
+    const p = {
+        'branding_settings[display_name]': 'JobFacile',
+        'branding_settings[background_color]': '#f0fdf4',
+        'branding_settings[button_color]': '#059669',
+        'branding_settings[border_style]': 'rounded'
+    };
+    // L'icône doit être joignable par Stripe : seulement une fois le site en ligne (https, pas localhost)
+    if (/^https:\/\/(?!localhost|127\.)/.test(PUBLIC_URL)) {
+        p['branding_settings[icon][type]'] = 'url';
+        p['branding_settings[icon][url]'] = PUBLIC_URL + '/icons/icon-512.png';
+    }
+    return p;
+}
+
 router.get('/api/premium', requireAuth, (req, res) => res.json({ success: true, plan: planInfo(req.user), payments: configured() }));
 
 router.post('/api/premium/checkout', requireAuth, async (req, res) => {
@@ -69,7 +85,14 @@ router.post('/api/premium/checkout', requireAuth, async (req, res) => {
         };
         if (u.premium && u.premium.customerId) params.customer = u.premium.customerId;
         else params.customer_email = u.email;
-        const session = await stripe('POST', '/checkout/sessions', params);
+        const branding = brandingParams();
+        let session;
+        try { session = await stripe('POST', '/checkout/sessions', { ...params, ...branding }); }
+        catch (e) {
+            // Compte ou version d'API Stripe sans personnalisation par session : on garde l'apparence du tableau de bord
+            if (!/branding/i.test(e.message)) throw e;
+            session = await stripe('POST', '/checkout/sessions', params);
+        }
         u.premium = { ...(u.premium || {}), waiverAt: new Date().toISOString() }; // preuve de la renonciation
         saveUsers(req.users);
         res.json({ success: true, url: session.url });
