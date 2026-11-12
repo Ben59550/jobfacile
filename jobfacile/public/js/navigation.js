@@ -310,12 +310,12 @@ function renderAlertBanner() {
                 <p class="font-bold text-slate-900">${existing ? 'Votre alerte est en pause' : 'Ne ratez plus aucune offre'}</p>
                 <p class="text-sm text-slate-500">Recevez par e-mail les nouvelles offres ${esc(label)}, dès qu'elles sont publiées.</p>
             </div>
-            <div class="flex items-center gap-2 shrink-0">
+            <div class="flex flex-wrap items-center gap-2 sm:shrink-0">
                 <select id="alert-banner-freq" class="field !w-auto !py-2.5 !text-xs font-semibold" aria-label="Fréquence">
                     <option value="daily">Chaque jour</option>
                     <option value="weekly">Chaque semaine</option>
                 </select>
-                <button onclick="${existing ? `updateAlert('${esc(existing.id)}', { active: true })` : 'createAlertFromSearch()'}" id="alert-banner-btn" class="btn-primary px-5 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap">${existing ? '▶ Réactiver' : '🔔 M’alerter par e-mail'}</button>
+                <button onclick="${existing ? `updateAlert('${esc(existing.id)}', { active: true })` : 'createAlertFromSearch()'}" id="alert-banner-btn" class="btn-primary flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap">${existing ? '▶ Réactiver' : '🔔 M’alerter par e-mail'}</button>
             </div>
         </div>`;
 }

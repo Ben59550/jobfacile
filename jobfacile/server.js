@@ -22,8 +22,12 @@ const app = express();
 require('./src/httpSecurity').applyHttpSecurity(app);
 // CORS : seulement l'adresse du site (et localhost en développement), pas n'importe quel site
 app.use(cors({ origin: (origin, cb) => cb(null, !origin || origin === PUBLIC_URL || /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) }));
+// Notifications Stripe : lues brutes (avant express.json), sinon leur signature ne peut pas être vérifiée
+app.post('/api/stripe/webhook', express.raw({ type: '*/*', limit: '1mb' }), require('./src/routes/billing').stripeWebhook);
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
+// ads.txt (Google AdSense) est rangé à la racine du projet : on publie ce seul fichier, jamais le reste de la racine (.env…)
+app.get('/ads.txt', (req, res) => res.type('text/plain').sendFile(path.join(__dirname, 'ads.txt')));
 app.use(express.static(path.join(__dirname, 'public')));
 // Photos et CV : seulement par lien signé (voir src/services/files.js)
 app.get('/uploads/:name', require('./src/services/files').serveUpload);
@@ -44,6 +48,7 @@ app.use(require('./src/routes/recruiter'));
 app.use(require('./src/routes/messages'));
 app.use(require('./src/routes/community'));
 app.use(require('./src/routes/status'));
+app.use(require('./src/routes/billing'));
 app.use(require('./src/routes/pages'));
 
 // Gestion centrale des erreurs (fichier trop gros, mauvais format, JSON invalide…)

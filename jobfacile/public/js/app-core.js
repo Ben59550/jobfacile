@@ -113,6 +113,8 @@ async function api(url, options = {}) {
         showNotification(data.message || 'Session expirée, veuillez vous reconnecter.', 'error');
         openAuthModal('login');
     }
+    // Quota gratuit du mois atteint : on propose Premium
+    if (res.status === 402 && data.quota && typeof openPremium === 'function') setTimeout(() => openPremium(data.message), 0);
     return data;
 }
 
@@ -194,6 +196,7 @@ function setSession(user, token) {
     if (token) { authToken = token; store('jobfacile_token', token); }
     store('jobfacile_current_user', user);
     updateAuthUI();
+    if (typeof syncPremiumFlag === 'function') syncPremiumFlag(); // pub masquée pour les abonnés
     if (typeof renderAlertBanner === 'function') renderAlertBanner();
     if (typeof pollUnread === 'function') pollUnread(); // messages non lus, menu modération
     // Nouveau badge gagné ? (vérifié un instant après chaque mise à jour du compte)
@@ -203,6 +206,7 @@ function setSession(user, token) {
 }
 function clearSession() {
     currentUser = null; authToken = null;
+    if (typeof syncPremiumFlag === 'function') syncPremiumFlag();
     if (typeof updateMessagingUI === 'function') setTimeout(updateMessagingUI, 0);
     store('jobfacile_current_user', null); store('jobfacile_token', null);
     updateAuthUI();
@@ -252,7 +256,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     updateThemeButton();
     renderRecentSearches();
     setJobsMode('list', false);
-    let storageOk = null; try { storageOk = localStorage.getItem('jobfacile_storage_ok'); } catch (e) {}
+    let storageOk = null; try { storageOk = localStorage.getItem('jobfacile_storage_ok_v2'); } catch (e) {}
     if (!storageOk) setTimeout(() => document.getElementById('storage-banner').classList.remove('hidden'), 1200);
     if ('serviceWorker' in navigator && (location.protocol === 'https:' || ['localhost', '127.0.0.1'].includes(location.hostname))) {
         navigator.serviceWorker.register('/sw.js').catch(() => {});
@@ -425,19 +429,21 @@ function updateAuthUI() {
             ? `<img src="${esc(currentUser.avatarUrl)}" alt="" class="w-9 h-9 rounded-full object-cover ring-2 ring-emerald-500 ring-offset-2">`
             : `<span class="w-9 h-9 rounded-full btn-primary grid place-items-center text-sm font-bold">${esc((currentUser.firstName || '?').charAt(0).toUpperCase())}</span>`;
         container.innerHTML = `
-            <button onclick="accessProfileView()" class="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full hover:bg-slate-100 transition text-sm font-bold text-slate-700">
+            <button onclick="accessProfileView()" aria-label="Mon profil" class="flex items-center gap-2 p-1 sm:pr-3 rounded-full hover:bg-slate-100 transition text-sm font-bold text-slate-700">
                 ${avatarImg}
-                <span class="hidden sm:inline">${esc(currentUser.firstName)}</span>
+                <span class="hidden sm:inline xl:hidden 2xl:inline max-w-[8rem] truncate">${esc(currentUser.firstName)}</span>
             </button>
-            <button onclick="logout()" aria-label="Déconnexion" class="w-9 h-9 sm:w-auto sm:px-3 sm:py-2 grid sm:inline-flex place-items-center rounded-xl text-slate-500 hover:bg-rose-50 hover:text-rose-600 text-xs font-semibold transition">
-                <svg class="sm:hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
-                <span class="hidden sm:inline">Déconnexion</span>
+            <button onclick="logout()" aria-label="Déconnexion" class="hidden sm:inline-flex sm:px-3 sm:py-2 place-items-center rounded-xl text-slate-500 hover:bg-rose-50 hover:text-rose-600 text-xs font-semibold transition">
+                <svg class="sm:hidden xl:inline 2xl:hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+                <span class="hidden sm:inline xl:hidden 2xl:inline">Déconnexion</span>
             </button>
         `;
         if (homeRegister) homeRegister.classList.add('hidden');
+        document.getElementById('nav-logout-btn')?.classList.remove('hidden');
     } else {
+        document.getElementById('nav-logout-btn')?.classList.add('hidden');
         container.innerHTML = `
-            <button onclick="openAuthModal('login')" class="px-3 sm:px-4 py-2 text-slate-700 hover:text-emerald-600 text-sm font-bold rounded-xl hover:bg-emerald-50 transition whitespace-nowrap">Se connecter</button>
+            <button onclick="openAuthModal('login')" class="px-2.5 sm:px-4 py-2 text-slate-700 hover:text-emerald-600 text-sm font-bold rounded-xl hover:bg-emerald-50 transition whitespace-nowrap max-w-[9rem] truncate">Se connecter</button>
             <button onclick="openAuthModal('register')" class="hidden sm:inline-block btn-primary px-4 py-2 text-sm font-bold rounded-xl">S'inscrire</button>
         `;
         if (homeRegister) homeRegister.classList.remove('hidden');

@@ -556,7 +556,6 @@
  "JobFacile ·": "JobFacile ·",
  "JobFacile est installé ! 🎉": "JobFacile is installed! 🎉",
  "JobFacile est une plateforme nationale d'emploi intelligente, connectée au référentiel ROME. Notre mission : rendre la recherche d'emploi plus simple, plus locale et plus humaine grâce à l'IA.": "JobFacile is an intelligent national employment platform, connected to the ROME reference. Our mission: make job searching simpler, more local and more human thanks to AI.",
- "JobFacile garde seulement votre session et vos préférences dans votre navigateur.": "JobFacile only keeps your session and preferences in your browser.",
  "JPG, PNG, WEBP ou GIF – 5 Mo maximum.": "JPG, PNG, WEBP or GIF – 5 MB maximum.",
  "juillet 2025": "July 2025",
  "L'âge indiqué dans l'onglet « Allocation chômage » est aussi utilisé.": "The age indicated in the \"Unemployment benefit\" tab is also used.",
@@ -685,7 +684,6 @@
  "Partager": "Share",
  "Partager l'offre": "Share the job offer",
  "Partagez votre lien : chaque personne qui crée son compte et vérifie son e-mail compte comme filleul.": "Share your link: each person who creates an account and verifies their e‑mail counts as a referral.",
- "Pas de cookies publicitaires ici.": "No advertising cookies here.",
  "Pas encore de compte ?": "No account yet?",
  "Pas intéressé : masquer cette offre": "Not interested: hide this job",
  "Pas intéressé : ne plus me montrer cette offre": "Not interested: don't show me this job again",
@@ -1101,5 +1099,16 @@
  "Très demandés en logistique, BTP, transport et industrie. Ils apparaissent sur votre CV et sont comparés aux exigences de chaque offre.": "Highly sought after in logistics, BTP, transport and industry. They appear on your CV and are compared to each job’s requirements.",
  "Trier les offres": "Sort offers",
  "TRIGGER:-PT2H": "TRIGGER:-PT2H",
- "Trouve ton job ou ton alternance": "Find your job or your alternance (work‑study)"
+ "Trouve ton job ou ton alternance": "Find your job or your alternance (work‑study)",
+ "État des services": "Service status",
+ "Langue": "Language",
+ "Langue / Language": "Language",
+ "Mon profil": "My profile",
+ "page publique": "public page",
+ "Traduction indisponible pour le moment.": "Translation currently unavailable.",
+ "Vérifié": "Verified",
+ "Vérifier maintenant": "Verify now",
+ "gratuit": "free",
+ "JobFacile est gratuit grâce aux publicités Google : vos choix sur les cookies publicitaires vous sont demandés par Google. Votre session et vos préférences restent dans votre navigateur.": "JobFacile is free thanks to Google ads: your choices regarding advertising cookies are requested by Google. Your session and preferences remain in your browser.",
+ "Publicités et cookies.": "Ads and cookies."
 }

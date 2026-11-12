@@ -1,4 +1,4 @@
-// Recherche d’offres : France Travail, Adzuna, JSearch, cache 24 h, doublons, offres partagées.
+// Recherche d’offres : France Travail, Adzuna, JSearch, La bonne alternance, cache 24 h, doublons, offres partagées.
 const fs = require('fs');
 const path = require('path');
 const { DATA_DIR } = require('../config');
@@ -96,6 +96,7 @@ function mapFtOffer(o) {
         description: desc.length > 260 ? desc.slice(0, 257) + '…' : desc,
         fullDescription: desc.slice(0, 4000),
         lat: o.lieuTravail && o.lieuTravail.latitude, lng: o.lieuTravail && o.lieuTravail.longitude,
+        rome: o.romeCode || undefined, // sert à interroger La bonne alternance sur les mêmes métiers
         url: `https://candidat.francetravail.fr/offres/recherche/detail/${encodeURIComponent(o.id)}`
     };
 }
@@ -390,6 +391,89 @@ async function searchJSearch({ keyword, location, radius, type, page, limit, day
     return result;
 }
 
+// --- La bonne alternance (API officielle de l'État, gratuite : api.apprentissage.beta.gouv.fr) ---
+// Offres d'alternance de La bonne alternance et de ses partenaires. Complète les résultats (elle ne remplace
+// pas les autres sources) : l'API cherche par lieu et par codes métier ROME, pas par mots-clés.
+const LBA_API_KEY = process.env.LBA_API_KEY;
+const LBA_URL = 'https://api.apprentissage.beta.gouv.fr/api/job/v1/search';
+async function communeCenter(location) {
+    const l = String(location || '').trim();
+    if (!l || /^(\d{2,3}|2[ab])$/i.test(l)) return null;
+    const params = new URLSearchParams({ fields: 'nom,codeDepartement,centre', boost: 'population', limit: '1' });
+    if (/^\d{5}$/.test(l)) params.set('codePostal', l); else params.set('nom', l);
+    const r = await fetch('https://geo.api.gouv.fr/communes?' + params.toString(), { signal: AbortSignal.timeout(5000) }).catch(() => null);
+    const c = r && r.ok ? (await r.json())[0] : null;
+    return c && c.centre ? { lat: c.centre.coordinates[1], lng: c.centre.coordinates[0], label: `${c.nom} (${c.codeDepartement})` } : null;
+}
+function mapLbaJob(j) {
+    const o = j.offer || {}, w = j.workplace || {}, c = j.contract || {}, loc = w.location || {};
+    const coords = loc.geopoint && loc.geopoint.coordinates;
+    const address = String(loc.address || '');
+    const city = (address.match(/\b\d{5}\s+([^,]+)$/) || [])[1] || address.split(',').pop().trim() || 'France';
+    const skills = (o.desired_skills || []).filter(Boolean);
+    const desc = cleanText(o.description, 4000);
+    const full = [desc, skills.length ? 'Compétences attendues : ' + skills.join(', ') + '.' : '', o.target_diploma && o.target_diploma.label ? 'Diplôme préparé : ' + o.target_diploma.label + '.' : '']
+        .filter(Boolean).join('\n\n');
+    const rawId = (j.identifier && (j.identifier.id || j.identifier.partner_job_id)) || '';
+    return {
+        id: 'lba-' + String(rawId).replace(/[^A-Za-z0-9_-]/g, '').slice(0, 60),
+        title: cleanText(o.title, 120) || 'Offre en alternance',
+        company: w.brand || w.name || w.legal_name || 'Entreprise non communiquée',
+        location: city,
+        domain: (w.domain && w.domain.naf && w.domain.naf.label) || '',
+        type: 'Alternance',
+        typeLabel: (c.type || []).join(', '),
+        category: 'alternance',
+        salary: '',
+        duration: c.duration ? `${c.duration} mois` : '',
+        source: 'La bonne alternance',
+        partner: j.identifier && j.identifier.partner_label,
+        date: relativeDate(o.publication && o.publication.creation),
+        description: cleanText(o.description),
+        fullDescription: full.slice(0, 4000),
+        lat: coords ? coords[1] : undefined, lng: coords ? coords[0] : undefined,
+        url: j.apply && j.apply.url
+    };
+}
+// romes : codes métier déduits des offres France Travail de la même recherche
+async function searchLba({ keyword, location, radius, ttl }, romes = []) {
+    if (!LBA_API_KEY) throw new Error('Clé LBA_API_KEY absente du fichier .env.');
+    const kw = fold(keyword).split(/\s+/).filter(w => w.length > 2);
+    const center = await communeCenter(location).catch(() => null);
+    let dept = /^(\d{2,3}|2[ab])$/i.test(String(location || '').trim()) ? String(location).trim().toUpperCase() : null;
+    // Position introuvable (service lent) : on se rabat sur le département de la ville
+    if (!center && !dept && location) { const loc = await resolveLocation(location).catch(() => ({})); dept = (/\((\w{2,3})\)$/.exec(loc.label || '') || [])[1] || null; }
+    if (!center && !dept && !romes.length) return { jobs: [] }; // recherche trop large : on s'abstient
+    const cacheKey = 'lba' + JSON.stringify([kw, center && center.label, dept, radius, romes]);
+    const cached = cacheGet(cacheKey, ttl);
+    if (cached) return cached;
+    const params = new URLSearchParams();
+    if (center) { params.set('latitude', String(center.lat)); params.set('longitude', String(center.lng)); params.set('radius', String(Math.min(Math.max(Number(radius) || 30, 1), 200))); }
+    if (dept) params.set('departements', dept);
+    if (romes.length) params.set('romes', romes.join(','));
+    const r = await fetch(LBA_URL + '?' + params.toString(), { headers: { Authorization: 'Bearer ' + LBA_API_KEY, Accept: 'application/json' }, signal: AbortSignal.timeout(12000) });
+    if (r.status === 401 || r.status === 403) throw new Error('Clé La bonne alternance refusée.');
+    if (r.status === 419 || r.status === 429) throw new Error('Limite de requêtes La bonne alternance atteinte.');
+    if (!r.ok) throw new Error(`La bonne alternance a répondu ${r.status}.`);
+    const data = await r.json();
+    let jobs = (data.jobs || [])
+        .filter(j => !j.offer || !j.offer.status || /activ/i.test(j.offer.status))
+        .filter(j => !/france travail|p[oô]le emploi/i.test((j.identifier && j.identifier.partner_label) || '')) // déjà fournies par France Travail
+        .map(mapLbaJob)
+        .filter(j => j.url);
+    // Sans codes métier, on garde les offres dont l'intitulé contient les mots recherchés
+    if (!romes.length && kw.length) jobs = jobs.filter(j => { const t = fold(j.title + ' ' + j.domain); return kw.every(w => t.includes(w)); });
+    const result = { jobs, source: 'La bonne alternance' };
+    cacheSet(cacheKey, result);
+    return result;
+}
+// Codes ROME les plus fréquents parmi les offres France Travail (3 au plus)
+function topRomes(jobs) {
+    const count = new Map();
+    for (const j of jobs || []) if (j.rome && /^[A-N]\d{4}$/.test(j.rome)) count.set(j.rome, (count.get(j.rome) || 0) + 1);
+    return [...count.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k]) => k);
+}
+
 // Ordre d'essai des sources : la première qui répond est utilisée
 const JOB_PROVIDERS = [
     ['France Travail', searchFranceTravail],
@@ -453,10 +537,34 @@ async function runExternalSearch(q, { statsOnly = false } = {}) {
     return { ...searchDemo(q), demo: true, message: 'Aucune source d’offres réelles n’est configurée.', details: errors };
 }
 
+// Page 1 des recherches « alternance » ou « tout » : on ajoute les offres de La bonne alternance (sans doublons)
+async function addLbaOffers(q, data) {
+    if (!LBA_API_KEY || data.demo || !['alternance', 'all'].includes(q.type)) return data;
+    const down = providerDown.get('La bonne alternance');
+    if (down && Date.now() - down.at < 10 * 60 * 1000) return data;
+    try {
+        const romes = q.keyword ? topRomes(data.jobs) : [];
+        const lba = await searchLba(q, romes);
+        providerDown.delete('La bonne alternance');
+        providerOk.set('La bonne alternance', Date.now());
+        const seen = new Set((data.jobs || []).map(jobSignature));
+        const extra = dedupeJobs(lba.jobs).jobs.filter(j => !seen.has(jobSignature(j))).slice(0, q.type === 'alternance' ? 20 : 10);
+        if (!extra.length) return data;
+        // Recherche « alternance » : ces offres passent devant ; « tout » : à la suite
+        const jobs = q.type === 'alternance' ? [...extra, ...(data.jobs || [])] : [...(data.jobs || []), ...extra];
+        return { ...data, jobs, total: (data.total || 0) + extra.length, lbaCount: extra.length };
+    } catch (e) {
+        if (!down || down.message !== e.message) console.warn('⚠️  La bonne alternance indisponible :', e.message);
+        providerDown.set('La bonne alternance', { at: Date.now(), message: e.message });
+        return data;
+    }
+}
+
 // Recherche complète : sources externes + offres publiées sur JobFacile par des recruteurs vérifiés (en tête, page 1)
 async function runJobSearch(q, opts = {}) {
-    const data = await runExternalSearch(q, opts);
+    let data = await runExternalSearch(q, opts);
     if (opts.statsOnly || (q.page || 1) > 1) return data;
+    data = await addLbaOffers(q, data);
     let local = [];
     try { local = (await require('./localOffers').searchLocalOffers(q)).slice(0, 10).map(o => ({ ...o, date: relativeDate(o.createdAt) })); }
     catch (e) { console.warn('⚠️  Offres JobFacile :', e.message); }
@@ -502,4 +610,4 @@ async function findOffer(id) {
     return ft;
 }
 
-module.exports = { providerDown, providerOk, getFtToken, RAPIDAPI_KEY, FT_CLIENT_ID, FT_CLIENT_SECRET, geoCommunes, SEARCH_TTL, STATS_TTL, ADZUNA_APP_ID, ADZUNA_APP_KEY, runJobSearch, sharedSet, findOffer };
+module.exports = { providerDown, providerOk, getFtToken, RAPIDAPI_KEY, LBA_API_KEY, FT_CLIENT_ID, FT_CLIENT_SECRET, geoCommunes, SEARCH_TTL, STATS_TTL, ADZUNA_APP_ID, ADZUNA_APP_KEY, runJobSearch, sharedSet, findOffer };

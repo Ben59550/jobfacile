@@ -7,6 +7,14 @@ html[data-color="corail"] { --e-50: 255 247 237; --t-50: 255 241 242; --e-100: 2
 html[data-color="indigo"] { --e-50: 238 242 255; --t-50: 240 249 255; --e-100: 224 231 255; --t-100: 224 242 254; --e-200: 199 210 254; --t-200: 186 230 253; --e-300: 165 180 252; --t-300: 125 211 252; --e-400: 129 140 248; --t-400: 56 189 248; --e-500: 99 102 241; --t-500: 14 165 233; --e-600: 79 70 229; --t-600: 2 132 199; --e-700: 67 56 202; --t-700: 3 105 161; --e-800: 55 48 163; --t-800: 7 89 133; --e-900: 49 46 129; --t-900: 12 74 110; }
 :root { --brand: rgb(var(--e-600)); --brand-2: rgb(var(--e-500)); --brand-3: rgb(var(--t-500)); --ink: #0f172a; }
 html { scroll-behavior: smooth; }
+/* Téléphones : la page ne doit jamais glisser de gauche à droite. « clip » (et non « hidden ») garde l'en-tête collant. */
+html, body { max-width: 100%; overflow-x: clip; }
+img, video, iframe, canvas, svg, table { max-width: 100%; }
+ins.adsbygoogle { max-width: 100%; overflow: hidden; }
+html.is-premium .ad-slot, html.is-premium ins.adsbygoogle, html.is-premium .google-auto-placed { display: none !important; } /* abonnés Premium */
+/* Bouton Google : son cadre intégré est en mode clair. En mode sombre, le navigateur peindrait un fond blanc
+   derrière (schémas de couleur différents) ; on aligne le schéma du cadre pour qu'il reste transparent. */
+#google-btn iframe, iframe[src*="accounts.google.com/gsi"] { color-scheme: light; background: transparent; }
 body {
     background-color: #f8fafc;
     background-image:
@@ -84,6 +92,11 @@ button:disabled { opacity: .6; cursor: wait; transform: none !important; }
 .menu-pop { transform-origin: top left; animation: pop .18s ease-out; }
 @keyframes pop { from { opacity: 0; transform: scale(.96) translateY(-4px); } to { opacity: 1; transform: none; } }
 .nav-link { white-space: nowrap; position: relative; padding: .5rem .85rem; border-radius: .75rem; font-size: .875rem; font-weight: 600; color: #475569; transition: color .2s, background .2s; }
+/* Écrans moyens (menu complet affiché à partir de 1280 px) : liens un peu plus serrés pour que tout tienne */
+@media (max-width: 1535px) { .nav-link { padding: .5rem .6rem; } }
+/* Menu complet trop large pour la place disponible (langue aux mots longs, écran moyen) : menu ☰ à la place (voir fitHeader) */
+#site-header.header-compact #desktop-nav { display: none !important; }
+#site-header.header-compact #nav-container { display: block !important; }
 .nav-link:hover { color: var(--brand); background: rgb(var(--e-50)); }
 .nav-link.active { color: var(--brand); background: rgb(var(--e-50)); }
 

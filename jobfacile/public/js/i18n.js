@@ -4,12 +4,44 @@
 // les messages et le forum (écrits par les utilisateurs), les pages légales (version qui fait foi).
 // Script classique, chargé en premier : il traduit aussi ce que les autres scripts affichent ensuite.
 
-const LANGUAGES = { fr: ['Français', 'ltr', 'FR'], en: ['English', 'ltr', 'EN'], ar: ['العربية', 'rtl', 'ع'], pl: ['Polski', 'ltr', 'PL'] };
+// Doit correspondre à LANGS dans scripts/i18n-translate.js (sauf le français, langue d'origine)
+const LANGUAGES = {
+    fr: ['Français', 'ltr', 'FR'], en: ['English', 'ltr', 'EN'], de: ['Deutsch', 'ltr', 'DE'], es: ['Español', 'ltr', 'ES'],
+    it: ['Italiano', 'ltr', 'IT'], pt: ['Português', 'ltr', 'PT'], nl: ['Nederlands', 'ltr', 'NL'], pl: ['Polski', 'ltr', 'PL'],
+    ro: ['Română', 'ltr', 'RO'], el: ['Ελληνικά', 'ltr', 'EL'], cs: ['Čeština', 'ltr', 'CS'], sk: ['Slovenčina', 'ltr', 'SK'],
+    hu: ['Magyar', 'ltr', 'HU'], bg: ['Български', 'ltr', 'BG'], hr: ['Hrvatski', 'ltr', 'HR'], sl: ['Slovenščina', 'ltr', 'SL'],
+    da: ['Dansk', 'ltr', 'DA'], sv: ['Svenska', 'ltr', 'SV'], no: ['Norsk', 'ltr', 'NO'], fi: ['Suomi', 'ltr', 'FI'],
+    et: ['Eesti', 'ltr', 'ET'], lv: ['Latviešu', 'ltr', 'LV'], lt: ['Lietuvių', 'ltr', 'LT'], ga: ['Gaeilge', 'ltr', 'GA'],
+    mt: ['Malti', 'ltr', 'MT'], uk: ['Українська', 'ltr', 'UK'], ar: ['العربية', 'rtl', 'ع']
+};
 const I18N_ATTRS = ['placeholder', 'aria-label', 'title', 'alt'];
 const LEGAL_NOTICE = {
     en: 'This page is only available in French, which is the legally binding version.',
     ar: 'هذه الصفحة متوفرة باللغة الفرنسية فقط، وهي النسخة المعتمدة قانونياً.',
-    pl: 'Ta strona jest dostępna tylko po francusku – to wersja wiążąca prawnie.'
+    pl: 'Ta strona jest dostępna tylko po francusku – to wersja wiążąca prawnie.',
+    de: 'Diese Seite ist nur auf Französisch verfügbar; dies ist die rechtsverbindliche Fassung.',
+    es: 'Esta página solo está disponible en francés, que es la versión jurídicamente vinculante.',
+    it: 'Questa pagina è disponibile solo in francese, che è la versione giuridicamente vincolante.',
+    pt: 'Esta página só está disponível em francês, que é a versão juridicamente vinculativa.',
+    nl: 'Deze pagina is alleen beschikbaar in het Frans; dat is de juridisch bindende versie.',
+    ro: 'Această pagină este disponibilă doar în franceză, care este versiunea cu valoare juridică.',
+    el: 'Αυτή η σελίδα είναι διαθέσιμη μόνο στα γαλλικά, που είναι η νομικά δεσμευτική έκδοση.',
+    cs: 'Tato stránka je k dispozici pouze ve francouzštině, která je právně závaznou verzí.',
+    sk: 'Táto stránka je dostupná iba vo francúzštine, ktorá je právne záväznou verziou.',
+    hu: 'Ez az oldal csak franciául érhető el, ez a jogilag kötelező változat.',
+    bg: 'Тази страница е достъпна само на френски език, който е правно обвързващата версия.',
+    hr: 'Ova je stranica dostupna samo na francuskom, što je pravno obvezujuća verzija.',
+    sl: 'Ta stran je na voljo samo v francoščini, ki je pravno zavezujoča različica.',
+    da: 'Denne side findes kun på fransk, som er den juridisk bindende version.',
+    sv: 'Den här sidan finns bara på franska, som är den juridiskt bindande versionen.',
+    no: 'Denne siden er bare tilgjengelig på fransk, som er den juridisk bindende versjonen.',
+    fi: 'Tämä sivu on saatavilla vain ranskaksi, joka on oikeudellisesti sitova versio.',
+    et: 'See leht on saadaval ainult prantsuse keeles, mis on õiguslikult siduv versioon.',
+    lv: 'Šī lapa ir pieejama tikai franču valodā, kas ir juridiski saistošā versija.',
+    lt: 'Šis puslapis prieinamas tik prancūzų kalba – tai teisiškai įpareigojanti versija.',
+    ga: 'Níl an leathanach seo ar fáil ach i bhFraincis, arb í an leagan atá ceangailteach go dlíthiúil.',
+    mt: 'Din il-paġna hija disponibbli biss bil-Franċiż, li hija l-verżjoni legalment vinkolanti.',
+    uk: 'Ця сторінка доступна лише французькою мовою, яка є юридично обов’язковою версією.'
 };
 let currentLang = 'fr', dict = null, i18nObserver = null, applyingI18n = false;
 const originalText = new WeakMap(); // nœud de texte → texte français d'origine
@@ -147,7 +179,11 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLangM
 window.addEventListener('DOMContentLoaded', () => {
     let lang = null;
     try { lang = localStorage.getItem('jf-lang'); } catch (e) {}
-    if (!lang) { const nav = (navigator.language || 'fr').slice(0, 2).toLowerCase(); lang = LANGUAGES[nav] ? nav : 'fr'; }
+    if (!lang) {
+        let nav = (navigator.language || 'fr').slice(0, 2).toLowerCase();
+        if (nav === 'nb' || nav === 'nn') nav = 'no'; // norvégien : bokmål / nynorsk
+        lang = LANGUAGES[nav] ? nav : 'fr';
+    }
     renderLangButton();
     if (lang !== 'fr') setLanguage(lang, { save: false });
 });

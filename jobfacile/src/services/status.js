@@ -35,6 +35,7 @@ async function collect() {
     }
     s.adzuna = provider('Adzuna', !!(J.ADZUNA_APP_ID && J.ADZUNA_APP_KEY));
     s.jsearch = provider('JSearch', !!J.RAPIDAPI_KEY);
+    s.lba = provider('La bonne alternance', !!J.LBA_API_KEY);
     // IA (Groq) : la liste des modèles ne consomme pas de crédits
     if (!GROQ_API_KEY) s.ai = { state: 'off', detail: 'Clé GROQ_API_KEY absente.' };
     else {
@@ -72,7 +73,7 @@ async function getStatus({ refresh = false } = {}) {
 
 const LABELS = {
     franceTravail: ['Offres France Travail', 'Source officielle des offres d’emploi'], adzuna: ['Offres Adzuna', 'Source d’offres complémentaire'],
-    jsearch: ['Offres JSearch', 'Source de secours'], ai: ['Intelligence artificielle', 'CV, lettres, entretiens, analyses'],
+    jsearch: ['Offres JSearch', 'Source de secours'], lba: ['Offres La bonne alternance', 'Offres d’alternance (API officielle)'], ai: ['Intelligence artificielle', 'CV, lettres, entretiens, analyses'],
     email: ['E-mails', 'Codes de connexion, alertes, rappels'], voice: ['Voix naturelle', 'Entretien vocal'],
     push: ['Notifications', 'Alertes sur téléphone et ordinateur'], database: ['Comptes et données', 'Base de données et sauvegardes']
 };

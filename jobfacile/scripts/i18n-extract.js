@@ -18,12 +18,13 @@ const legalStart = html.indexOf('<!-- ================= VUE 9 : INFORMATIONS LÉ
 const legalEnd = html.indexOf('<!-- ================= VUE : MES DROITS');
 if (legalStart > 0 && legalEnd > legalStart) html = html.slice(0, legalStart) + html.slice(legalEnd);
 html = html.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<!--[\s\S]*?-->/g, '');
-for (const m of html.matchAll(/>([^<>]+)</g)) { const t = norm(m[1].replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&')); if (looksFrench(t) && !looksLikeCode(t)) strings.add(t); }
+// (dans le HTML, un mot seul en minuscules entre deux balises est un texte visible : « gratuit », « offres »…)
+for (const m of html.matchAll(/>([^<>]+)</g)) { const t = norm(m[1].replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&')); if (looksFrench(t) && (!looksLikeCode(t) || /^[a-zà-ÿ]{3,}$/.test(t))) strings.add(t); }
 for (const m of html.matchAll(/\s(?:placeholder|aria-label|title|alt)="([^"]+)"/g)) { const t = norm(m[1]); if (looksFrench(t) && !looksLikeCode(t)) strings.add(t); }
 
 // 2. Scripts : textes entre guillemets et morceaux fixes des gabarits `...${x}...`
 const pieces = (t) => t.split(/\$\{[^}]*\}/).map(norm);
-for (const f of fs.readdirSync(path.join(PUB, 'js')).filter(f => f.endsWith('.js'))) {
+for (const f of fs.readdirSync(path.join(PUB, 'js')).filter(f => f.endsWith('.js') && f !== 'i18n.js')) { // i18n.js : noms des langues et avis déjà traduits
     let src = fs.readFileSync(path.join(PUB, 'js', f), 'utf8').replace(/^\s*\/\/.*$/gm, '');
     const candidates = [];
     for (const m of src.matchAll(/'((?:[^'\\\n]|\\.){2,300})'/g)) candidates.push(m[1].replace(/\\'/g, "'").replace(/\\u2019/g, '’'));
@@ -47,6 +48,8 @@ const isNoise = (t) => /^[,.;:)\]]|:\s*$|^[a-z]+[A-Z]\w*$|BEGIN:|END:|VEVENT|VCA
     || t.split(' ').every(w => /^[a-z0-9:!/[\].-]+$/.test(w) && /-/.test(w))
     || (t.length > 120 && /Réponds|Rédige|JSON|Tu (es|modères|simules|prépares)|N'invente|candidat\b.*(Compétences|Expériences)/.test(t));
 for (const t of [...strings]) if (isNoise(t)) strings.delete(t);
+// Seul message de i18n.js à traduire (ce fichier n'est pas parcouru)
+strings.add('Traduction indisponible pour le moment.');
 // Nom de la marque : jamais traduit
 for (const t of ['Job', 'Facile', 'JobFacile']) strings.delete(t);
 const list = [...strings].sort((a, b) => a.localeCompare(b, 'fr'));

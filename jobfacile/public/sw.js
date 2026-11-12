@@ -1,8 +1,8 @@
 // Service worker JobFacile : rend le site installable et utilisable hors connexion
 // (toutes les pages ; le suivi s'affiche depuis la dernière version gardée par le navigateur)
-const CACHE = 'jobfacile-v5';
+const CACHE = 'jobfacile-v8';
 const SHELL = ['/', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png', '/css/app.css',
-    '/js/i18n.js', '/js/app-core.js', '/js/interview.js', '/js/job-detail.js', '/js/tracker.js', '/js/account.js', '/js/navigation.js', '/js/ui.js', '/js/badges.js', '/js/rights.js', '/js/recruiter.js', '/js/messages.js', '/js/community.js', '/js/search.js'];
+    '/js/i18n.js', '/js/app-core.js', '/js/interview.js', '/js/job-detail.js', '/js/tracker.js', '/js/account.js', '/js/navigation.js', '/js/ui.js', '/js/badges.js', '/js/rights.js', '/js/recruiter.js', '/js/messages.js', '/js/community.js', '/js/search.js', '/js/premium.js'];
 
 self.addEventListener('install', (event) => {
     event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -57,6 +57,8 @@ self.addEventListener('fetch', (event) => {
     if (url.origin === location.origin && (url.pathname.startsWith('/api/') || url.pathname.startsWith('/uploads/'))) return;
     // Fonds de carte : laissés au navigateur
     if (url.hostname.endsWith('tile.openstreetmap.org')) return;
+    // Publicités (AdSense) : jamais en cache, laissées au navigateur
+    if (/(^|\.)(googlesyndication\.com|doubleclick\.net|google\.com|adtrafficquality\.google)$/.test(url.hostname)) return;
 
     // Pages : réseau d'abord (toujours la dernière version), cache si hors connexion
     if (req.mode === 'navigate') {

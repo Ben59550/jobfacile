@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JobFacile - L'emploi au kilomètre près</title>
     <meta name="description" content="JobFacile : trouvez votre emploi ou alternance près de chez vous, générez votre CV par IA et entraînez-vous aux entretiens.">
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23059669'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='900' font-size='18' fill='white' text-anchor='middle'%3EJ%3C/text%3E%3C/svg%3E">
+    <link rel="icon" href="/icons/logo.svg" type="image/svg+xml">
+    <link rel="icon" href="/icons/icon-192.png" type="image/png" sizes="192x192">
     <link rel="manifest" href="/manifest.webmanifest">
     <meta name="theme-color" content="#059669">
     <meta property="og:site_name" content="JobFacile">
@@ -38,7 +39,11 @@
             } }
         };
     </script>
-    <link rel="stylesheet" href="/css/app.css?v=2653fda9">
+    <link rel="stylesheet" href="/css/app.css?v=6a1d8cec">
+    <script>
+        // Abonnés Premium : aucune publicité (les demandes de pub sont mises en pause avant le chargement d'AdSense)
+        try { if (localStorage.getItem('jobfacile_premium') === '1') { (window.adsbygoogle = window.adsbygoogle || []).pauseAdRequests = 1; document.documentElement.classList.add('is-premium'); } } catch (e) {}
+    </script>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3255791817002804"
          crossorigin="anonymous"></script>
 </head>
@@ -46,14 +51,14 @@
     <a href="#main-content" onclick="event.preventDefault(); const v = [...document.querySelectorAll('[id^=view-]')].find(x => !x.classList.contains('hidden')); if (v) { v.setAttribute('tabindex', '-1'); v.focus(); }" class="skip-link">Aller au contenu principal</a>
 
     <!-- ================= EN-TÊTE ================= -->
-    <header id="site-header" class="glass border-b border-slate-200/70 sticky top-0 z-40 transition-shadow">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex justify-between items-center gap-3">
-            <div class="flex items-center gap-2">
+    <header id="site-header" class="glass border-b border-slate-200/70 sticky top-0 z-[45] transition-shadow">
+        <div class="max-w-7xl 2xl:max-w-[1480px] mx-auto px-3 sm:px-6 h-16 flex justify-between items-center gap-2 sm:gap-3">
+            <div class="flex items-center gap-2 shrink-0">
                 <div class="relative xl:hidden" id="nav-container">
                     <button onclick="toggleNavMenu(event)" aria-label="Menu" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-600 transition flex items-center justify-center">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
                     </button>
-                    <div id="nav-dropdown-menu" class="menu-pop absolute left-0 mt-2 w-72 bg-white border border-slate-200 rounded-2xl shadow-2xl hidden z-50 p-2">
+                    <div id="nav-dropdown-menu" class="menu-pop absolute left-0 mt-2 w-72 max-w-[calc(100vw-1.5rem)] max-h-[calc(100dvh-5rem)] overflow-y-auto bg-white border border-slate-200 rounded-2xl shadow-2xl hidden z-50 p-2">
                         <button onclick="switchView('home'); closeNavMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 font-semibold flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-slate-100 grid place-items-center">🏠</span> Accueil</button>
                         <button onclick="accessJobsView(); closeNavMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 font-semibold flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-slate-100 grid place-items-center">💼</span> Offres d'emploi</button>
                         <button onclick="switchView('ai-generator'); closeNavMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 font-semibold flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-slate-100 grid place-items-center">✨</span> Générateur IA & PDF</button>
@@ -65,12 +70,20 @@
                         <button onclick="openRights(); closeNavMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 font-semibold flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-slate-100 grid place-items-center">⚖️</span> Mes droits</button>
                         <button onclick="openMessages(); closeNavMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 font-semibold flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-slate-100 grid place-items-center">✉️</span> Messages</button>
                         <button onclick="openRecruiter(); closeNavMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 font-semibold flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-slate-100 grid place-items-center">🏢</span> Espace recruteur</button>
+                        <button onclick="openPremium(); closeNavMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm text-amber-700 hover:bg-amber-50 font-bold flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-amber-100 grid place-items-center">⭐</span> Premium</button>
                         <button id="install-menu-btn" onclick="installApp(); closeNavMenu();" class="hidden w-full text-left px-3 py-2.5 rounded-xl text-sm text-emerald-700 hover:bg-emerald-50 font-bold flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-emerald-100 grid place-items-center">📲</span> Installer l'appli</button>
+                        <!-- Sur téléphone, ces réglages quittent l'en-tête (trop étroit) et se retrouvent ici -->
+                        <div class="sm:hidden border-t border-slate-100 mt-1 pt-2">
+                            <button onclick="toggleTheme(); closeNavMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 font-semibold flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-slate-100 grid place-items-center">🌓</span> Mode clair / sombre</button>
+                            <p class="px-3 pt-2 pb-1 text-xs font-bold text-slate-500 uppercase tracking-wider">Couleur du site</p>
+                            <div id="nav-color-options" class="flex flex-wrap gap-2 px-3 pb-2"></div>
+                            <button id="nav-logout-btn" onclick="closeNavMenu(); logout();" class="hidden w-full text-left px-3 py-2.5 rounded-xl text-sm text-rose-700 hover:bg-rose-50 font-semibold flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-rose-50 grid place-items-center">🚪</span> Déconnexion</button>
+                        </div>
                     </div>
                 </div>
-                <a href="#" onclick="switchView('home'); return false;" class="flex items-center gap-2 group">
-                    <span class="w-9 h-9 rounded-xl btn-primary grid place-items-center font-extrabold text-lg group-hover:rotate-6 transition-transform">J</span>
-                    <span class="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900"><span translate="no">Job<span class="text-emerald-600">Facile</span></span></span>
+                <a href="#" onclick="switchView('home'); return false;" class="flex items-center gap-2 group shrink-0">
+                    <svg viewBox="0 0 48 48" aria-hidden="true" class="w-9 h-9 shrink-0 group-hover:-translate-y-0.5 transition-transform text-emerald-600"><path d="M24 3C14.6 3 7 10.4 7 19.6 7 31.5 24 45 24 45s17-13.5 17-25.4C41 10.4 33.4 3 24 3Z" fill="currentColor"/><circle cx="24" cy="19.5" r="11.5" fill="#fff"/><path d="M27.4 12.6v9.6a4.6 4.6 0 0 1-9.2 0" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span class="hidden min-[360px]:inline text-lg min-[400px]:text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900"><span translate="no">Job<span class="text-emerald-600">Facile</span></span></span>
                 </a>
             </div>
 
@@ -84,6 +97,7 @@
                 <div class="relative">
                     <button id="more-btn" onclick="toggleMoreMenu(event)" aria-haspopup="true" aria-expanded="false" class="nav-link">Plus ▾</button>
                     <div id="more-menu" role="menu" class="hidden absolute right-0 top-11 z-50 card p-2 w-60 shadow-2xl">
+                        <button role="menuitem" onclick="openPremium(); closeMoreMenu()" class="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-amber-700 hover:bg-amber-50">⭐ Premium</button>
                         <button role="menuitem" data-nav="rights" onclick="openRights(); closeMoreMenu()" class="w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-emerald-50">⚖️ Mes droits</button>
                         <button role="menuitem" data-nav="recruiter" onclick="openRecruiter(); closeMoreMenu()" class="w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-emerald-50">🏢 Espace recruteur</button>
                         <button role="menuitem" data-nav="advice" onclick="switchView('advice'); closeMoreMenu()" class="w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-emerald-50">💡 Conseils</button>
@@ -93,20 +107,20 @@
                 </div>
             </nav>
 
-            <div class="flex items-center gap-1 sm:gap-2">
+            <div class="flex items-center gap-1 sm:gap-2 shrink-0">
                 <button id="msg-btn" onclick="openMessages()" aria-label="Messages" title="Messages" class="hidden relative w-9 h-9 rounded-xl text-slate-500 hover:bg-slate-100 grid place-items-center transition text-lg">✉️<span id="msg-badge" class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-600 text-white text-[10px] font-bold grid place-items-center"></span></button>
                 <div class="relative">
                     <button id="lang-btn" onclick="toggleLangMenu(event)" aria-haspopup="true" aria-expanded="false" aria-label="Langue" title="Langue / Language" translate="no" class="w-9 h-9 rounded-xl text-slate-500 hover:bg-slate-100 grid place-items-center transition text-xs font-extrabold">FR</button>
-                    <div id="lang-menu" role="menu" aria-label="Langue" class="hidden absolute right-0 top-11 z-50 card p-2 w-44 shadow-2xl"><div id="lang-options" class="space-y-1"></div></div>
+                    <div id="lang-menu" role="menu" aria-label="Langue" class="hidden absolute right-0 top-11 z-50 card p-2 w-48 max-h-[70dvh] overflow-y-auto shadow-2xl"><div id="lang-options" class="space-y-1"></div></div>
                 </div>
-                <div class="relative">
+                <div class="relative hidden sm:block">
                     <button id="color-btn" onclick="toggleColorMenu(event)" aria-label="Couleur du site" aria-haspopup="true" aria-expanded="false" title="Couleur du site" class="w-9 h-9 rounded-xl text-slate-500 hover:bg-slate-100 grid place-items-center transition text-lg">🎨</button>
                     <div id="color-menu" role="menu" aria-label="Couleur du site" class="hidden absolute right-0 top-11 z-50 card p-3 w-56 shadow-2xl">
                         <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 px-1">Couleur du site</p>
                         <div id="color-options" class="space-y-1"></div>
                     </div>
                 </div>
-                <button id="theme-btn" onclick="toggleTheme()" aria-label="Mode clair ou sombre" title="Mode clair / sombre" class="w-9 h-9 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-emerald-600 grid place-items-center transition text-lg">🌙</button>
+                <button id="theme-btn" onclick="toggleTheme()" aria-label="Mode clair ou sombre" title="Mode clair / sombre" class="w-9 h-9 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-emerald-600 hidden sm:grid place-items-center transition text-lg">🌙</button>
                 <div class="flex items-center gap-2 sm:gap-3" id="auth-container"></div>
             </div>
         </div>
@@ -442,7 +456,7 @@
         <div class="card p-8 sm:p-12 relative overflow-hidden">
             <div class="blob w-64 h-64 bg-emerald-200 -top-20 -right-20"></div>
             <div class="relative">
-                <span class="w-14 h-14 rounded-2xl btn-primary grid place-items-center font-extrabold text-2xl mb-6">J</span>
+                <svg viewBox="0 0 48 48" aria-hidden="true" class="block w-14 h-14 mb-6 text-emerald-600"><path d="M24 3C14.6 3 7 10.4 7 19.6 7 31.5 24 45 24 45s17-13.5 17-25.4C41 10.4 33.4 3 24 3Z" fill="currentColor"/><circle cx="24" cy="19.5" r="11.5" fill="#fff"/><path d="M27.4 12.6v9.6a4.6 4.6 0 0 1-9.2 0" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">À propos de JobFacile</h2>
                 <p class="text-slate-600 text-lg leading-relaxed mb-8">JobFacile est une plateforme nationale d'emploi intelligente, connectée au référentiel ROME. Notre mission : rendre la recherche d'emploi plus simple, plus locale et plus humaine grâce à l'IA.</p>
                 <div class="grid sm:grid-cols-3 gap-4">
@@ -807,21 +821,26 @@
                     <li><strong>Technique</strong> : adresse IP de connexion, appareils de confiance (double authentification).</li>
                 </ul></section>
             <section><h3 class="font-bold text-slate-900 text-base mb-2">Pourquoi</h3>
-                <p>Uniquement pour faire fonctionner le service : gérer votre compte, personnaliser la recherche (score de compatibilité), générer vos documents et sécuriser l'accès. Base légale : l'exécution du service que vous demandez (article 6.1.b du RGPD). Aucune revente, aucune publicité.</p></section>
+                <p>Uniquement pour faire fonctionner le service : gérer votre compte, personnaliser la recherche (score de compatibilité), générer vos documents et sécuriser l'accès. Base légale : l'exécution du service que vous demandez (article 6.1.b du RGPD). Vos données de compte, de profil et de candidature ne sont jamais vendues ni transmises aux annonceurs.</p>
+                <p class="mt-2">Le site affiche aussi des <strong>publicités</strong> (Google AdSense), qui le financent. Base légale : votre consentement (article 6.1.a du RGPD) pour les publicités personnalisées et leurs cookies ; sans consentement, Google n'affiche que des publicités non personnalisées.</p></section>
             <section><h3 class="font-bold text-slate-900 text-base mb-2">Qui y a accès</h3>
                 <ul class="list-disc pl-5 space-y-1">
                     <li><strong>Groq</strong> (intelligence artificielle, États-Unis) : reçoit le contenu nécessaire quand vous utilisez une fonction IA (texte du CV, profil, annonce visée), et l'enregistrement de votre voix quand vous répondez au micro dans l'entretien simulé (transformé en texte, non conservé par JobFacile).</li>
                     <li><strong>ElevenLabs</strong> (voix de synthèse, États-Unis) : reçoit uniquement le texte prononcé par le recruteur virtuel, jamais votre voix ni votre identité.</li>
-                    <li><strong>Adzuna, JSearch (RapidAPI), France Travail</strong> : reçoivent uniquement vos critères de recherche (mots-clés, ville), jamais votre identité.</li>
+                    <li><strong>Adzuna, JSearch (RapidAPI), France Travail, La bonne alternance</strong> : reçoivent uniquement vos critères de recherche (mots-clés, ville), jamais votre identité.</li>
                     <li><strong>Google</strong> : envoi des e-mails de code de sécurité (Gmail) et, si vous choisissez « Continuer avec Google », vérification de votre identité (JobFacile reçoit alors vos nom, prénom et e-mail Google).</li>
                     <li><strong>Base Adresse Nationale, Annuaire des entreprises (État français), OpenStreetMap (OSRM)</strong> : reçoivent la ville ou l'adresse de votre domicile et les coordonnées des offres pour situer les entreprises et calculer les trajets, jamais votre identité.</li>
+                    <li><strong>Stripe</strong> (paiement, Irlande / États-Unis) : si vous prenez l'abonnement Premium, Stripe reçoit votre e-mail et traite le paiement. JobFacile ne voit ni ne stocke jamais votre numéro de carte ; il garde seulement l'état de votre abonnement.</li>
+                    <li><strong>Google AdSense</strong> (publicité, Irlande / États-Unis) : quand une page s'affiche, Google reçoit des informations techniques (adresse IP, navigateur, page visitée) et, si vous l'acceptez, dépose des cookies pour personnaliser et mesurer les publicités. Google n'a jamais accès à votre compte JobFacile. Plus d'informations : policies.google.com/technologies/ads.</li>
                     <li><strong>[Hébergeur]</strong> : stockage du site et des données.</li>
                 </ul>
                 <p class="mt-2">Certains de ces services sont situés hors de l'Union européenne ; ils sont encadrés par des clauses contractuelles types ou le Data Privacy Framework.</p></section>
             <section><h3 class="font-bold text-slate-900 text-base mb-2">Durée de conservation</h3>
                 <p>Vos données sont conservées tant que votre compte existe. Elles sont effacées immédiatement si vous supprimez votre compte, et un compte inactif depuis 3 ans peut être supprimé.</p></section>
             <section><h3 class="font-bold text-slate-900 text-base mb-2">Cookies et stockage</h3>
-                <p>JobFacile n'utilise <strong>aucun cookie publicitaire ni outil de mesure d'audience</strong>. Votre navigateur conserve seulement des informations techniques nécessaires : votre session de connexion, le thème choisi et vos recherches récentes. Ces éléments n'exigent pas de consentement.</p></section>
+                <p><strong>Stockage technique de JobFacile</strong> : votre navigateur conserve votre session de connexion, le thème choisi et vos recherches récentes. Ces éléments sont nécessaires au service et n'exigent pas de consentement.</p>
+                <p class="mt-2"><strong>Cookies publicitaires (Google)</strong> : ils ne sont déposés qu'avec votre accord, demandé par Google à votre première visite. Vous pouvez refuser aussi facilement qu'accepter, et changer d'avis à tout moment :</p>
+                <button onclick="(window.googlefc = window.googlefc || {}).callbackQueue = window.googlefc.callbackQueue || []; window.googlefc.callbackQueue.push(() => window.googlefc.showRevocationMessage());" class="mt-2 px-4 py-2 rounded-xl text-sm font-bold border border-slate-200 hover:bg-slate-50">Gérer mes choix de cookies publicitaires</button></section>
             <section><h3 class="font-bold text-slate-900 text-base mb-2">Vos droits</h3>
                 <p>Vous pouvez accéder à vos données, les corriger, les récupérer (portabilité), vous opposer à leur traitement ou les faire effacer. Depuis <strong>Mon profil → Informations → Mes données personnelles</strong>, vous pouvez les télécharger ou supprimer votre compte en un clic. Pour toute autre demande : [adresse e-mail de contact]. Vous pouvez aussi saisir la CNIL (cnil.fr).</p></section>
             <p class="text-xs text-slate-400">Dernière mise à jour : <span id="privacy-date"></span></p>
@@ -920,7 +939,7 @@
     </div>
 
     <!-- ================= PUBLICITÉ (AdSense, le script est chargé dans le head) ================= -->
-    <div class="max-w-6xl w-full mx-auto px-4 mt-10">
+    <div class="ad-slot max-w-6xl w-full mx-auto px-4 mt-10">
         <!-- Jobfacile -->
         <ins class="adsbygoogle"
              style="display:block"
@@ -937,7 +956,7 @@
     <footer class="border-t border-slate-200/70 bg-white mt-10">
         <div class="max-w-6xl mx-auto px-4 py-10 flex flex-col md:flex-row justify-between items-center gap-6">
             <div class="flex items-center gap-2">
-                <span class="w-8 h-8 rounded-lg btn-primary grid place-items-center font-extrabold">J</span>
+                <svg viewBox="0 0 48 48" aria-hidden="true" class="w-8 h-8 shrink-0 text-emerald-600"><path d="M24 3C14.6 3 7 10.4 7 19.6 7 31.5 24 45 24 45s17-13.5 17-25.4C41 10.4 33.4 3 24 3Z" fill="currentColor"/><circle cx="24" cy="19.5" r="11.5" fill="#fff"/><path d="M27.4 12.6v9.6a4.6 4.6 0 0 1-9.2 0" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 <span class="font-extrabold text-slate-900"><span translate="no">Job<span class="text-emerald-600">Facile</span></span></span>
                 <span class="text-sm text-slate-400 ml-2">L'emploi au kilomètre près</span>
             </div>
@@ -966,7 +985,7 @@
         <div role="dialog" aria-modal="true" aria-labelledby="modal-title" class="modal-panel bg-white p-6 sm:p-8 rounded-3xl w-full max-w-md shadow-2xl relative max-h-[92vh] overflow-y-auto">
             <button onclick="closeAuthModal()" aria-label="Fermer" class="absolute top-4 right-4 w-9 h-9 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 grid place-items-center transition">✕</button>
             <div id="form-auth-view">
-                <span class="w-12 h-12 rounded-2xl btn-primary grid place-items-center font-extrabold text-xl mb-4">J</span>
+                <svg viewBox="0 0 48 48" aria-hidden="true" class="block w-12 h-12 mb-4 text-emerald-600"><path d="M24 3C14.6 3 7 10.4 7 19.6 7 31.5 24 45 24 45s17-13.5 17-25.4C41 10.4 33.4 3 24 3Z" fill="currentColor"/><circle cx="24" cy="19.5" r="11.5" fill="#fff"/><path d="M27.4 12.6v9.6a4.6 4.6 0 0 1-9.2 0" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 <h2 id="modal-title" class="text-2xl font-extrabold text-slate-900 mb-1">Se connecter</h2>
                 <p id="modal-subtitle" class="text-sm text-slate-500 mb-6">Heureux de vous revoir 👋</p>
                 <div id="google-auth" class="hidden mb-5">
@@ -1048,7 +1067,7 @@
     <div id="storage-banner" class="hidden fixed bottom-4 left-4 right-4 sm:right-auto sm:max-w-md z-40 card shadow-2xl p-4 flex gap-3 items-start view-enter">
         <span class="text-2xl">🍪</span>
         <div class="flex-1">
-            <p class="text-sm text-slate-700"><strong>Pas de cookies publicitaires ici.</strong> JobFacile garde seulement votre session et vos préférences dans votre navigateur.</p>
+            <p class="text-sm text-slate-700"><strong>Publicités et cookies.</strong> JobFacile est gratuit grâce aux publicités Google : vos choix sur les cookies publicitaires vous sont demandés par Google. Votre session et vos préférences restent dans votre navigateur.</p>
             <div class="flex gap-3 mt-3">
                 <button onclick="dismissStorageBanner()" class="btn-primary px-4 py-2 rounded-xl text-xs font-bold">J'ai compris</button>
                 <button onclick="dismissStorageBanner(); openLegal('privacy')" class="text-xs font-semibold text-slate-500 hover:text-emerald-600">En savoir plus</button>
@@ -1141,6 +1160,17 @@
             </div>
         </div>
     </div>
+    <!-- ================= PREMIUM (abonnement) ================= -->
+    <div id="premium-modal" class="modal-backdrop fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-end sm:items-center justify-center z-50 sm:p-4" onclick="if(event.target===this) closeModal('premium-modal')">
+        <div class="modal-panel bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl relative max-h-[94vh] overflow-y-auto p-6 sm:p-8" role="dialog" aria-modal="true" aria-labelledby="premium-title">
+            <button onclick="closeModal('premium-modal')" aria-label="Fermer" class="absolute top-4 right-4 w-9 h-9 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 grid place-items-center">✕</button>
+            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold mb-3">⭐ JobFacile Premium</span>
+            <h3 id="premium-title" class="text-2xl font-extrabold text-slate-900 pr-10 tracking-tight">L'IA sans limite pour décrocher le poste</h3>
+            <p id="premium-reason" class="hidden mt-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 text-sm font-semibold"></p>
+            <div id="premium-body" class="mt-5"></div>
+        </div>
+    </div>
+
     <div id="li-modal" class="modal-backdrop fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-end sm:items-center justify-center z-50 sm:p-4" onclick="if(event.target===this) closeModal('li-modal')">
         <div class="modal-panel bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl relative max-h-[94vh] overflow-y-auto p-6 sm:p-8" role="dialog" aria-modal="true" aria-labelledby="li-title">
             <button onclick="closeModal('li-modal')" aria-label="Fermer" class="absolute top-4 right-4 w-9 h-9 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 grid place-items-center">✕</button>
@@ -1206,19 +1236,20 @@
     <div id="offline-banner" role="status" class="hidden fixed bottom-0 inset-x-0 z-[55] bg-slate-900 text-white text-xs sm:text-sm font-semibold text-center px-4 py-2.5"></div>
     <div id="toast-container" role="status" aria-live="polite" class="fixed bottom-5 right-5 left-5 sm:left-auto z-[60] flex flex-col items-end gap-2 pointer-events-none"></div>
 
-    <script src="/js/i18n.js?v=0"></script>
-    <script src="/js/app-core.js?v=cdfab7d3"></script>
+    <script src="/js/i18n.js?v=79744383"></script>
+    <script src="/js/app-core.js?v=68a8ba57"></script>
     <script src="/js/interview.js?v=52093995"></script>
     <script src="/js/job-detail.js?v=c4303216"></script>
     <script src="/js/tracker.js?v=74c94435"></script>
     <script src="/js/account.js?v=9e3fc56e"></script>
-    <script src="/js/navigation.js?v=d739d3ae"></script>
-    <script src="/js/ui.js?v=c49f5fe1"></script>
+    <script src="/js/navigation.js?v=17099618"></script>
+    <script src="/js/ui.js?v=4d999972"></script>
     <script src="/js/badges.js?v=ab9d6313"></script>
     <script src="/js/rights.js?v=af882565"></script>
     <script src="/js/recruiter.js?v=6f6505d6"></script>
     <script src="/js/messages.js?v=829fd1d2"></script>
-    <script src="/js/community.js?v=678fe1dd"></script>
+    <script src="/js/community.js?v=c95f293f"></script>
     <script src="/js/search.js?v=15d51b16"></script>
+    <script src="/js/premium.js?v=45014ba2"></script>
 </body>
 </html>

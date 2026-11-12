@@ -27,7 +27,34 @@ function renderColorOptions() {
         <button role="menuitemradio" aria-checked="${k === cur}" data-k="${k}" onclick="setColorTheme(this.dataset.k)" class="w-full flex items-center gap-3 px-2 py-2 rounded-xl text-sm font-semibold ${k === cur ? 'bg-slate-100 text-slate-900' : 'text-slate-600 hover:bg-slate-50'}">
             <span class="w-6 h-6 rounded-full shrink-0" style="background: linear-gradient(135deg, rgb(${a}), rgb(${b}))"></span>${label}${k === cur ? '<span class="ml-auto">✓</span>' : ''}
         </button>`).join('');
+    // Version compacte (pastilles) dans le menu ☰ des téléphones
+    const nav = document.getElementById('nav-color-options');
+    if (nav) nav.innerHTML = COLOR_THEMES.map(([k, label, a, b]) => `
+        <button data-k="${k}" onclick="setColorTheme(this.dataset.k)" aria-label="${label}" aria-pressed="${k === cur}" title="${label}"
+            class="w-9 h-9 rounded-full ring-offset-2 ${k === cur ? 'ring-2 ring-slate-400' : ''}" style="background: linear-gradient(135deg, rgb(${a}), rgb(${b}))"></button>`).join('');
 }
+document.addEventListener('DOMContentLoaded', () => { if (document.getElementById('nav-color-options')) renderColorOptions(); });
+
+// ---------- En-tête : le menu complet seulement s'il tient en entier ----------
+// La largeur du menu dépend de la langue (l'allemand est bien plus long que le français) et du compte connecté :
+// on mesure, et s'il déborde, on passe au menu ☰ plutôt que de laisser les liens recouvrir le logo.
+function fitHeader() {
+    const header = document.getElementById('site-header');
+    const row = header && header.firstElementChild;
+    if (!row) return;
+    header.classList.remove('header-compact');
+    if (getComputedStyle(document.getElementById('desktop-nav')).display === 'none') return; // petit écran : déjà en ☰
+    if (row.scrollWidth > row.clientWidth + 1) header.classList.add('header-compact');
+}
+document.addEventListener('DOMContentLoaded', () => {
+    fitHeader();
+    let t = null;
+    const later = () => { clearTimeout(t); t = setTimeout(fitHeader, 50); };
+    window.addEventListener('resize', later);
+    // Changement de langue ou de compte : le contenu de l'en-tête change de largeur
+    new MutationObserver(later).observe(document.getElementById('site-header'), { subtree: true, childList: true, characterData: true });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitHeader);
+});
 function toggleColorMenu(e) {
     if (e) e.stopPropagation();
     const menu = document.getElementById('color-menu');
@@ -287,7 +314,7 @@ function openLegal(tab = 'mentions') {
     if (!routing) setUrl(urlForView('legal'), true);
 }
 function dismissStorageBanner() {
-    store('jobfacile_storage_ok', '1');
+    store('jobfacile_storage_ok_v2', '1'); // v2 : bandeau revu à l'arrivée des publicités (tout le monde le revoit une fois)
     document.getElementById('storage-banner').classList.add('hidden');
 }
 

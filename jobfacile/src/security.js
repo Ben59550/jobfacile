@@ -25,7 +25,9 @@ function genCode() { return crypto.randomInt(100000, 1000000).toString(); }
 // Données renvoyées au navigateur : jamais de mot de passe, code ni secret
 function publicUser(u) {
     const { password, verificationCode, twoFactorSecret, tempTwoFactorSecret, pendingPassword,
-        passwordChangeCode, resetCode, resetExpires, trustedDevices, sessions, ipAddress, pushSubscriptions, googleId, google2fa, homeGeo, ...safe } = u;
+        passwordChangeCode, resetCode, resetExpires, trustedDevices, sessions, ipAddress, pushSubscriptions, googleId, google2fa, homeGeo,
+        premium, usage, ...safe } = u;
+    safe.plan = require('./services/plans').planInfo(u); // formule, quotas du mois (sans les identifiants Stripe)
     safe.hasPassword = !!password;
     safe.googleLinked = !!googleId;
     // Liens signés vers la photo et le CV (les fichiers ne sont plus publics)

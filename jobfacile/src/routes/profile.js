@@ -188,6 +188,7 @@ router.post('/api/user/delete', requireAuth, (req, res) => {
     for (const url of [user.avatarUrl, user.cvPdfUrl]) {
         if (url && url.startsWith('/uploads/')) fs.unlink(path.join(UPLOADS_DIR, path.basename(url)), () => {});
     }
+    require('./billing').cancelSubscriptionNow(user); // abonnement Premium arrêté : plus aucun prélèvement
     deleteUser(user.id);
     res.json({ success: true, message: 'Votre compte et vos données ont été supprimés.' });
 });

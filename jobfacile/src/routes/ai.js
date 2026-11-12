@@ -7,11 +7,12 @@ const { UPLOADS_DIR } = require('../config');
 const { saveUsers } = require('../db');
 const { publicUser, requireAuth, tooManyAttempts } = require('../security');
 const { callGroq } = require('../services/ai');
+const { quota } = require('../services/plans'); // quotas mensuels de la formule gratuite
 const { qualifLabelsServer } = require('../services/qualifs');
 const { storage } = require('../uploads');
 const { fold } = require('../utils');
 
-router.post('/api/ai/generate', requireAuth, async (req, res) => {
+router.post('/api/ai/generate', requireAuth, quota('docs'), async (req, res) => {
     const prompt = String(req.body.prompt || '').slice(0, 8000);
     if (!prompt) return res.status(400).json({ success: false, message: 'Demande vide.' });
     try {
@@ -26,7 +27,7 @@ router.post('/api/ai/generate', requireAuth, async (req, res) => {
 });
 
 // Simulateur d'entretien : conversation avec historique
-router.post('/api/ai/chat', requireAuth, async (req, res) => {
+router.post('/api/ai/chat', requireAuth, quota('interview'), async (req, res) => {
     const history = Array.isArray(req.body.messages) ? req.body.messages.slice(-20) : [];
     const messages = history
         .filter(m => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
@@ -48,7 +49,7 @@ router.post('/api/ai/chat', requireAuth, async (req, res) => {
 });
 
 // Bilan de fin d'entretien simulé
-router.post('/api/ai/interview-report', requireAuth, async (req, res) => {
+router.post('/api/ai/interview-report', requireAuth, quota('analyses'), async (req, res) => {
     const history = Array.isArray(req.body.messages) ? req.body.messages.slice(-40) : [];
     const messages = history
         .filter(m => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
@@ -113,7 +114,7 @@ const cvUpload = multer({
     fileFilter: (req, file, cb) => file.mimetype === 'application/pdf' ? cb(null, true) : cb(new Error('Merci d’envoyer votre CV au format PDF.'))
 });
 
-router.post('/api/user/cv/analyze', requireAuth, cvUpload.single('cvFile'), async (req, res) => {
+router.post('/api/user/cv/analyze', requireAuth, quota('analyses'), cvUpload.single('cvFile'), async (req, res) => {
     if (!req.file) return res.status(400).json({ success: false, message: 'Aucun fichier reçu.' });
     if (tooManyAttempts('cv:' + req.user.id, 10, 60 * 60 * 1000)) return res.status(429).json({ success: false, message: 'Trop d’analyses, réessayez dans une heure.' });
     let text = '';
@@ -177,7 +178,7 @@ N'invente rien qui ne soit pas dans le CV. Texte du CV :
 
 // ---------- CV : contenu rédigé par l'IA (CV général ou adapté à une offre) ----------
 // L'IA ne fait que reformuler et ordonner ce qui est déjà dans le profil : elle n'ajoute aucune compétence.
-router.post('/api/ai/cv-content', requireAuth, async (req, res) => {
+router.post('/api/ai/cv-content', requireAuth, quota('docs'), async (req, res) => {
     const u = req.user;
     const s = (v, max) => String(v ?? '').trim().slice(0, max);
     const targetJob = s(req.body.targetJob, 120) || s(u.desiredJob, 120) || 'Poste';
@@ -245,7 +246,7 @@ Règles : n'invente AUCUNE compétence, expérience, entreprise, date ni chiffre
 });
 
 // ---------- E-mail de relance (ou de remerciement après entretien) rédigé par l'IA ----------
-router.post('/api/ai/follow-up', requireAuth, async (req, res) => {
+router.post('/api/ai/follow-up', requireAuth, quota('docs'), async (req, res) => {
     const u = req.user;
     const a = (u.applications || []).find(x => x && x.id === req.body.id);
     if (!a) return res.status(404).json({ success: false, message: 'Candidature introuvable.' });
@@ -288,7 +289,7 @@ function buildProfileCvText(u) {
         'Langues', (u.languages || []).map(l => l.lang + ' ' + (l.level || '')).join(', ')
     ].filter(Boolean).join('\n');
 }
-router.post('/api/ai/ats-check', requireAuth, async (req, res) => {
+router.post('/api/ai/ats-check', requireAuth, quota('analyses'), async (req, res) => {
     const u = req.user;
     const s_ = (v, max) => String(v ?? '').trim().slice(0, max);
     if (tooManyAttempts('ats:' + u.id, 30, 60 * 60 * 1000)) return res.status(429).json({ success: false, message: 'Trop de demandes, réessayez dans une heure.' });
@@ -346,7 +347,7 @@ Réponds UNIQUEMENT avec un objet JSON :
 });
 
 // ---------- Compétences manquantes pour une offre + formations pour les acquérir ----------
-router.post('/api/ai/skill-gap', requireAuth, async (req, res) => {
+router.post('/api/ai/skill-gap', requireAuth, quota('analyses'), async (req, res) => {
     const u = req.user;
     const s = (v, max) => String(v ?? '').trim().slice(0, max);
     const o = req.body.offer && typeof req.body.offer === 'object' ? req.body.offer : {};

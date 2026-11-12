@@ -58,6 +58,8 @@ router.post('/api/ai/transcribe', requireAuth, audioUpload.single('audio'), asyn
 // ---------- Texte → voix naturelle ----------
 router.post('/api/ai/tts', requireAuth, async (req, res) => {
     if (!ELEVENLABS_API_KEY) return res.status(503).json({ success: false, fallback: true, message: 'Voix naturelle non configurée.' });
+    // Voix naturelle réservée à Premium (c'est le service le plus coûteux) ; sinon, voix du navigateur
+    if (!require('../services/plans').isPremium(req.user)) return res.status(503).json({ success: false, fallback: true, premiumOnly: true, message: 'Voix naturelle incluse dans Premium.' });
     if (Date.now() < ttsDownUntil) return res.status(503).json({ success: false, fallback: true, message: 'Voix naturelle momentanément indisponible.' });
     if (tooManyAttempts('tts:' + req.user.id, 120, 60 * 60 * 1000)) return res.status(429).json({ success: false, fallback: true, message: 'Trop de demandes de voix.' });
     // Les émojis, puces et symboles ne se lisent pas
