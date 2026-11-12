@@ -1,0 +1,21 @@
+{
+  "name": "jobfacile-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Application Android / iPhone de JobFacile (Capacitor). Elle ouvre le site en ligne : à fabriquer une fois le site publié en HTTPS.",
+  "scripts": {
+    "prepare-www": "node -e \"require('fs').mkdirSync('www',{recursive:true});require('fs').writeFileSync('www/index.html','<!doctype html><meta charset=utf-8><title>JobFacile</title><p>Chargement…</p>')\"",
+    "android:init": "npm run prepare-www && npx cap add android",
+    "android:sync": "npx cap sync android",
+    "android:open": "npx cap open android",
+    "android:apk": "npx cap sync android && cd android && gradlew.bat assembleDebug",
+    "ios:init": "npm run prepare-www && npx cap add ios"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/cli": "^7.0.0",
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/ios": "^7.0.0",
+    "@capacitor/splash-screen": "^7.0.0"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "jobfacile-backend",
+  "version": "1.0.0",
+  "description": "Serveur backend pour la plateforme JobFacile",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test \"tests/**/*.test.js\"",
+    "assets": "node scripts/version-assets.js",
+    "i18n": "node scripts/i18n-extract.js && node scripts/i18n-translate.js"
+  },
+  "dependencies": {
+    "@google/genai": "^3.2.0",
+    "axios": "^1.6.0",
+    "compression": "^1.8.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "fflate": "^0.8.3",
+    "google-auth-library": "^10.9.1",
+    "helmet": "^8.3.0",
+    "multer": "^2.5.0",
+    "nodemailer": "^10.5.0",
+    "pdfkit": "^0.20.2",
+    "qrcode": "^1.5.4",
+    "speakeasy": "^2.0.0",
+    "unpdf": "^0.12.1",
+    "web-push": "^3.6.7"
+  },
+  "engines": {
+    "node": ">=22.5"
+  }
+}

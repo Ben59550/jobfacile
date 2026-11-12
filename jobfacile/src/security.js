@@ -1,0 +1,89 @@
+// Sécurité : mots de passe hachés, sessions, limite d’essais, données publiques d’un compte.
+const crypto = require('crypto');
+const { getUsers } = require('./db');
+
+// Mots de passe hachés (scrypt). Les anciens mots de passe en clair sont convertis à la connexion.
+function hashPassword(password) {
+    const salt = crypto.randomBytes(16).toString('hex');
+    const hash = crypto.scryptSync(String(password), salt, 64).toString('hex');
+    return `scrypt$${salt}$${hash}`;
+}
+function verifyPassword(user, password) {
+    if (!user || !user.password || password === undefined || password === null) return false;
+    const stored = user.password;
+    if (stored.startsWith('scrypt$')) {
+        const [, salt, hash] = stored.split('$');
+        const test = crypto.scryptSync(String(password), salt, 64);
+        const ref = Buffer.from(hash, 'hex');
+        return ref.length === test.length && crypto.timingSafeEqual(ref, test);
+    }
+    if (stored === String(password)) { user.password = hashPassword(password); return true; } // migration
+    return false;
+}
+function genCode() { return crypto.randomInt(100000, 1000000).toString(); }
+
+// Données renvoyées au navigateur : jamais de mot de passe, code ni secret
+function publicUser(u) {
+    const { password, verificationCode, twoFactorSecret, tempTwoFactorSecret, pendingPassword,
+        passwordChangeCode, resetCode, resetExpires, trustedDevices, sessions, ipAddress, pushSubscriptions, googleId, google2fa, homeGeo, ...safe } = u;
+    safe.hasPassword = !!password;
+    safe.googleLinked = !!googleId;
+    // Liens signés vers la photo et le CV (les fichiers ne sont plus publics)
+    const { signUpload } = require('./services/files');
+    if (safe.avatarUrl) safe.avatarUrl = signUpload(safe.avatarUrl);
+    if (safe.cvPdfUrl) safe.cvPdfUrl = signUpload(safe.cvPdfUrl);
+    safe.isAdmin = require('./services/moderation').isAdmin(u); // ADMIN_EMAILS dans .env
+    safe.pushDevices = Array.isArray(pushSubscriptions) ? pushSubscriptions.length : 0;
+    return safe;
+}
+
+// Sessions : jeton aléatoire, seul son empreinte SHA-256 est stockée
+function sha256(s) { return crypto.createHash('sha256').update(s).digest('hex'); }
+function createSession(user) {
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString();
+    user.sessions = (user.sessions || []).filter(s => new Date(s.expiresAt) > new Date());
+    user.sessions.push({ hash: sha256(token), expiresAt });
+    return token;
+}
+function requireAuth(req, res, next) {
+    const auth = req.headers.authorization || '';
+    const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
+    if (!token) return res.status(401).json({ success: false, message: 'Veuillez vous connecter.' });
+    const h = sha256(token);
+    const users = getUsers();
+    const idx = users.findIndex(u => (u.sessions || []).some(s => s.hash === h && new Date(s.expiresAt) > new Date()));
+    if (idx === -1) return res.status(401).json({ success: false, message: 'Session expirée, veuillez vous reconnecter.' });
+    req.users = users;
+    req.userIndex = idx;
+    req.user = users[idx];
+    req.tokenHash = h;
+    next();
+}
+// Adresse IP du visiteur. Derrière un hébergeur, Express la lit dans X-Forwarded-For seulement si TRUST_PROXY est réglé.
+function clientIp(req) { return req.ip || (req.socket && req.socket.remoteAddress) || 'inconnue'; }
+
+// Petite protection contre les essais en rafale (codes, mots de passe)
+const attempts = new Map();
+// Ménage toutes les 10 minutes : on oublie les compteurs inactifs depuis plus de 24 h (sinon la mémoire grossit sans fin)
+setInterval(() => { const old = Date.now() - 24 * 3600 * 1000; for (const [k, list] of attempts) if (!list.length || list[list.length - 1] < old) attempts.delete(k); }, 10 * 60 * 1000).unref();
+function tooManyAttempts(key, max = 10, windowMs = 15 * 60 * 1000) {
+    const now = Date.now();
+    const list = (attempts.get(key) || []).filter(t => now - t < windowMs);
+    list.push(now);
+    attempts.set(key, list);
+    return list.length > max;
+}
+
+// Limite par adresse IP (attaques qui essaient beaucoup d'e-mails différents). Désactivée pendant les tests automatiques.
+const IP_LIMITS = { register: [10, 3600e3], login: [60, 900e3], verify: [60, 900e3], forgot: [20, 3600e3] };
+function ipLimit(kind) {
+    return (req, res, next) => {
+        if (process.env.NODE_ENV === 'test') return next();
+        const [max, win] = IP_LIMITS[kind];
+        if (tooManyAttempts(kind + '-ip:' + clientIp(req), max, win)) return res.status(429).json({ success: false, message: 'Trop de tentatives depuis votre connexion. Réessayez plus tard.' });
+        next();
+    };
+}
+
+module.exports = { ipLimit, attempts, publicUser, requireAuth, tooManyAttempts, hashPassword, verifyPassword, genCode, sha256, createSession, clientIp };

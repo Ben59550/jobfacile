@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobFacile - L'emploi au kilomètre près</title>
+    <meta name="description" content="JobFacile : trouvez votre emploi ou alternance près de chez vous, générez votre CV par IA et entraînez-vous aux entretiens.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23059669'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='900' font-size='18' fill='white' text-anchor='middle'%3EJ%3C/text%3E%3C/svg%3E">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#059669">
+    <meta property="og:site_name" content="JobFacile">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="JobFacile">
+    <script>
+        // Thème appliqué avant l'affichage (évite un flash blanc en mode sombre)
+        (function () {
+            var t = null; try { t = localStorage.getItem('jobfacile_theme'); } catch (e) {}
+            var dark = t ? t === 'dark' : (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+            if (dark) document.documentElement.classList.add('dark');
+            var c = null; try { c = localStorage.getItem('jobfacile_color'); } catch (e) {}
+            if (c && c !== 'emeraude') document.documentElement.setAttribute('data-color', c);
+        })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: {
+                fontFamily: { sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'] },
+                // Couleurs du thème choisi (variables --e-* et --t-*, voir « Thèmes de couleur »)
+                colors: {
+                    emerald: Object.fromEntries([50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map(s => [s, `rgb(var(--e-${s}) / <alpha-value>)`])),
+                    teal: Object.fromEntries([50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map(s => [s, `rgb(var(--t-${s}) / <alpha-value>)`]))
+                }
+            } }
+        };
+    </script>
+    <link rel="stylesheet" href="/css/app.css?v=2653fda9">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3255791817002804"
+         crossorigin="anonymous"></script>
+</head>
+<body class="min-h-screen font-sans text-slate-800 antialiased flex flex-col">
+    <a href="#main-content" onclick="event.preventDefault(); const v = [...document.querySelectorAll('[id^=view-]')].find(x => !x.classList.contains('hidden')); if (v) { v.setAttribute('tabindex', '-1'); v.focus(); }" class="skip-link">Aller au contenu principal</a>
+
+    <!-- ================= EN-TÊTE ================= -->
+    <header id="site-header" class="glass border-b border-slate-200/70 sticky top-0 z-40 transition-shadow">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex justify-between items-center gap-3">
+            <div class="flex items-center gap-2">
+                <div class="relative xl:hidden" id="nav-container">
+                    <button onclick="toggleNavMenu(event)" aria-label="Menu" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-emerald-600 transition flex items-center justify-center">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+                    </button>
+                    <div id="nav-dropdown-menu" class="menu-pop absolute left-0 mt-2 w-72 bg-white border border-slate-200 rounded-2xl shadow-2xl hidden z-50 p-2">
+                        <button onclick="switchView('home'); closeNavMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 font-semibold flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-slate-100 grid place-items-center">🏠</span> Accueil</button>
+                        <button onclick="accessJobsView(); closeNavMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 font-semibold flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-slate-100 grid place-items-center">💼</span> Offres d'emploi</button>
+                        <button onclick="switchView('ai-generator'); closeNavMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 font-semibold flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-slate-100 grid place-items-center">✨</span> Générateur IA & PDF</button>
+                        <button onclick="switchView('ai-assistant'); closeNavMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 font-semibold flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-slate-100 grid place-items-center">🤖</span> Simulateur d'entretien</button>
+                        <button onclick="accessTracker(); closeNavMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 font-semibold flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-slate-100 grid place-items-center">📋</span> Mon suivi & favoris</button>
+                        <button onclick="switchView('advice'); closeNavMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 font-semibold flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-slate-100 grid place-items-center">💡</span> Conseils & Coaching</button>
+                        <button onclick="switchView('about'); closeNavMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 font-semibold flex items-center gap-3 border-t border-slate-100 mt-1 pt-3"><span class="w-8 h-8 rounded-lg bg-slate-100 grid place-items-center">ℹ️</span> À propos</button>
+                        <button onclick="switchView('community'); closeNavMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 font-semibold flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-slate-100 grid place-items-center">💬</span> Communauté</button>
+                        <button onclick="openRights(); closeNavMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 font-semibold flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-slate-100 grid place-items-center">⚖️</span> Mes droits</button>
+                        <button onclick="openMessages(); closeNavMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 font-semibold flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-slate-100 grid place-items-center">✉️</span> Messages</button>
+                        <button onclick="openRecruiter(); closeNavMenu();" class="w-full text-left px-3 py-2.5 rounded-xl text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 font-semibold flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-slate-100 grid place-items-center">🏢</span> Espace recruteur</button>
+                        <button id="install-menu-btn" onclick="installApp(); closeNavMenu();" class="hidden w-full text-left px-3 py-2.5 rounded-xl text-sm text-emerald-700 hover:bg-emerald-50 font-bold flex items-center gap-3"><span class="w-8 h-8 rounded-lg bg-emerald-100 grid place-items-center">📲</span> Installer l'appli</button>
+                    </div>
+                </div>
+                <a href="#" onclick="switchView('home'); return false;" class="flex items-center gap-2 group">
+                    <span class="w-9 h-9 rounded-xl btn-primary grid place-items-center font-extrabold text-lg group-hover:rotate-6 transition-transform">J</span>
+                    <span class="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900"><span translate="no">Job<span class="text-emerald-600">Facile</span></span></span>
+                </a>
+            </div>
+
+            <nav class="hidden xl:flex items-center gap-1" id="desktop-nav">
+                <button data-nav="home" onclick="switchView('home')" class="nav-link">Accueil</button>
+                <button data-nav="jobs" onclick="accessJobsView()" class="nav-link">Offres</button>
+                <button data-nav="ai-generator" onclick="switchView('ai-generator')" class="nav-link">Générateur IA</button>
+                <button data-nav="ai-assistant" onclick="switchView('ai-assistant')" class="nav-link">Entretien IA</button>
+                <button data-nav="tracker" onclick="accessTracker()" class="nav-link">Mon suivi</button>
+                <button data-nav="community" onclick="switchView('community')" class="nav-link">Communauté</button>
+                <div class="relative">
+                    <button id="more-btn" onclick="toggleMoreMenu(event)" aria-haspopup="true" aria-expanded="false" class="nav-link">Plus ▾</button>
+                    <div id="more-menu" role="menu" class="hidden absolute right-0 top-11 z-50 card p-2 w-60 shadow-2xl">
+                        <button role="menuitem" data-nav="rights" onclick="openRights(); closeMoreMenu()" class="w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-emerald-50">⚖️ Mes droits</button>
+                        <button role="menuitem" data-nav="recruiter" onclick="openRecruiter(); closeMoreMenu()" class="w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-emerald-50">🏢 Espace recruteur</button>
+                        <button role="menuitem" data-nav="advice" onclick="switchView('advice'); closeMoreMenu()" class="w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-emerald-50">💡 Conseils</button>
+                        <button role="menuitem" data-nav="about" onclick="switchView('about'); closeMoreMenu()" class="w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-emerald-50">ℹ️ À propos</button>
+                        <button role="menuitem" id="admin-menu-btn" onclick="openAdmin(); closeMoreMenu()" class="hidden w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold text-rose-700 hover:bg-rose-50">🛡️ Modération</button>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="flex items-center gap-1 sm:gap-2">
+                <button id="msg-btn" onclick="openMessages()" aria-label="Messages" title="Messages" class="hidden relative w-9 h-9 rounded-xl text-slate-500 hover:bg-slate-100 grid place-items-center transition text-lg">✉️<span id="msg-badge" class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-600 text-white text-[10px] font-bold grid place-items-center"></span></button>
+                <div class="relative">
+                    <button id="lang-btn" onclick="toggleLangMenu(event)" aria-haspopup="true" aria-expanded="false" aria-label="Langue" title="Langue / Language" translate="no" class="w-9 h-9 rounded-xl text-slate-500 hover:bg-slate-100 grid place-items-center transition text-xs font-extrabold">FR</button>
+                    <div id="lang-menu" role="menu" aria-label="Langue" class="hidden absolute right-0 top-11 z-50 card p-2 w-44 shadow-2xl"><div id="lang-options" class="space-y-1"></div></div>
+                </div>
+                <div class="relative">
+                    <button id="color-btn" onclick="toggleColorMenu(event)" aria-label="Couleur du site" aria-haspopup="true" aria-expanded="false" title="Couleur du site" class="w-9 h-9 rounded-xl text-slate-500 hover:bg-slate-100 grid place-items-center transition text-lg">🎨</button>
+                    <div id="color-menu" role="menu" aria-label="Couleur du site" class="hidden absolute right-0 top-11 z-50 card p-3 w-56 shadow-2xl">
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 px-1">Couleur du site</p>
+                        <div id="color-options" class="space-y-1"></div>
+                    </div>
+                </div>
+                <button id="theme-btn" onclick="toggleTheme()" aria-label="Mode clair ou sombre" title="Mode clair / sombre" class="w-9 h-9 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-emerald-600 grid place-items-center transition text-lg">🌙</button>
+                <div class="flex items-center gap-2 sm:gap-3" id="auth-container"></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex-1">
+
+    <!-- ================= VUE 1 : ACCUEIL ================= -->
+    <div id="view-home">
+        <!-- Hero -->
+        <section class="relative overflow-hidden">
+            <div class="absolute inset-0 grid-bg"></div>
+            <div class="blob w-72 h-72 bg-emerald-300 -top-10 -left-16"></div>
+            <div class="blob w-80 h-80 bg-teal-200 top-24 -right-20" style="animation-delay:-5s"></div>
+            <div class="blob w-64 h-64 bg-lime-200 bottom-0 left-1/3" style="animation-delay:-9s"></div>
+
+            <!-- Cartes flottantes décoratives -->
+            <div class="hidden xl:block absolute left-[6%] top-40 float">
+                <div class="card px-4 py-3 shadow-xl flex items-center gap-3 rotate-[-4deg]">
+                    <span class="w-10 h-10 rounded-xl bg-emerald-100 grid place-items-center text-lg">📍</span>
+                    <div><p class="text-xs text-slate-400 font-semibold">Près de chez vous</p><p class="text-sm font-bold text-slate-800">Lille · 59</p></div>
+                </div>
+            </div>
+            <div class="hidden xl:block absolute right-[6%] top-32 float float-delay">
+                <div class="card px-4 py-3 shadow-xl flex items-center gap-3 rotate-[4deg]">
+                    <span class="w-10 h-10 rounded-xl bg-teal-100 grid place-items-center text-lg">📄</span>
+                    <div><p class="text-xs text-slate-400 font-semibold">CV généré par IA</p><p class="text-sm font-bold text-emerald-600">Prêt en 10 s ✓</p></div>
+                </div>
+            </div>
+            <div class="hidden xl:block absolute right-[10%] bottom-24 float">
+                <div class="card px-4 py-3 shadow-xl flex items-center gap-3 rotate-[-3deg]">
+                    <span class="w-10 h-10 rounded-xl bg-amber-100 grid place-items-center text-lg">🎯</span>
+                    <div><p class="text-xs text-slate-400 font-semibold">Entretien simulé</p><p class="text-sm font-bold text-slate-800">Score : 92 %</p></div>
+                </div>
+            </div>
+
+            <div class="relative max-w-4xl mx-auto px-4 pt-16 sm:pt-24 pb-20 text-center">
+                <span class="fade-up inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 border border-emerald-200 text-emerald-700 text-xs sm:text-sm font-semibold shadow-sm mb-6">
+                    <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>
+                    Nouveau : simulateur d'entretien propulsé par l'IA
+                </span>
+                <h1 class="fade-up d1 text-4xl sm:text-5xl md:text-7xl font-extrabold text-slate-900 tracking-tight leading-[1.05] mb-6">
+                    Trouve ton job ou ton alternance <br class="hidden sm:block"><span class="gradient-text">au kilomètre près</span>
+                </h1>
+                <p class="fade-up d2 text-base sm:text-lg text-slate-600 max-w-2xl mx-auto mb-10">
+                    Offres près de chez vous, CV et lettre de motivation rédigés par l'IA, entraînement aux entretiens : tout pour décrocher votre prochain poste, gratuitement.
+                </p>
+
+                <!-- Recherche rapide -->
+                <form onsubmit="heroSearch(event)" class="fade-up d3 card p-2 shadow-xl shadow-emerald-900/5 flex flex-col sm:flex-row gap-2 max-w-3xl mx-auto text-left">
+                    <label class="flex items-center gap-2 flex-1 px-3 rounded-xl hover:bg-slate-50 transition">
+                        <svg class="text-slate-400 shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                        <input id="hero-keyword" type="text" placeholder="Métier, domaine..." class="w-full py-3 bg-transparent outline-none text-sm">
+                    </label>
+                    <div class="hidden sm:block w-px bg-slate-200 my-2"></div>
+                    <label class="flex items-center gap-2 flex-1 px-3 rounded-xl hover:bg-slate-50 transition">
+                        <svg class="text-slate-400 shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-12a7 7 0 1 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
+                        <input id="hero-location" type="text" list="city-suggestions" autocomplete="off" oninput="suggestCities(this.value)" placeholder="Ville ou département" class="w-full py-3 bg-transparent outline-none text-sm">
+                    </label>
+                    <button type="submit" class="btn-primary px-7 py-3.5 rounded-xl font-bold text-sm">Rechercher</button>
+                </form>
+
+                <div class="fade-up d4 flex flex-wrap justify-center items-center gap-x-6 gap-y-2 mt-6 text-xs sm:text-sm text-slate-500">
+                    <span class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> 100 % gratuit</span>
+                    <span class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> Référentiel ROME</span>
+                    <span class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> CV en PDF en un clic</span>
+                </div>
+                <div class="fade-up d4 mt-8">
+                    <button id="home-register-btn" onclick="openAuthModal('register')" class="btn-ghost px-6 py-3 bg-white text-emerald-700 border border-emerald-200 font-bold rounded-xl shadow-sm text-sm">
+                        Créer mon compte gratuitement →
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chiffres -->
+        <section class="max-w-5xl mx-auto px-4 -mt-6 relative">
+            <div class="reveal card shadow-lg grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+                <div class="p-6 text-center"><p class="text-3xl sm:text-4xl font-extrabold text-slate-900"><span class="counter" id="stat-offers" data-target="32">0</span></p><p class="text-xs sm:text-sm text-slate-500 mt-1">offres disponibles</p></div>
+                <div class="p-6 text-center"><p class="text-3xl sm:text-4xl font-extrabold text-slate-900"><span class="counter" id="stat-new" data-target="">…</span></p><p class="text-xs sm:text-sm text-slate-500 mt-1">nouvelles offres en 24 h</p></div>
+                <div class="p-6 text-center"><p class="text-3xl sm:text-4xl font-extrabold text-slate-900"><span class="counter" data-target="101">0</span></p><p class="text-xs sm:text-sm text-slate-500 mt-1">départements couverts</p></div>
+                <div class="p-6 text-center"><p class="text-3xl sm:text-4xl font-extrabold gradient-text"><span class="counter" data-target="100">0</span>%</p><p class="text-xs sm:text-sm text-slate-500 mt-1">gratuit</p></div>
+            </div>
+        </section>
+
+        <!-- Fonctionnalités -->
+        <section class="max-w-6xl mx-auto px-4 py-20 sm:py-24">
+            <div class="text-center max-w-2xl mx-auto mb-12 reveal">
+                <p class="text-emerald-600 font-bold text-sm uppercase tracking-widest mb-3">Tout-en-un</p>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Tous les outils pour décrocher le poste</h2>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <button onclick="accessJobsView()" class="reveal card card-hover p-6 text-left group">
+                    <span class="w-12 h-12 rounded-2xl bg-emerald-100 text-2xl grid place-items-center mb-5 group-hover:scale-110 transition-transform">💼</span>
+                    <h3 class="font-bold text-slate-900 text-lg mb-2">Offres locales</h3>
+                    <p class="text-sm text-slate-500 mb-4">Emploi et alternance filtrés par ville, département et type de contrat.</p>
+                    <span class="text-sm font-bold text-emerald-600 group-hover:translate-x-1 inline-block transition-transform">Explorer →</span>
+                </button>
+                <button onclick="switchView('ai-generator')" class="reveal card card-hover p-6 text-left group" style="transition-delay:.06s">
+                    <span class="w-12 h-12 rounded-2xl bg-teal-100 text-2xl grid place-items-center mb-5 group-hover:scale-110 transition-transform">✨</span>
+                    <h3 class="font-bold text-slate-900 text-lg mb-2">CV & lettre par IA</h3>
+                    <p class="text-sm text-slate-500 mb-4">Un document sur-mesure pour chaque poste, téléchargé en PDF.</p>
+                    <span class="text-sm font-bold text-emerald-600 group-hover:translate-x-1 inline-block transition-transform">Générer →</span>
+                </button>
+                <button onclick="switchView('ai-assistant')" class="reveal card card-hover p-6 text-left group" style="transition-delay:.12s">
+                    <span class="w-12 h-12 rounded-2xl bg-sky-100 text-2xl grid place-items-center mb-5 group-hover:scale-110 transition-transform">🤖</span>
+                    <h3 class="font-bold text-slate-900 text-lg mb-2">Entretien simulé</h3>
+                    <p class="text-sm text-slate-500 mb-4">Un recruteur virtuel vous pose des questions et vous coache.</p>
+                    <span class="text-sm font-bold text-emerald-600 group-hover:translate-x-1 inline-block transition-transform">S'entraîner →</span>
+                </button>
+                <button onclick="accessProfileView('cv')" class="reveal card card-hover p-6 text-left group" style="transition-delay:.18s">
+                    <span class="w-12 h-12 rounded-2xl bg-amber-100 text-2xl grid place-items-center mb-5 group-hover:scale-110 transition-transform">🧑‍💼</span>
+                    <h3 class="font-bold text-slate-900 text-lg mb-2">Profil complet</h3>
+                    <p class="text-sm text-slate-500 mb-4">Compétences ROME, expériences, diplômes et photo au même endroit.</p>
+                    <span class="text-sm font-bold text-emerald-600 group-hover:translate-x-1 inline-block transition-transform">Compléter →</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Comment ça marche -->
+        <section class="bg-white border-y border-slate-200/70">
+            <div class="max-w-6xl mx-auto px-4 py-20 sm:py-24">
+                <div class="text-center max-w-2xl mx-auto mb-14 reveal">
+                    <p class="text-emerald-600 font-bold text-sm uppercase tracking-widest mb-3">Simple et rapide</p>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Comment ça marche ?</h2>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8 relative">
+                    <div class="hidden md:block absolute top-8 left-[17%] right-[17%] h-0.5 bg-gradient-to-r from-emerald-200 via-teal-200 to-emerald-200"></div>
+                    <div class="reveal text-center relative">
+                        <div class="w-16 h-16 mx-auto rounded-2xl btn-primary grid place-items-center text-2xl font-extrabold mb-5 relative">1</div>
+                        <h3 class="font-bold text-lg text-slate-900 mb-2">Créez votre profil</h3>
+                        <p class="text-sm text-slate-500 max-w-xs mx-auto">Ajoutez vos compétences, expériences et diplômes en quelques minutes.</p>
+                    </div>
+                    <div class="reveal text-center relative" style="transition-delay:.1s">
+                        <div class="w-16 h-16 mx-auto rounded-2xl btn-primary grid place-items-center text-2xl font-extrabold mb-5 relative">2</div>
+                        <h3 class="font-bold text-lg text-slate-900 mb-2">Générez vos documents</h3>
+                        <p class="text-sm text-slate-500 max-w-xs mx-auto">L'IA rédige un CV et une lettre adaptés à chaque offre.</p>
+                    </div>
+                    <div class="reveal text-center relative" style="transition-delay:.2s">
+                        <div class="w-16 h-16 mx-auto rounded-2xl btn-primary grid place-items-center text-2xl font-extrabold mb-5 relative">3</div>
+                        <h3 class="font-bold text-lg text-slate-900 mb-2">Postulez en confiance</h3>
+                        <p class="text-sm text-slate-500 max-w-xs mx-auto">Entraînez-vous à l'entretien et postulez près de chez vous.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Appel à l'action -->
+        <section class="max-w-6xl mx-auto px-4 py-20">
+            <div class="reveal relative overflow-hidden rounded-[2rem] p-10 sm:p-14 text-center text-white" style="background: linear-gradient(135deg,rgb(var(--e-700)) 0%,rgb(var(--e-600)) 45%,rgb(var(--t-500)) 100%);">
+                <div class="blob w-72 h-72 bg-white/30 -top-20 -right-10"></div>
+                <div class="blob w-60 h-60 bg-emerald-300/40 -bottom-20 -left-10" style="animation-delay:-6s"></div>
+                <h2 class="relative text-3xl sm:text-4xl font-extrabold tracking-tight mb-4">Votre prochain job est peut-être à 5 km.</h2>
+                <p class="relative text-emerald-50 max-w-xl mx-auto mb-8">Lancez une recherche maintenant ou laissez l'IA préparer votre candidature.</p>
+                <div class="relative flex flex-wrap justify-center gap-3">
+                    <button onclick="accessJobsView()" class="btn-ghost px-7 py-3.5 bg-white text-emerald-700 font-bold rounded-xl">Voir les offres 🚀</button>
+                    <button onclick="switchView('ai-generator')" class="btn-ghost px-7 py-3.5 bg-white/10 border border-white/40 text-white font-bold rounded-xl">Générer mon CV ✨</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ================= VUE 2 : GÉNÉRATEUR IA & PDF ================= -->
+    <div id="view-ai-generator" class="max-w-5xl mx-auto px-4 py-10 sm:py-14 hidden">
+        <div class="mb-8">
+            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-bold mb-3">✨ Intelligence artificielle</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Générateur de documents</h2>
+            <p class="text-slate-500">L'IA rédige votre CV ou votre lettre à partir de <a href="#" onclick="accessProfileView('cv'); return false;" class="text-emerald-600 font-semibold underline decoration-emerald-200 underline-offset-4 hover:decoration-emerald-500">votre profil</a>.</p>
+        </div>
+        <div class="grid lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 card p-6 sm:p-8">
+                <p class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Type de document</p>
+                <select id="ai-doc-type" class="sr-only" aria-label="Type de document">
+                    <option value="cv">CV Professionnel Synthétique</option>
+                    <option value="lm">Lettre de Motivation sur-mesure</option>
+                </select>
+                <div class="grid grid-cols-2 gap-3 mb-6" id="doc-type-picker">
+                    <button type="button" data-doc="cv" onclick="pickDocType('cv')" class="doc-opt p-4 rounded-2xl border-2 text-left transition">
+                        <span class="text-2xl">📄</span>
+                        <p class="font-bold text-slate-900 mt-2 text-sm sm:text-base">CV</p>
+                        <p class="text-xs text-slate-500">Synthèse professionnelle</p>
+                    </button>
+                    <button type="button" data-doc="lm" onclick="pickDocType('lm')" class="doc-opt p-4 rounded-2xl border-2 text-left transition">
+                        <span class="text-2xl">✉️</span>
+                        <p class="font-bold text-slate-900 mt-2 text-sm sm:text-base">Lettre</p>
+                        <p class="text-xs text-slate-500">Motivation sur-mesure</p>
+                    </button>
+                </div>
+                <div id="cv-options" class="mb-6">
+                    <p class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Modèle de CV</p>
+                    <div class="grid grid-cols-3 gap-3 mb-3" id="cv-template-picker">
+                        <button type="button" data-tpl="moderne" onclick="pickCvTemplate('moderne')" class="cv-tpl p-3 rounded-2xl border-2 text-left transition">
+                            <span class="block h-16 rounded-lg overflow-hidden border border-slate-200 bg-white flex"><span class="w-1/3 h-full bg-emerald-800"></span><span class="flex-1 p-1.5 space-y-1"><span class="block h-1.5 w-3/4 bg-slate-700 rounded"></span><span class="block h-1 w-1/2 bg-emerald-600 rounded"></span><span class="block h-1 w-full bg-slate-200 rounded"></span><span class="block h-1 w-5/6 bg-slate-200 rounded"></span></span></span>
+                            <span class="block font-bold text-slate-900 text-sm mt-2">Moderne</span>
+                        </button>
+                        <button type="button" data-tpl="classique" onclick="pickCvTemplate('classique')" class="cv-tpl p-3 rounded-2xl border-2 text-left transition">
+                            <span class="block h-16 rounded-lg overflow-hidden border border-slate-200 bg-white p-1.5 space-y-1"><span class="block h-1.5 w-1/2 bg-slate-800 rounded"></span><span class="block h-px w-full bg-blue-800"></span><span class="block h-1 w-full bg-slate-200 rounded"></span><span class="block h-1 w-5/6 bg-slate-200 rounded"></span><span class="block h-px w-full bg-blue-800"></span><span class="block h-1 w-2/3 bg-slate-200 rounded"></span></span>
+                            <span class="block font-bold text-slate-900 text-sm mt-2">Classique</span>
+                        </button>
+                        <button type="button" data-tpl="compact" onclick="pickCvTemplate('compact')" class="cv-tpl p-3 rounded-2xl border-2 text-left transition">
+                            <span class="block h-16 rounded-lg overflow-hidden border border-slate-200 bg-white"><span class="block h-5 bg-amber-800"></span><span class="block p-1.5 space-y-1"><span class="flex gap-1"><span class="h-1.5 w-5 bg-amber-200 rounded-full"></span><span class="h-1.5 w-4 bg-amber-200 rounded-full"></span><span class="h-1.5 w-6 bg-amber-200 rounded-full"></span></span><span class="block h-1 w-full bg-slate-200 rounded"></span><span class="block h-1 w-4/5 bg-slate-200 rounded"></span></span></span>
+                            <span class="block font-bold text-slate-900 text-sm mt-2">Compact</span>
+                        </button>
+                    </div>
+                    <label class="flex items-center gap-2 text-sm font-semibold text-slate-700 cursor-pointer"><input type="checkbox" id="cv-include-photo" checked class="accent-emerald-600 w-4 h-4"> 📷 Inclure ma photo <span id="cv-photo-hint" class="text-xs font-normal text-slate-400"></span></label>
+                </div>
+                <div id="lm-options" class="hidden mb-6">
+                    <p class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Ton de la lettre</p>
+                    <div class="grid grid-cols-3 gap-2" id="lm-tone-picker">
+                        <button type="button" data-tone="formel" onclick="pickLetterTone('formel')" class="lm-tone p-3 rounded-2xl border-2 text-left transition"><span class="block text-lg">🎩</span><span class="block font-bold text-slate-900 text-sm">Formel</span><span class="block text-[11px] text-slate-500">Classique, sobre</span></button>
+                        <button type="button" data-tone="dynamique" onclick="pickLetterTone('dynamique')" class="lm-tone p-3 rounded-2xl border-2 text-left transition"><span class="block text-lg">⚡</span><span class="block font-bold text-slate-900 text-sm">Dynamique</span><span class="block text-[11px] text-slate-500">Direct, énergique</span></button>
+                        <button type="button" data-tone="creatif" onclick="pickLetterTone('creatif')" class="lm-tone p-3 rounded-2xl border-2 text-left transition"><span class="block text-lg">🎨</span><span class="block font-bold text-slate-900 text-sm">Créatif</span><span class="block text-[11px] text-slate-500">Original, marquant</span></button>
+                    </div>
+                </div>
+                <div id="ai-offer-chip" class="hidden mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 flex items-start gap-3">
+                    <span class="text-xl">🎯</span>
+                    <div class="flex-1 min-w-0">
+                        <p id="ai-offer-chip-label" class="text-xs font-bold text-emerald-700 uppercase tracking-wider">Lettre ciblée sur l'offre</p>
+                        <p id="ai-offer-chip-text" class="text-sm font-semibold text-slate-800 truncate"></p>
+                    </div>
+                    <button onclick="clearTargetOffer()" aria-label="Retirer l'offre" class="w-7 h-7 rounded-full text-emerald-700 hover:bg-emerald-100 grid place-items-center">✕</button>
+                </div>
+                <label for="ai-target-job" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Intitulé du poste visé</label>
+                <input type="text" id="ai-target-job" placeholder="Ex : Développeur web, Comptable..." onkeydown="if(event.key==='Enter') generateAIDocument()" class="field mb-6">
+                <button onclick="generateAIDocument()" id="ai-generate-btn" class="btn-primary w-full py-3.5 font-bold rounded-xl flex items-center justify-center gap-2">
+                    <span>Générer et télécharger en PDF</span><span>📥</span>
+                </button>
+
+                <div id="ai-loading" class="hidden mt-6 space-y-3">
+                    <div class="skeleton h-4 w-3/4"></div><div class="skeleton h-4 w-full"></div><div class="skeleton h-4 w-5/6"></div><div class="skeleton h-4 w-2/3"></div>
+                    <p class="text-xs text-slate-400 pt-1">L'IA rédige votre document…</p>
+                </div>
+
+                <div id="ai-result-box" class="hidden mt-8 pt-6 border-t border-slate-100 view-enter">
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="font-bold text-slate-900">Résultat</p>
+                        <span class="text-xs text-slate-400">Modifiable avant de retélécharger</span>
+                    </div>
+                    <p id="ai-output-label" class="hidden text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Accroche du CV</p>
+                    <textarea id="ai-output-text" rows="12" class="field leading-relaxed mb-3"></textarea>
+                    <div id="cv-missing" class="hidden mb-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900"></div>
+                    <button onclick="downloadGeneratedPDF()" class="btn-ghost w-full py-3 bg-white border-2 border-emerald-500 text-emerald-700 font-bold rounded-xl">Retélécharger le PDF 📄</button>
+                </div>
+            </div>
+            <aside class="space-y-4">
+                <div class="card p-6">
+                    <h3 class="font-bold text-slate-900 mb-3">💡 Pour un meilleur résultat</h3>
+                    <ul class="space-y-3 text-sm text-slate-600">
+                        <li class="flex gap-2"><span class="text-emerald-500 font-bold">1.</span> Ajoutez vos compétences ROME dans votre profil.</li>
+                        <li class="flex gap-2"><span class="text-emerald-500 font-bold">2.</span> Décrivez vos missions pour chaque expérience.</li>
+                        <li class="flex gap-2"><span class="text-emerald-500 font-bold">3.</span> Indiquez un intitulé de poste précis.</li>
+                        <li class="flex gap-2"><span class="text-emerald-500 font-bold">4.</span> Relisez et personnalisez le texte avant d'envoyer.</li>
+                    </ul>
+                </div>
+                <div class="card p-6">
+                    <h3 class="font-bold text-slate-900 mb-1">🤖 Test ATS de mon CV</h3>
+                    <p class="text-xs text-slate-500 mb-3">Les grandes entreprises trient les CV avec un logiciel (ATS). Vérifiez si le vôtre contient les bons mots-clés pour le poste visé.</p>
+                    <button onclick="runAtsCheck(null)" id="ats-gen-btn" class="w-full btn-ghost py-2.5 rounded-xl border border-sky-200 bg-sky-50 text-sm font-bold text-sky-700">Vérifier mon CV</button>
+                    <div id="ats-gen-box" class="mt-3"></div>
+                </div>
+                <button onclick="accessProfileView('cv')" class="w-full card card-hover p-5 text-left flex items-center gap-4">
+                    <span class="w-11 h-11 rounded-xl bg-emerald-100 grid place-items-center text-xl">🧑‍💼</span>
+                    <span><span class="block font-bold text-slate-900 text-sm">Compléter mon profil</span><span class="block text-xs text-slate-500">Plus il est complet, meilleur est le CV</span></span>
+                </button>
+            </aside>
+        </div>
+    </div>
+
+    <!-- ================= VUE 3 : SIMULATEUR D'ENTRETIEN ================= -->
+    <div id="view-ai-assistant" class="max-w-4xl mx-auto px-4 py-10 sm:py-14 hidden">
+        <div class="mb-8">
+            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-50 text-sky-700 text-xs font-bold mb-3">🤖 Coaching IA</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Simulateur d'entretien</h2>
+            <p class="text-slate-500">Répondez comme en vrai : le recruteur virtuel vous donne un conseil après chaque réponse, puis un bilan complet.</p>
+            <div class="mt-4 flex flex-col sm:flex-row gap-2 sm:items-center">
+                <label for="chat-target-job" class="text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Poste visé</label>
+                <input id="chat-target-job" type="text" placeholder="Ex : Assistant comptable (facultatif)" onkeydown="if(event.key==='Enter') resetChat()" class="field sm:max-w-xs !py-2">
+                <button onclick="resetChat()" class="text-xs font-bold text-emerald-700 hover:underline text-left">Démarrer l'entretien pour ce poste →</button>
+            </div>
+        </div>
+        <div class="card overflow-hidden flex flex-col h-[560px] sm:h-[600px]">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-white">
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <span class="w-10 h-10 rounded-full btn-primary grid place-items-center text-lg">🤖</span>
+                        <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-400 border-2 border-white"></span>
+                    </div>
+                    <div><p class="font-bold text-slate-900 text-sm">Recruteur virtuel</p><p class="text-xs text-emerald-600 font-semibold">En ligne</p></div>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button id="voice-toggle" onclick="toggleVoiceMode()" aria-pressed="false" title="Le recruteur parle à voix haute et vous répondez au micro" class="text-xs font-semibold text-slate-500 hover:text-emerald-600 px-3 py-1.5 rounded-lg hover:bg-emerald-50 transition">🎙️ Mode vocal</button>
+                    <button onclick="resetChat()" class="text-xs font-semibold text-slate-500 hover:text-emerald-600 px-3 py-1.5 rounded-lg hover:bg-emerald-50 transition">↺ Recommencer</button>
+                </div>
+            </div>
+            <div id="voice-status" class="hidden px-4 py-2 border-b border-slate-100 bg-sky-50 text-xs font-semibold text-sky-800 flex items-center gap-2"><span id="voice-dot" class="w-2 h-2 rounded-full bg-sky-500"></span><span id="voice-status-text"></span></div>
+            <div id="chat-messages" class="flex-1 overflow-y-auto space-y-4 p-4 sm:p-6 bg-gradient-to-b from-slate-50 to-white flex flex-col"></div>
+            <div id="chat-report-bar" class="hidden px-4 py-2.5 border-t border-slate-100 bg-emerald-50/60 flex items-center justify-between gap-3">
+                <span class="text-xs text-slate-600">Prêt ? Obtenez votre note et des exemples de meilleures réponses.</span>
+                <button onclick="getInterviewReport()" id="chat-report-btn" class="btn-primary px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">🏁 Voir mon bilan</button>
+            </div>
+            <div class="p-3 sm:p-4 border-t border-slate-100 bg-white flex gap-2">
+                <button id="mic-btn" onclick="toggleMic()" aria-label="Répondre au micro" title="Répondre au micro" class="hidden shrink-0 w-12 rounded-xl border border-slate-200 bg-white text-lg hover:border-emerald-300 hover:bg-emerald-50 transition">🎤</button>
+                <input type="text" id="chat-input" placeholder="Écrivez votre réponse…" class="field flex-1 min-w-0" onkeydown="if(event.key === 'Enter') sendChatMessage()">
+                <button onclick="sendChatMessage()" id="chat-send-btn" aria-label="Envoyer" class="btn-primary px-4 sm:px-6 rounded-xl font-bold text-sm flex items-center gap-2">
+                    <span class="hidden sm:inline">Envoyer</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg>
+                </button>
+            </div>
+        </div>
+        <div id="chat-report" class="mt-6"></div>
+        <div id="interview-progress" class="mt-6"></div>
+    </div>
+
+    <!-- ================= VUE 4 : CONSEILS ================= -->
+    <div id="view-advice" class="max-w-6xl mx-auto px-4 py-10 sm:py-14 hidden">
+        <div class="mb-10 max-w-2xl">
+            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-bold mb-3">💡 Coaching carrière</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Conseils pour réussir</h2>
+            <p class="text-slate-500">Les essentiels pour une candidature qui sort du lot.</p>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div class="reveal card card-hover p-6"><span class="w-11 h-11 rounded-xl bg-emerald-100 grid place-items-center text-xl mb-4">📄</span><h3 class="font-bold text-slate-900 text-lg mb-2">Un CV percutant</h3><p class="text-sm text-slate-500">Une page, des verbes d'action, des résultats chiffrés et les compétences ROME de l'offre.</p></div>
+            <div class="reveal card card-hover p-6"><span class="w-11 h-11 rounded-xl bg-teal-100 grid place-items-center text-xl mb-4">✉️</span><h3 class="font-bold text-slate-900 text-lg mb-2">Une lettre ciblée</h3><p class="text-sm text-slate-500">Vous, eux, nous : montrez ce que vous apportez à cette entreprise précise.</p></div>
+            <div class="reveal card card-hover p-6"><span class="w-11 h-11 rounded-xl bg-sky-100 grid place-items-center text-xl mb-4">🎯</span><h3 class="font-bold text-slate-900 text-lg mb-2">Réussir l'entretien</h3><p class="text-sm text-slate-500">Préparez 3 exemples concrets (méthode STAR) et entraînez-vous avec notre <a href="#" onclick="switchView('ai-assistant'); return false;" class="text-emerald-600 font-semibold underline">recruteur virtuel</a>.</p></div>
+            <div class="reveal card card-hover p-6"><span class="w-11 h-11 rounded-xl bg-amber-100 grid place-items-center text-xl mb-4">🔎</span><h3 class="font-bold text-slate-900 text-lg mb-2">Se renseigner</h3><p class="text-sm text-slate-500">Site, actualités, valeurs : citez un détail sur l'entreprise, ça fait la différence.</p></div>
+            <div class="reveal card card-hover p-6"><span class="w-11 h-11 rounded-xl bg-rose-100 grid place-items-center text-xl mb-4">🤝</span><h3 class="font-bold text-slate-900 text-lg mb-2">Activer son réseau</h3><p class="text-sm text-slate-500">Une grande partie des postes se pourvoient par recommandation : parlez de votre recherche.</p></div>
+            <div class="reveal card card-hover p-6"><span class="w-11 h-11 rounded-xl bg-violet-100 grid place-items-center text-xl mb-4">📬</span><h3 class="font-bold text-slate-900 text-lg mb-2">Relancer</h3><p class="text-sm text-slate-500">Sans réponse après 7 à 10 jours, une relance courte et polie montre votre motivation.</p></div>
+        </div>
+    </div>
+
+    <!-- ================= VUE 5 : À PROPOS ================= -->
+    <div id="view-about" class="max-w-4xl mx-auto px-4 py-10 sm:py-16 hidden">
+        <div class="card p-8 sm:p-12 relative overflow-hidden">
+            <div class="blob w-64 h-64 bg-emerald-200 -top-20 -right-20"></div>
+            <div class="relative">
+                <span class="w-14 h-14 rounded-2xl btn-primary grid place-items-center font-extrabold text-2xl mb-6">J</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">À propos de JobFacile</h2>
+                <p class="text-slate-600 text-lg leading-relaxed mb-8">JobFacile est une plateforme nationale d'emploi intelligente, connectée au référentiel ROME. Notre mission : rendre la recherche d'emploi plus simple, plus locale et plus humaine grâce à l'IA.</p>
+                <div class="grid sm:grid-cols-3 gap-4">
+                    <div class="rounded-2xl bg-emerald-50 p-5"><p class="text-2xl mb-2">📍</p><p class="font-bold text-slate-900">Local</p><p class="text-sm text-slate-500">Des offres au kilomètre près.</p></div>
+                    <div class="rounded-2xl bg-teal-50 p-5"><p class="text-2xl mb-2">🧠</p><p class="font-bold text-slate-900">Intelligent</p><p class="text-sm text-slate-500">L'IA au service de votre candidature.</p></div>
+                    <div class="rounded-2xl bg-sky-50 p-5"><p class="text-2xl mb-2">🔒</p><p class="font-bold text-slate-900">Sécurisé</p><p class="text-sm text-slate-500">Mots de passe chiffrés, double authentification.</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= VUE 6 : MON PROFIL ================= -->
+    <div id="view-profile" class="max-w-3xl mx-auto px-4 py-10 sm:py-14 hidden">
+        <div class="card overflow-hidden">
+            <div class="h-32 sm:h-40 relative overflow-hidden" style="background: linear-gradient(135deg,rgb(var(--e-700)) 0%,rgb(var(--e-600)) 45%,rgb(var(--t-500)) 100%);">
+                <div class="blob w-52 h-52 bg-white/30 -top-16 right-10"></div>
+                <div class="absolute inset-0 grid-bg opacity-40"></div>
+            </div>
+            <div class="px-6 sm:px-8 pb-8">
+                <div class="flex flex-col sm:flex-row sm:items-end gap-4 mb-6">
+                    <label for="avatar-file-input" class="relative -mt-12 w-24 h-24 rounded-3xl border-4 border-white shadow-xl overflow-hidden cursor-pointer group shrink-0 bg-white">
+                        <img id="profile-avatar-preview" src="" alt="Avatar" class="w-full h-full object-cover">
+                        <span class="absolute inset-0 bg-black/40 text-white text-xs font-bold grid place-items-center opacity-0 group-hover:opacity-100 transition">Changer</span>
+                    </label>
+                    <div class="pb-1">
+                        <h2 class="text-2xl font-extrabold text-slate-900" id="profile-name-title">Mon Profil</h2>
+                        <p id="profile-headline" class="text-sm text-slate-500"></p>
+                        <span class="inline-flex items-center gap-1.5 text-xs text-emerald-700 font-bold bg-emerald-50 px-2.5 py-1 rounded-full mt-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Compte actif</span>
+                    </div>
+                </div>
+
+                <div id="profile-completeness" class="mb-6 rounded-2xl border border-slate-200 p-4"></div>
+                <div class="inline-flex p-1 bg-slate-100 rounded-2xl mb-8 max-w-full overflow-x-auto">
+                    <button onclick="switchProfileTab('info')" id="tab-btn-info">Informations</button>
+                    <button onclick="switchProfileTab('cv')" id="tab-btn-cv">Parcours, diplômes & photo</button>
+                    <button onclick="switchProfileTab('security')" id="tab-btn-security">Sécurité & données</button>
+                </div>
+
+                <div id="profile-tab-info" class="space-y-5">
+                    <section class="rounded-2xl border border-slate-200 p-5">
+                        <h3 class="font-bold text-slate-900 mb-4">👤 Identité</h3>
+                        <div class="grid sm:grid-cols-2 gap-3">
+                            <div><label for="prof-firstname" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Prénom</label><input type="text" id="prof-firstname" autocomplete="given-name" class="field"></div>
+                            <div><label for="prof-lastname" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nom</label><input type="text" id="prof-lastname" autocomplete="family-name" class="field"></div>
+                            <div><label for="prof-gender" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Genre</label>
+                                <select id="prof-gender" class="field"><option value="H">Homme</option><option value="F">Femme</option><option value="A">Autre / ne pas préciser</option></select></div>
+                            <div><label for="prof-birthdate" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Date de naissance</label><input type="date" id="prof-birthdate" class="field"></div>
+                        </div>
+                    </section>
+
+                    <section class="rounded-2xl border border-slate-200 p-5">
+                        <h3 class="font-bold text-slate-900 mb-4">📞 Coordonnées</h3>
+                        <div class="grid sm:grid-cols-2 gap-3">
+                            <div><label for="prof-email" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Email</label><input type="email" id="prof-email" autocomplete="email" oninput="checkEmailChange()" class="field"></div>
+                            <div><label for="prof-phone" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Téléphone</label><input type="tel" id="prof-phone" autocomplete="tel" class="field"></div>
+                            <div id="prof-email-password-box" class="hidden sm:col-span-2 rounded-xl bg-amber-50 border border-amber-200 p-3">
+                                <label for="prof-email-password" class="block text-xs font-semibold text-amber-800 mb-1.5">Vous changez d'adresse e-mail : confirmez avec votre mot de passe actuel</label>
+                                <input type="password" id="prof-email-password" autocomplete="current-password" class="field">
+                            </div>
+                            <div><label for="prof-city" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Ville</label><input type="text" id="prof-city" list="city-suggestions" autocomplete="off" oninput="suggestCities(this.value)" placeholder="Ex : Maubeuge" class="field"></div>
+                            <div><label for="prof-postal" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Code postal</label><input type="text" id="prof-postal" inputmode="numeric" maxlength="5" placeholder="59600" class="field"></div>
+                            <div class="sm:col-span-2"><label for="prof-address" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Adresse (facultatif)</label><input type="text" id="prof-address" autocomplete="street-address" maxlength="160" placeholder="Ex : 12 rue de la Gare" class="field"><p class="text-[11px] text-slate-400 mt-1">Sert uniquement à calculer vos temps de trajet. Jamais affichée sur votre CV ni transmise aux recruteurs. Sans adresse, le calcul part du centre de votre ville.</p></div>
+                        </div>
+                    </section>
+
+                    <section class="rounded-2xl border border-slate-200 p-5">
+                        <h3 class="font-bold text-slate-900 mb-1">🎯 Ma recherche</h3>
+                        <p class="text-xs text-slate-500 mb-4">Ces choix pré-remplissent la recherche d'offres et améliorent votre score de compatibilité.</p>
+                        <div class="grid sm:grid-cols-2 gap-3">
+                            <div class="sm:col-span-2"><label for="prof-desired-job" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Poste recherché</label><input type="text" id="prof-desired-job" placeholder="Ex : Assistant comptable, Développeur web…" class="field"></div>
+                            <div class="sm:col-span-2">
+                                <p class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Contrats souhaités</p>
+                                <div id="prof-contracts" class="flex flex-wrap gap-2"></div>
+                            </div>
+                            <div><label for="prof-mobility" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Distance maximale</label>
+                                <select id="prof-mobility" class="field"><option value="5">5 km</option><option value="10">10 km</option><option value="20">20 km</option><option value="30">30 km</option><option value="50">50 km</option><option value="100">100 km</option></select></div>
+                            <div><label for="prof-availability" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Disponibilité</label>
+                                <select id="prof-availability" class="field"><option value="">Non précisée</option><option>Immédiate</option><option>Sous 1 mois</option><option>Sous 3 mois</option><option>En poste, à l’écoute</option></select></div>
+                            <div><label for="prof-salary" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Salaire souhaité</label><input type="text" id="prof-salary" placeholder="Ex : 1 900 € net / mois" class="field"></div>
+                            <label class="flex items-center gap-2 text-sm font-semibold text-slate-700 cursor-pointer sm:mt-6"><input type="checkbox" id="prof-remote" class="accent-emerald-600 w-4 h-4"> 🏠 Je souhaite du télétravail</label>
+                        </div>
+                    </section>
+
+                    <section class="rounded-2xl border border-slate-200 p-5">
+                        <h3 class="font-bold text-slate-900 mb-4">✨ Présentation</h3>
+                        <div class="space-y-3">
+                            <div><label for="prof-headline" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Titre du profil</label><input type="text" id="prof-headline" maxlength="120" placeholder="Ex : Assistante comptable · 3 ans d'expérience · BTS CG" class="field"></div>
+                            <div>
+                                <label for="prof-bio" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">À propos de moi</label>
+                                <textarea id="prof-bio" rows="4" maxlength="800" oninput="document.getElementById('prof-bio-count').textContent = this.value.length" placeholder="Quelques phrases sur vous, ce que vous aimez faire et ce que vous cherchez. L'IA s'en sert pour vos lettres de motivation." class="field leading-relaxed"></textarea>
+                                <p class="text-right text-[11px] text-slate-400 mt-1"><span id="prof-bio-count">0</span> / 800</p>
+                            </div>
+                            <div class="grid sm:grid-cols-2 gap-3">
+                                <div><label for="prof-linkedin" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">LinkedIn</label><input type="url" id="prof-linkedin" placeholder="linkedin.com/in/…" class="field"></div>
+                                <div><label for="prof-portfolio" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Site / portfolio</label><input type="url" id="prof-portfolio" placeholder="https://…" class="field"></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="rounded-2xl border border-slate-200 p-5">
+                        <h3 class="font-bold text-slate-900 mb-4">🌍 Langues & atouts</h3>
+                        <div id="prof-languages" class="space-y-2 mb-3"></div>
+                        <button type="button" onclick="addLanguage()" class="w-full py-2.5 border-2 border-dashed border-slate-200 hover:border-emerald-300 hover:bg-emerald-50 text-slate-500 hover:text-emerald-700 text-sm font-semibold rounded-xl transition mb-4">+ Ajouter une langue</button>
+                        <div class="flex flex-wrap gap-x-6 gap-y-2">
+                            <label class="flex items-center gap-2 text-sm font-semibold text-slate-700 cursor-pointer"><input type="checkbox" id="prof-vehicle" class="accent-emerald-600 w-4 h-4"> 🔑 Véhiculé(e)</label>
+                        </div>
+                    </section>
+
+                    <section class="rounded-2xl border border-slate-200 p-5">
+                        <h3 class="font-bold text-slate-900 mb-1">🪪 Permis, CACES & habilitations</h3>
+                        <p class="text-xs text-slate-500 mb-4">Très demandés en logistique, BTP, transport et industrie. Ils apparaissent sur votre CV et sont comparés aux exigences de chaque offre.</p>
+                        <div class="space-y-4">
+                            <div><p class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">🚗 Permis de conduire</p><div id="prof-licenses" class="flex flex-wrap gap-2"></div></div>
+                            <div><p class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">🏗️ CACES</p><div id="prof-caces" class="flex flex-wrap gap-2"></div></div>
+                            <div><p class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">⚡ Habilitations & certificats</p><div id="prof-habilitations" class="flex flex-wrap gap-2"></div></div>
+                            <div><label for="prof-other-certifs" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Autres certifications</label><input type="text" id="prof-other-certifs" maxlength="300" placeholder="Séparées par des virgules. Ex : Carte VTC, TOEIC 850" class="field"></div>
+                        </div>
+                    </section>
+
+                    <button onclick="saveProfileInfo()" id="save-info-btn" class="btn-primary w-full py-3.5 font-bold rounded-xl sticky bottom-4 shadow-xl">Enregistrer mes informations</button>
+                </div>
+
+                <div id="profile-tab-security" class="space-y-5 hidden">
+                    <section class="rounded-2xl border border-slate-200 p-5">
+                        <h3 class="font-bold text-slate-900 mb-1">🔑 Mot de passe</h3>
+                        <p class="text-sm text-slate-500 mb-4">Un code de confirmation vous sera envoyé par e-mail.</p>
+                        <div id="pw-step1" class="grid sm:grid-cols-3 gap-3">
+                            <input type="password" id="pw-current" placeholder="Mot de passe actuel" autocomplete="current-password" class="field">
+                            <input type="password" id="pw-new" placeholder="Nouveau (8 caractères min.)" autocomplete="new-password" class="field">
+                            <input type="password" id="pw-confirm" placeholder="Confirmer le nouveau" autocomplete="new-password" class="field">
+                            <button onclick="requestPasswordChange()" id="pw-send-btn" class="btn-primary sm:col-span-3 py-3 rounded-xl text-sm font-bold">Changer mon mot de passe</button>
+                        </div>
+                        <div id="pw-step2" class="hidden flex flex-col sm:flex-row gap-2">
+                            <input type="text" id="pw-code" maxlength="6" inputmode="numeric" placeholder="Code reçu par e-mail" class="field flex-1 text-center tracking-[.3em] font-mono font-bold placeholder:tracking-normal placeholder:font-sans placeholder:font-normal">
+                            <button onclick="confirmPasswordChange()" class="btn-primary px-5 py-3 rounded-xl text-sm font-bold">Valider</button>
+                        </div>
+                    </section>
+
+                    <section class="rounded-2xl border border-slate-200 p-5">
+                        <h3 class="font-bold text-slate-900 mb-1">🛡️ Double authentification</h3>
+                        <p class="text-sm text-slate-500 mb-4">En plus du mot de passe, un code à 6 chiffres de votre application (Google Authenticator, Microsoft Authenticator…) sera demandé à la connexion.</p>
+                        <div id="twofa-box"></div>
+                    </section>
+
+                    <section class="rounded-2xl border border-slate-200 p-5">
+                        <h3 class="font-bold text-slate-900 mb-1">🔒 Mes données personnelles</h3>
+                        <p class="text-sm text-slate-500 mb-4">Conformément au RGPD, vous pouvez récupérer toutes vos données ou supprimer définitivement votre compte. <a href="#" onclick="openLegal('privacy'); return false;" class="text-emerald-600 font-semibold underline">Politique de confidentialité</a></p>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="exportMyData()" class="btn-ghost px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-700">📥 Télécharger mes données</button>
+                            <button onclick="document.getElementById('delete-box').classList.toggle('hidden')" class="px-4 py-2.5 rounded-xl text-sm font-bold text-rose-600 hover:bg-rose-50 transition">Supprimer mon compte</button>
+                        </div>
+                        <div id="delete-box" class="hidden mt-4 rounded-xl border border-rose-200 bg-rose-50 p-4">
+                            <p class="text-sm text-rose-700 font-semibold mb-3">Cette action est définitive : profil, CV, photo, favoris et suivi seront effacés.</p>
+                            <div class="flex flex-col sm:flex-row gap-2">
+                                <input type="password" id="delete-password" placeholder="Votre mot de passe pour confirmer" autocomplete="current-password" class="field flex-1">
+                                <button onclick="deleteMyAccount()" id="delete-btn" class="px-5 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold whitespace-nowrap">Supprimer définitivement</button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+<div id="profile-tab-cv" class="space-y-5 hidden">
+                    <div class="rounded-2xl border-2 border-dashed border-emerald-200 bg-emerald-50/50 p-5">
+                        <div class="flex flex-wrap items-start gap-4">
+                            <span class="w-12 h-12 rounded-2xl btn-primary grid place-items-center text-xl shrink-0">🤖</span>
+                            <div class="flex-1 min-w-[200px]">
+                                <h3 class="font-bold text-slate-900">Remplir mon profil avec mon CV</h3>
+                                <p class="text-sm text-slate-500 mt-1">Envoyez votre CV en PDF : l'IA en extrait vos compétences, expériences et diplômes, et vous donne des conseils pour l'améliorer.</p>
+                                <p id="cv-current" class="text-xs mt-2"></p>
+                            </div>
+                            <label for="cv-file-input" id="cv-upload-label" class="btn-primary px-5 py-3 rounded-xl font-bold text-sm cursor-pointer whitespace-nowrap">📄 Analyser mon CV</label>
+                            <input type="file" id="cv-file-input" accept="application/pdf" class="hidden" onchange="analyzeCV(this)">
+                        </div>
+                        <div id="cv-analysis"></div>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200 p-5">
+                        <h3 class="font-bold text-slate-900 mb-1 flex items-center gap-2">📷 Photo de profil</h3>
+                        <p class="text-xs text-slate-400 mb-3">JPG, PNG, WEBP ou GIF – 5 Mo maximum.</p>
+                        <input type="file" id="avatar-file-input" accept="image/jpeg,image/png,image/webp,image/gif" onchange="previewAvatar(this)" class="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-emerald-50 file:text-emerald-700 file:font-semibold hover:file:bg-emerald-100 file:cursor-pointer">
+                    </div>
+                    <div class="rounded-2xl border border-slate-200 p-5">
+                        <h3 class="font-bold text-slate-900 mb-3 flex items-center gap-2">🎯 Métiers ROME & compétences</h3>
+                        <div class="relative mb-3">
+                            <input type="text" id="skill-search-input" placeholder="Rechercher un métier ou une compétence…" oninput="searchSkills(this.value)" autocomplete="off" class="field">
+                            <div id="skills-dropdown" class="dropdown-suggestions hidden"></div>
+                        </div>
+                        <div id="skills-tags-container" class="flex flex-wrap gap-2 min-h-[44px]"></div>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200 p-5">
+                        <h3 class="font-bold text-slate-900 mb-3 flex items-center gap-2">💼 Parcours professionnel</h3>
+                        <div id="experience-container" class="space-y-3 mb-3"></div>
+                        <button type="button" onclick="addExperienceField()" class="w-full py-2.5 border-2 border-dashed border-slate-200 hover:border-emerald-300 hover:bg-emerald-50 text-slate-500 hover:text-emerald-700 text-sm font-semibold rounded-xl transition">+ Ajouter une expérience</button>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200 p-5">
+                        <h3 class="font-bold text-slate-900 mb-3 flex items-center gap-2">🎓 Diplômes & formations</h3>
+                        <div id="education-container" class="space-y-3 mb-3"></div>
+                        <button type="button" onclick="addEducationField()" class="w-full py-2.5 border-2 border-dashed border-slate-200 hover:border-emerald-300 hover:bg-emerald-50 text-slate-500 hover:text-emerald-700 text-sm font-semibold rounded-xl transition">+ Ajouter un diplôme</button>
+                    </div>
+                    <button onclick="saveProfileFilesAndSkills()" id="save-profile-btn" class="btn-primary w-full py-3.5 font-bold rounded-xl">Enregistrer mon profil et ma photo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= VUE 7 : OFFRES D'EMPLOI ================= -->
+    <main id="view-jobs" class="max-w-6xl mx-auto px-4 py-10 sm:py-14 hidden">
+        <div class="mb-8">
+            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold mb-3">💼 Offres d'emploi</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Trouvez l'offre qui vous correspond</h2>
+        </div>
+        <div class="card p-3 shadow-lg shadow-emerald-900/5 grid grid-cols-2 md:grid-cols-[1.3fr_1.2fr_110px_170px_auto] gap-2 mb-6 md:sticky md:top-20 md:z-30">
+            <input type="text" id="keyword" placeholder="Poste, domaine…" onkeydown="if(event.key==='Enter') fetchJobs(1)" class="field col-span-2 md:col-span-1">
+            <div class="relative col-span-2 md:col-span-1">
+                <input type="text" id="location" list="city-suggestions" autocomplete="off" placeholder="Ville, code postal, n° dépt…" oninput="suggestCities(this.value)" onkeydown="if(event.key==='Enter') fetchJobs(1)" class="field pr-12">
+                <button type="button" id="geo-btn" onclick="searchNearMe()" title="Offres près de ma position" aria-label="Offres près de ma position" class="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 grid place-items-center">📍</button>
+            </div>
+            <select id="radius-select" onchange="if(document.getElementById('location').value.trim()) fetchJobs(1)" class="field" aria-label="Distance">
+                <option value="5">5 km</option>
+                <option value="10">10 km</option>
+                <option value="20" selected>20 km</option>
+                <option value="30">30 km</option>
+                <option value="50">50 km</option>
+                <option value="100">100 km</option>
+            </select>
+            <select id="type-select" onchange="fetchJobs(1)" class="field">
+                <option value="all">Tous les contrats</option>
+                <option value="emploi">Emploi</option>
+                <option value="alternance">Alternance</option>
+            </select>
+            <button onclick="fetchJobs(1)" class="btn-primary font-bold px-6 py-3 rounded-xl text-sm col-span-2 md:col-span-1">Rechercher</button>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 mb-4">
+            <select id="days-select" onchange="fetchJobs(1)" aria-label="Date de publication" class="field !w-auto !py-2 !text-xs font-semibold">
+                <option value="0">📅 Toutes les dates</option>
+                <option value="1">Dernières 24 h</option>
+                <option value="3">3 derniers jours</option>
+                <option value="7">7 derniers jours</option>
+                <option value="30">30 derniers jours</option>
+            </select>
+            <select id="time-select" onchange="fetchJobs(1)" aria-label="Temps de travail" class="field !w-auto !py-2 !text-xs font-semibold">
+                <option value="all">⏱️ Tous horaires</option>
+                <option value="full">Temps plein</option>
+                <option value="part">Temps partiel</option>
+            </select>
+            <select id="salary-select" onchange="fetchJobs(1)" aria-label="Salaire minimum" class="field !w-auto !py-2 !text-xs font-semibold">
+                <option value="0">💶 Tous salaires</option>
+                <option value="1500">1 500 € brut/mois et +</option>
+                <option value="1800">1 800 € et +</option>
+                <option value="2000">2 000 € et +</option>
+                <option value="2500">2 500 € et +</option>
+                <option value="3000">3 000 € et +</option>
+                <option value="3500">3 500 € et +</option>
+            </select>
+            <select id="audience-select" onchange="fetchJobs(1)" aria-label="Offres adaptées à ma situation" class="field !w-auto !py-2 !text-xs font-semibold">
+                <option value="">🤝 Toutes situations</option>
+                <option value="rqth">Travailleur handicapé (RQTH)</option>
+                <option value="debutant">Jeune / sans diplôme ni expérience</option>
+                <option value="reconversion">Reconversion</option>
+                <option value="senior">Senior (50 ans et +)</option>
+            </select>
+            <select id="sort-select" onchange="onSortChange()" aria-label="Trier les offres" class="field !w-auto !py-2 !text-xs font-semibold">
+                <option value="date">↕️ Plus récentes</option>
+                <option value="relevance">Pertinence</option>
+                <option value="match">Compatibilité avec mon profil</option>
+                <option value="commute">Trajet le plus court</option>
+            </select>
+            <label class="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 cursor-pointer hover:border-emerald-300 transition">
+                <input type="checkbox" id="remote-check" onchange="fetchJobs(1)" class="accent-emerald-600 w-4 h-4"> 🏠 Télétravail
+            </label>
+            <div class="ml-auto inline-flex p-1 bg-slate-100 rounded-xl">
+                <button id="mode-list" onclick="setJobsMode('list')" class="px-3 py-1.5 rounded-lg text-xs font-bold">☰ Liste</button>
+                <button id="mode-map" onclick="setJobsMode('map')" class="px-3 py-1.5 rounded-lg text-xs font-bold">🗺️ Carte</button>
+            </div>
+        </div>
+        <div id="recent-searches" class="flex flex-wrap items-center gap-2 mb-5"></div>
+        <div id="audience-panel" class="hidden mb-5"></div>
+        <datalist id="city-suggestions"></datalist>
+        <div id="jobs-demo-banner" class="hidden mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 flex gap-3 items-start">
+            <span class="text-lg leading-none">⚠️</span>
+            <span><strong>Offres d'exemple.</strong> <span id="jobs-demo-reason"></span></span>
+        </div>
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <div class="flex flex-wrap items-center gap-3">
+                <p id="jobs-count" class="text-sm font-semibold text-slate-500"></p>            </div>
+            <span id="jobs-source" class="hidden text-xs font-semibold text-slate-500 bg-white border border-slate-200 rounded-full px-3 py-1">Source : <span id="jobs-source-name" class="text-emerald-700">France Travail</span> · offres réelles</span>
+        </div>
+        <div id="alert-banner" class="hidden mb-5"></div>
+        <div id="jobs-map-wrap" class="hidden mb-6">
+            <div id="jobs-map" class="card overflow-hidden h-[460px] sm:h-[560px]"></div>
+            <p id="jobs-map-note" class="text-xs text-slate-400 mt-2"></p>
+        </div>
+        <div id="jobs-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        <div id="jobs-pagination" class="flex justify-center items-center gap-3 mt-8"></div>
+    </main>
+
+    <!-- ================= VUE 8 : MON SUIVI ================= -->
+    <div id="view-tracker" class="max-w-7xl mx-auto px-4 py-10 sm:py-14 hidden">
+        <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+            <div>
+                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold mb-3">📋 Mon espace</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Mon suivi</h2>
+                <p class="text-slate-500">Vos candidatures étape par étape, et les offres que vous avez gardées.</p>
+            </div>
+            <div class="inline-flex p-1 bg-slate-100 rounded-2xl max-w-full overflow-x-auto">
+                <button onclick="switchTrackerTab('apps')" id="tracker-tab-apps">Candidatures</button>
+                <button onclick="switchTrackerTab('favs')" id="tracker-tab-favs">Favoris</button>
+                <button onclick="switchTrackerTab('agenda')" id="tracker-tab-agenda">Agenda</button>
+                <button onclick="switchTrackerTab('alerts')" id="tracker-tab-alerts">Alertes</button>
+                <button onclick="switchTrackerTab('progress')" id="tracker-tab-progress">Progression</button>
+            </div>
+        </div>
+        <div class="flex flex-wrap gap-2 -mt-4 mb-6">
+            <button onclick="exportTrackerCsv()" class="btn-ghost px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-700">⬇️ Exporter en CSV (Excel)</button>
+            <button onclick="openLinkedinImport()" class="btn-ghost px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-700">⬆️ Importer depuis LinkedIn</button>
+        </div>
+        <div id="tracker-stats" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4"></div>
+        <div id="tracker-weekly" class="mb-8"></div>
+        <div id="tracker-apps"></div>
+        <div id="tracker-favs" class="hidden"></div>
+        <div id="tracker-alerts" class="hidden"></div>
+        <div id="tracker-agenda" class="hidden"></div>
+        <div id="tracker-progress" class="hidden"></div>
+    </div>
+
+    <!-- ================= VUE 9 : INFORMATIONS LÉGALES ================= -->
+    <div id="view-legal" class="max-w-3xl mx-auto px-4 py-10 sm:py-14 hidden">
+        <div class="inline-flex p-1 bg-slate-100 rounded-2xl mb-8">
+            <button onclick="openLegal('mentions')" id="legal-tab-mentions">Mentions légales</button>
+            <button onclick="openLegal('privacy')" id="legal-tab-privacy">Confidentialité</button>
+        </div>
+
+        <article id="legal-mentions" class="card p-6 sm:p-10 space-y-6 text-sm text-slate-600 leading-relaxed">
+            <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Mentions légales</h2>
+            <p class="rounded-xl bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 text-xs font-semibold">À compléter avant la mise en ligne : remplacez les éléments entre crochets par vos informations.</p>
+            <section><h3 class="font-bold text-slate-900 text-base mb-2">Éditeur du site</h3>
+                <p>JobFacile est édité par <strong>[Nom et prénom, ou raison sociale]</strong>, [statut : particulier / micro-entreprise / société], [adresse complète].<br>
+                Contact : <strong>[adresse e-mail de contact]</strong>.<br>
+                [Si entreprise : SIRET, capital, numéro de TVA.]<br>
+                Directeur de la publication : [Nom et prénom].</p></section>
+            <section><h3 class="font-bold text-slate-900 text-base mb-2">Hébergement</h3>
+                <p>Le site est hébergé par <strong>[Nom de l'hébergeur]</strong>, [adresse], [téléphone].</p></section>
+            <section><h3 class="font-bold text-slate-900 text-base mb-2">Offres d'emploi</h3>
+                <p>Les offres affichées proviennent de services partenaires (Adzuna, JSearch, France Travail). JobFacile n'est pas l'employeur et ne garantit pas leur exactitude ni leur disponibilité : la candidature se fait sur le site d'origine de l'offre.</p></section>
+            <section><h3 class="font-bold text-slate-900 text-base mb-2">Intelligence artificielle</h3>
+                <p>Les CV, lettres, analyses et entretiens simulés sont générés automatiquement par une IA. Relisez-les toujours avant de les utiliser : ils peuvent contenir des erreurs.</p></section>
+            <section><h3 class="font-bold text-slate-900 text-base mb-2">Propriété intellectuelle</h3>
+                <p>Le nom JobFacile, le logo et les contenus du site sont protégés. Toute reproduction sans autorisation est interdite.</p></section>
+        </article>
+
+        <article id="legal-privacy" class="hidden card p-6 sm:p-10 space-y-6 text-sm text-slate-600 leading-relaxed">
+            <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Politique de confidentialité</h2>
+            <p>Nous expliquons ici quelles données JobFacile utilise, pourquoi, et comment exercer vos droits (Règlement général sur la protection des données, RGPD).</p>
+            <section><h3 class="font-bold text-slate-900 text-base mb-2">Responsable du traitement</h3>
+                <p><strong>[Nom ou raison sociale]</strong>, joignable à <strong>[adresse e-mail de contact]</strong>.</p></section>
+            <section><h3 class="font-bold text-slate-900 text-base mb-2">Données collectées</h3>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Compte</strong> : prénom, nom, sexe, date de naissance, e-mail, téléphone, mot de passe (stocké chiffré, jamais en clair).</li>
+                    <li><strong>Profil</strong> : compétences, expériences, diplômes, permis et habilitations, photo et CV si vous les ajoutez, ainsi que votre adresse si vous la renseignez (uniquement pour les temps de trajet).</li>
+                    <li><strong>Utilisation</strong> : offres en favoris, suivi de candidatures et notes, badges et parrainage (qui vous a invité).</li>
+                    <li><strong>Échanges</strong> : vos messages avec les recruteurs (visibles uniquement par vous et votre interlocuteur), vos messages publics sur le forum (signés de votre prénom et de l'initiale de votre nom), vos signalements.</li>
+                    <li><strong>Recruteurs</strong> : SIRET, nom et adresse de l'établissement (données publiques de l'annuaire officiel des entreprises), offres publiées et candidatures reçues.</li>
+                    <li><strong>Technique</strong> : adresse IP de connexion, appareils de confiance (double authentification).</li>
+                </ul></section>
+            <section><h3 class="font-bold text-slate-900 text-base mb-2">Pourquoi</h3>
+                <p>Uniquement pour faire fonctionner le service : gérer votre compte, personnaliser la recherche (score de compatibilité), générer vos documents et sécuriser l'accès. Base légale : l'exécution du service que vous demandez (article 6.1.b du RGPD). Aucune revente, aucune publicité.</p></section>
+            <section><h3 class="font-bold text-slate-900 text-base mb-2">Qui y a accès</h3>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Groq</strong> (intelligence artificielle, États-Unis) : reçoit le contenu nécessaire quand vous utilisez une fonction IA (texte du CV, profil, annonce visée), et l'enregistrement de votre voix quand vous répondez au micro dans l'entretien simulé (transformé en texte, non conservé par JobFacile).</li>
+                    <li><strong>ElevenLabs</strong> (voix de synthèse, États-Unis) : reçoit uniquement le texte prononcé par le recruteur virtuel, jamais votre voix ni votre identité.</li>
+                    <li><strong>Adzuna, JSearch (RapidAPI), France Travail</strong> : reçoivent uniquement vos critères de recherche (mots-clés, ville), jamais votre identité.</li>
+                    <li><strong>Google</strong> : envoi des e-mails de code de sécurité (Gmail) et, si vous choisissez « Continuer avec Google », vérification de votre identité (JobFacile reçoit alors vos nom, prénom et e-mail Google).</li>
+                    <li><strong>Base Adresse Nationale, Annuaire des entreprises (État français), OpenStreetMap (OSRM)</strong> : reçoivent la ville ou l'adresse de votre domicile et les coordonnées des offres pour situer les entreprises et calculer les trajets, jamais votre identité.</li>
+                    <li><strong>[Hébergeur]</strong> : stockage du site et des données.</li>
+                </ul>
+                <p class="mt-2">Certains de ces services sont situés hors de l'Union européenne ; ils sont encadrés par des clauses contractuelles types ou le Data Privacy Framework.</p></section>
+            <section><h3 class="font-bold text-slate-900 text-base mb-2">Durée de conservation</h3>
+                <p>Vos données sont conservées tant que votre compte existe. Elles sont effacées immédiatement si vous supprimez votre compte, et un compte inactif depuis 3 ans peut être supprimé.</p></section>
+            <section><h3 class="font-bold text-slate-900 text-base mb-2">Cookies et stockage</h3>
+                <p>JobFacile n'utilise <strong>aucun cookie publicitaire ni outil de mesure d'audience</strong>. Votre navigateur conserve seulement des informations techniques nécessaires : votre session de connexion, le thème choisi et vos recherches récentes. Ces éléments n'exigent pas de consentement.</p></section>
+            <section><h3 class="font-bold text-slate-900 text-base mb-2">Vos droits</h3>
+                <p>Vous pouvez accéder à vos données, les corriger, les récupérer (portabilité), vous opposer à leur traitement ou les faire effacer. Depuis <strong>Mon profil → Informations → Mes données personnelles</strong>, vous pouvez les télécharger ou supprimer votre compte en un clic. Pour toute autre demande : [adresse e-mail de contact]. Vous pouvez aussi saisir la CNIL (cnil.fr).</p></section>
+            <p class="text-xs text-slate-400">Dernière mise à jour : <span id="privacy-date"></span></p>
+        </article>
+    </div>
+
+    <!-- ================= VUE : MES DROITS ================= -->
+    <div id="view-rights" class="max-w-5xl mx-auto px-4 py-10 sm:py-14 hidden">
+        <div class="mb-8">
+            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold mb-3">⚖️ Mes droits</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Simulateur de droits</h2>
+            <p class="text-slate-500">Estimez votre allocation chômage et découvrez les aides pour vous déplacer, vous former ou reprendre un emploi. Rien n'est enregistré.</p>
+        </div>
+        <div class="inline-flex p-1 bg-slate-100 rounded-2xl mb-6 max-w-full overflow-x-auto">
+            <button onclick="switchRightsTab('are')" id="rights-tab-are">💶 Allocation chômage</button>
+            <button onclick="switchRightsTab('aids')" id="rights-tab-aids">🚆 Aides à la mobilité</button>
+        </div>
+        <div id="rights-are" class="grid lg:grid-cols-5 gap-6">
+            <div class="lg:col-span-2 card p-6 space-y-4">
+                <div><label for="ri-salary" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Salaire brut mensuel moyen</label><input id="ri-salary" inputmode="decimal" placeholder="Ex : 1 900" class="field"><p class="text-[11px] text-slate-500 mt-1">Sur la période travaillée, primes comprises (avant impôts et cotisations).</p></div>
+                <div><label for="ri-months" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Mois travaillés sur les 2 dernières années</label><input id="ri-months" type="number" min="0" max="36" placeholder="Ex : 18" class="field"><p class="text-[11px] text-slate-500 mt-1">3 dernières années si vous avez 55 ans ou plus.</p></div>
+                <div><label for="ri-age" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Âge à la fin du contrat</label><input id="ri-age" type="number" min="16" max="75" placeholder="Ex : 32" class="field"></div>
+                <div><label for="ri-reason" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Fin du dernier contrat</label>
+                    <select id="ri-reason" class="field"><option value="fin">Fin de CDD ou de mission d'intérim</option><option value="licenciement">Licenciement</option><option value="rupture">Rupture conventionnelle</option><option value="demission">Démission</option></select></div>
+                <button onclick="runRightsSim()" class="btn-primary w-full py-3 rounded-xl font-bold text-sm">Estimer mes droits</button>
+            </div>
+            <div class="lg:col-span-3" id="ri-result" aria-live="polite">
+                <div class="card p-6 text-sm text-slate-500"><p class="text-3xl mb-2">💶</p>Remplissez le formulaire pour voir une estimation de votre allocation (ARE) et de sa durée.</div>
+            </div>
+        </div>
+        <div id="rights-aids" class="hidden grid lg:grid-cols-5 gap-6">
+            <div class="lg:col-span-2 card p-6">
+                <p class="font-bold text-slate-900 text-sm mb-3">Votre situation</p>
+                <div class="space-y-2.5 text-sm text-slate-700">
+                    <label class="flex gap-2 items-start cursor-pointer"><input type="checkbox" id="ai-registered" checked class="accent-emerald-600 w-4 h-4 mt-0.5"> Je suis inscrit(e) à France Travail</label>
+                    <label class="flex gap-2 items-start cursor-pointer"><input type="checkbox" id="ai-far" class="accent-emerald-600 w-4 h-4 mt-0.5"> J'ai un entretien ou un emploi loin de chez moi</label>
+                    <label class="flex gap-2 items-start cursor-pointer"><input type="checkbox" id="ai-training" class="accent-emerald-600 w-4 h-4 mt-0.5"> Je vais suivre une formation</label>
+                    <label class="flex gap-2 items-start cursor-pointer"><input type="checkbox" id="ai-nolicense" class="accent-emerald-600 w-4 h-4 mt-0.5"> Je n'ai pas le permis B</label>
+                    <label class="flex gap-2 items-start cursor-pointer"><input type="checkbox" id="ai-apprentice" class="accent-emerald-600 w-4 h-4 mt-0.5"> Je suis ou vais être en alternance</label>
+                    <label class="flex gap-2 items-start cursor-pointer"><input type="checkbox" id="ai-single" class="accent-emerald-600 w-4 h-4 mt-0.5"> J'élève seul(e) un enfant de moins de 10 ans</label>
+                    <label class="flex gap-2 items-start cursor-pointer"><input type="checkbox" id="ai-move" class="accent-emerald-600 w-4 h-4 mt-0.5"> Je dois déménager pour un emploi</label>
+                    <label class="flex gap-2 items-start cursor-pointer"><input type="checkbox" id="ai-rqth" class="accent-emerald-600 w-4 h-4 mt-0.5"> J'ai une reconnaissance de handicap (RQTH)</label>
+                    <label class="flex gap-2 items-start cursor-pointer"><input type="checkbox" id="ai-create" class="accent-emerald-600 w-4 h-4 mt-0.5"> J'ai un projet de création d'entreprise</label>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-3">L'âge indiqué dans l'onglet « Allocation chômage » est aussi utilisé.</p>
+                <button onclick="runAidsGuide()" class="btn-primary w-full py-3 rounded-xl font-bold text-sm mt-4">Voir les aides possibles</button>
+            </div>
+            <div class="lg:col-span-3" id="ai-result" aria-live="polite">
+                <div class="card p-6 text-sm text-slate-500"><p class="text-3xl mb-2">🚆</p>Cochez ce qui vous correspond pour voir les aides à demander.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= VUE : ESPACE RECRUTEUR ================= -->
+    <div id="view-recruiter" class="max-w-6xl mx-auto px-4 py-10 sm:py-14 hidden">
+        <div class="mb-8">
+            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold mb-3">🏢 Recruteurs</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Espace recruteur</h2>
+            <p class="text-slate-500">Publiez gratuitement vos offres locales et échangez directement avec les candidats.</p>
+        </div>
+        <div id="recruiter-body"></div>
+    </div>
+
+    <!-- ================= VUE : MESSAGERIE ================= -->
+    <div id="view-messages" class="max-w-6xl mx-auto px-4 py-10 sm:py-14 hidden">
+        <div class="mb-6">
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Messages</h2>
+            <p class="text-slate-500">Vos échanges avec les recruteurs et les candidats, à propos des offres publiées sur JobFacile.</p>
+        </div>
+        <div class="card overflow-hidden grid md:grid-cols-[320px_1fr] h-[600px]">
+            <div id="conv-list" class="border-r border-slate-100 overflow-y-auto" aria-label="Conversations"></div>
+            <div id="conv-thread" class="flex flex-col min-h-0"></div>
+        </div>
+    </div>
+
+    <!-- ================= VUE : COMMUNAUTÉ ================= -->
+    <div id="view-community" class="max-w-5xl mx-auto px-4 py-10 sm:py-14 hidden">
+        <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+            <div>
+                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold mb-3">💬 Entraide</span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">Communauté</h2>
+                <p class="text-slate-500">Posez vos questions, partagez vos conseils et vos réussites. Bienveillance obligatoire.</p>
+            </div>
+            <button onclick="openNewTopic()" class="btn-primary px-5 py-3 rounded-xl text-sm font-bold">✍️ Nouvelle discussion</button>
+        </div>
+        <div id="community-body"></div>
+    </div>
+
+    <!-- ================= VUE : MODÉRATION ================= -->
+    <div id="view-admin" class="max-w-5xl mx-auto px-4 py-10 sm:py-14 hidden">
+        <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Modération</h2>
+        <p class="text-slate-500 mb-6">Signalements, offres en attente de vérification et comptes suspendus.</p>
+        <div id="admin-body"></div>
+    </div>
+
+    </div>
+
+    <!-- ================= PUBLICITÉ (AdSense, le script est chargé dans le head) ================= -->
+    <div class="max-w-6xl w-full mx-auto px-4 mt-10">
+        <!-- Jobfacile -->
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-3255791817002804"
+             data-ad-slot="8268802320"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+    <!-- ================= PIED DE PAGE ================= -->
+    <footer class="border-t border-slate-200/70 bg-white mt-10">
+        <div class="max-w-6xl mx-auto px-4 py-10 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-lg btn-primary grid place-items-center font-extrabold">J</span>
+                <span class="font-extrabold text-slate-900"><span translate="no">Job<span class="text-emerald-600">Facile</span></span></span>
+                <span class="text-sm text-slate-400 ml-2">L'emploi au kilomètre près</span>
+            </div>
+            <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-slate-500">
+                <a href="#" onclick="accessJobsView(); return false;" class="hover:text-emerald-600 transition">Offres</a>
+                <a href="#" onclick="switchView('ai-generator'); return false;" class="hover:text-emerald-600 transition">Générateur IA</a>
+                <a href="#" onclick="switchView('ai-assistant'); return false;" class="hover:text-emerald-600 transition">Entretien IA</a>
+                <a href="#" onclick="switchView('advice'); return false;" class="hover:text-emerald-600 transition">Conseils</a>
+                <a href="#" onclick="switchView('community'); return false;" class="hover:text-emerald-600 transition">Communauté</a>
+                <a href="#" onclick="openRights(); return false;" class="hover:text-emerald-600 transition">Mes droits</a>
+                <a href="#" onclick="openRecruiter(); return false;" class="hover:text-emerald-600 transition">Recruteurs</a>
+                <a href="#" onclick="switchView('about'); return false;" class="hover:text-emerald-600 transition">À propos</a>
+            </div>
+            <div class="flex flex-col items-center md:items-end gap-2">
+                <button id="install-btn" onclick="installApp()" class="hidden btn-primary px-4 py-2 rounded-xl text-xs font-bold">📲 Installer l'appli</button>
+                <p class="text-xs text-slate-400">© <span id="year"></span> JobFacile ·
+                    <a href="#" onclick="openLegal('mentions'); return false;" class="hover:text-emerald-600">Mentions légales</a> ·
+                    <a href="#" onclick="openLegal('privacy'); return false;" class="hover:text-emerald-600">Confidentialité</a> ·
+                    <a href="/etat" class="hover:text-emerald-600">État des services</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================= MODALE CONNEXION ================= -->
+    <div id="auth-modal" class="modal-backdrop fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4" onclick="if(event.target===this) closeAuthModal()">
+        <div role="dialog" aria-modal="true" aria-labelledby="modal-title" class="modal-panel bg-white p-6 sm:p-8 rounded-3xl w-full max-w-md shadow-2xl relative max-h-[92vh] overflow-y-auto">
+            <button onclick="closeAuthModal()" aria-label="Fermer" class="absolute top-4 right-4 w-9 h-9 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 grid place-items-center transition">✕</button>
+            <div id="form-auth-view">
+                <span class="w-12 h-12 rounded-2xl btn-primary grid place-items-center font-extrabold text-xl mb-4">J</span>
+                <h2 id="modal-title" class="text-2xl font-extrabold text-slate-900 mb-1">Se connecter</h2>
+                <p id="modal-subtitle" class="text-sm text-slate-500 mb-6">Heureux de vous revoir 👋</p>
+                <div id="google-auth" class="hidden mb-5">
+                    <div id="google-btn" class="flex justify-center min-h-[44px]"></div>
+                    <p class="text-[11px] text-slate-400 text-center mt-2">En continuant avec Google, vous acceptez la <a href="#" onclick="closeAuthModal(); openLegal('privacy'); return false;" class="underline">politique de confidentialité</a>.</p>
+                    <div class="flex items-center gap-3 mt-4 text-xs text-slate-400"><span class="h-px flex-1 bg-slate-200"></span>ou avec votre e-mail<span class="h-px flex-1 bg-slate-200"></span></div>
+                </div>
+                <div id="register-fields" class="hidden">
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <input type="text" id="auth-firstname" placeholder="Prénom" autocomplete="given-name" class="field min-w-0">
+                        <input type="text" id="auth-lastname" placeholder="Nom" autocomplete="family-name" class="field min-w-0">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <select id="auth-gender" class="field min-w-0">
+                            <option value="" disabled selected>Sexe</option>
+                            <option value="H">Homme (H)</option>
+                            <option value="F">Femme (F)</option>
+                        </select>
+                        <input type="date" id="auth-birthdate" aria-label="Date de naissance" class="field min-w-0">
+                    </div>
+                    <input type="tel" id="auth-phone" placeholder="Téléphone" autocomplete="tel" class="field mb-3">
+                    <label class="flex items-start gap-2 text-xs text-slate-600 mb-3 cursor-pointer">
+                        <input type="checkbox" id="auth-terms" class="accent-emerald-600 w-4 h-4 mt-0.5 shrink-0">
+                        <span>J'accepte la <a href="#" onclick="closeAuthModal(); openLegal('privacy'); return false;" class="text-emerald-600 font-semibold underline">politique de confidentialité</a> et le traitement de mes données pour utiliser JobFacile.</span>
+                    </label>
+                </div>
+                <input type="email" id="auth-email" placeholder="Email" autocomplete="email" class="field mb-3">
+                <div class="relative mb-2">
+                    <input type="password" id="auth-password" placeholder="Mot de passe" autocomplete="current-password" onkeydown="if(event.key==='Enter') submitAuth()" class="field pr-12">
+                    <button type="button" onclick="togglePassword()" aria-label="Afficher le mot de passe" class="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-lg text-slate-400 hover:text-emerald-600 grid place-items-center">👁</button>
+                </div>
+                <div class="text-right mb-4 min-h-[1.25rem]">
+                    <a href="#" id="forgot-link" onclick="openForgot(); return false;" class="text-xs font-semibold text-slate-500 hover:text-emerald-600">Mot de passe oublié ?</a>
+                </div>
+                <button onclick="submitAuth()" id="auth-submit-btn" class="btn-primary w-full py-3.5 font-bold rounded-xl mb-4">Se connecter</button>
+                <p class="text-center text-sm text-slate-500">
+                    <span id="auth-switch-text">Pas encore de compte ?</span>
+                    <a href="#" onclick="switchAuthMode(); return false;" id="auth-switch-link" class="text-emerald-600 font-bold hover:underline">S'inscrire</a>
+                </p>
+            </div>
+            <div id="form-verify-view" class="hidden text-center py-2">
+                <span class="w-16 h-16 mx-auto rounded-2xl bg-emerald-100 grid place-items-center text-3xl mb-4">📧</span>
+                <h3 class="text-2xl font-extrabold text-slate-900 mb-2">Vérifiez votre e-mail</h3>
+                <p class="text-sm text-slate-500 mb-6">Saisissez le code à 6 chiffres reçu par e-mail (pensez à vérifier les spams).</p>
+                <input type="text" id="verify-code-input" maxlength="6" inputmode="numeric" placeholder="••••••" onkeydown="if(event.key==='Enter') submitVerificationCode()" class="field w-56 mx-auto text-center text-2xl tracking-[.5em] font-mono font-bold mb-5">
+                <button onclick="submitVerificationCode()" class="btn-primary w-full py-3.5 font-bold rounded-xl mb-4">Valider</button>
+                <a href="#" onclick="resendCode(); return false;" class="text-sm text-emerald-600 font-semibold hover:underline">Renvoyer un code</a>
+            </div>
+            <div id="form-forgot-view" class="hidden py-2">
+                <span class="w-14 h-14 rounded-2xl bg-emerald-100 grid place-items-center text-2xl mb-4">🔑</span>
+                <h3 class="text-2xl font-extrabold text-slate-900 mb-1">Mot de passe oublié</h3>
+                <div id="forgot-step1">
+                    <p class="text-sm text-slate-500 mb-5">Saisissez votre e-mail : nous vous envoyons un code pour choisir un nouveau mot de passe.</p>
+                    <input type="email" id="forgot-email" placeholder="Email" autocomplete="email" onkeydown="if(event.key==='Enter') requestReset()" class="field mb-4">
+                    <button onclick="requestReset()" id="forgot-send-btn" class="btn-primary w-full py-3.5 font-bold rounded-xl">Recevoir un code</button>
+                </div>
+                <div id="forgot-step2" class="hidden">
+                    <p class="text-sm text-slate-500 mb-5">Saisissez le code reçu par e-mail (valable 15 minutes) et votre nouveau mot de passe.</p>
+                    <input type="text" id="forgot-code" maxlength="6" inputmode="numeric" placeholder="Code à 6 chiffres" class="field mb-3 text-center tracking-[.3em] font-mono font-bold placeholder:tracking-normal placeholder:font-sans placeholder:font-normal">
+                    <input type="password" id="forgot-new" placeholder="Nouveau mot de passe (8 caractères min.)" autocomplete="new-password" class="field mb-3">
+                    <input type="password" id="forgot-confirm" placeholder="Confirmer le mot de passe" autocomplete="new-password" onkeydown="if(event.key==='Enter') submitReset()" class="field mb-4">
+                    <button onclick="submitReset()" id="forgot-reset-btn" class="btn-primary w-full py-3.5 font-bold rounded-xl mb-3">Changer le mot de passe</button>
+                    <a href="#" onclick="requestReset(); return false;" class="block text-center text-sm text-emerald-600 font-semibold hover:underline">Renvoyer un code</a>
+                </div>
+                <a href="#" onclick="openAuthModal('login'); return false;" class="block text-center text-sm text-slate-500 hover:text-emerald-600 mt-4">← Retour à la connexion</a>
+            </div>
+            <div id="form-2fa-view" class="hidden text-center py-2">
+                <span class="w-16 h-16 mx-auto rounded-2xl bg-emerald-100 grid place-items-center text-3xl mb-4">🔐</span>
+                <h3 class="text-2xl font-extrabold text-slate-900 mb-2">Double authentification</h3>
+                <p class="text-sm text-slate-500 mb-6">Saisissez le code affiché dans votre application d'authentification.</p>
+                <input type="text" id="twofa-code-input" maxlength="6" inputmode="numeric" placeholder="••••••" onkeydown="if(event.key==='Enter') submit2FA()" class="field w-56 mx-auto text-center text-2xl tracking-[.5em] font-mono font-bold mb-4">
+                <label class="flex items-center justify-center gap-2 text-sm text-slate-600 mb-5 cursor-pointer"><input type="checkbox" id="twofa-remember" class="accent-emerald-600 w-4 h-4"> Se souvenir de cet appareil 30 jours</label>
+                <button onclick="submit2FA()" class="btn-primary w-full py-3.5 font-bold rounded-xl">Valider</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= BANDEAU D'INFORMATION STOCKAGE ================= -->
+    <div id="storage-banner" class="hidden fixed bottom-4 left-4 right-4 sm:right-auto sm:max-w-md z-40 card shadow-2xl p-4 flex gap-3 items-start view-enter">
+        <span class="text-2xl">🍪</span>
+        <div class="flex-1">
+            <p class="text-sm text-slate-700"><strong>Pas de cookies publicitaires ici.</strong> JobFacile garde seulement votre session et vos préférences dans votre navigateur.</p>
+            <div class="flex gap-3 mt-3">
+                <button onclick="dismissStorageBanner()" class="btn-primary px-4 py-2 rounded-xl text-xs font-bold">J'ai compris</button>
+                <button onclick="dismissStorageBanner(); openLegal('privacy')" class="text-xs font-semibold text-slate-500 hover:text-emerald-600">En savoir plus</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= GUIDE APRÈS L'INSCRIPTION ================= -->
+    <div id="onboarding-modal" class="modal-backdrop fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div role="dialog" aria-modal="true" aria-label="Bienvenue sur JobFacile" class="modal-panel bg-white w-full max-w-lg rounded-3xl shadow-2xl relative max-h-[92vh] overflow-y-auto p-6 sm:p-8">
+            <button onclick="closeOnboarding()" aria-label="Passer" class="absolute top-4 right-4 text-xs font-semibold text-slate-400 hover:text-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-100">Passer</button>
+            <div class="flex items-center gap-1.5 mb-6">
+                <span id="onb-dot-1"></span><span id="onb-dot-2"></span><span id="onb-dot-3"></span>
+            </div>
+
+            <div id="onb-step-1">
+                <p class="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-2">Étape 1 sur 3</p>
+                <h2 class="text-2xl font-extrabold text-slate-900 mb-2">Bienvenue <span id="onb-name"></span> 👋</h2>
+                <p class="text-sm text-slate-500 mb-6">Envoyez votre CV : l'IA remplit votre profil (compétences, expériences, diplômes) pour vous trouver des offres qui vous correspondent.</p>
+                <label for="onb-cv-input" id="onb-cv-label" class="block cursor-pointer rounded-2xl border-2 border-dashed border-emerald-300 bg-emerald-50/50 hover:bg-emerald-50 p-8 text-center transition">
+                    <span class="text-4xl block mb-2">📄</span>
+                    <span class="font-bold text-emerald-800">Choisir mon CV (PDF)</span>
+                    <span class="block text-xs text-slate-500 mt-1">5 Mo maximum</span>
+                </label>
+                <input type="file" id="onb-cv-input" accept="application/pdf" class="hidden" onchange="onbUploadCV(this)">
+                <div id="onb-cv-result"></div>
+                <button onclick="showOnbStep(2)" class="w-full mt-4 py-3 text-sm font-semibold text-slate-500 hover:text-emerald-700">Je n'ai pas de CV sous la main →</button>
+            </div>
+
+            <div id="onb-step-2" class="hidden">
+                <p class="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-2">Étape 2 sur 3</p>
+                <h2 class="text-2xl font-extrabold text-slate-900 mb-2">Que cherchez-vous ?</h2>
+                <p class="text-sm text-slate-500 mb-6">On s'en sert pour vous montrer directement les bonnes offres.</p>
+                <label for="onb-job" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Métier recherché</label>
+                <input type="text" id="onb-job" placeholder="Ex : Boulanger, Assistant comptable…" class="field mb-4">
+                <div class="grid grid-cols-[1fr_120px] gap-3 mb-4">
+                    <div><label for="onb-city" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Ville</label>
+                        <input type="text" id="onb-city" list="city-suggestions" autocomplete="off" oninput="suggestCities(this.value)" placeholder="Ex : Maubeuge" class="field"></div>
+                    <div><label for="onb-radius" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Distance</label>
+                        <select id="onb-radius" class="field"><option value="5">5 km</option><option value="10">10 km</option><option value="20">20 km</option><option value="30">30 km</option><option value="50">50 km</option><option value="100">100 km</option></select></div>
+                </div>
+                <p class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Contrats</p>
+                <div id="onb-contracts" class="flex flex-wrap gap-2 mb-5"></div>
+                <label class="flex items-start gap-3 rounded-2xl border border-slate-200 p-4 cursor-pointer mb-6">
+                    <input type="checkbox" id="onb-alert" checked class="accent-emerald-600 w-5 h-5 mt-0.5 shrink-0">
+                    <span><span class="block text-sm font-bold text-slate-900">🔔 M'envoyer les nouvelles offres par e-mail</span><span class="block text-xs text-slate-500">Une fois par jour, seulement s'il y a du nouveau. Désactivable à tout moment.</span></span>
+                </label>
+                <div class="flex gap-2">
+                    <button onclick="showOnbStep(1)" class="px-5 py-3.5 rounded-xl text-sm font-bold text-slate-500 hover:bg-slate-100">← Retour</button>
+                    <button onclick="onbSave()" id="onb-save-btn" class="btn-primary flex-1 py-3.5 rounded-xl font-bold">Continuer →</button>
+                </div>
+            </div>
+
+            <div id="onb-step-3" class="hidden text-center">
+                <p class="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-2">Étape 3 sur 3</p>
+                <p class="text-6xl my-4">🎉</p>
+                <h2 class="text-2xl font-extrabold text-slate-900 mb-2">Tout est prêt !</h2>
+                <p class="text-sm text-slate-500 mb-6">Votre recherche : <strong id="onb-summary" class="text-slate-800"></strong></p>
+                <button onclick="onbFinish('jobs')" class="btn-primary w-full py-3.5 rounded-xl font-bold mb-3">Voir mes offres 🚀</button>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="onbFinish('profile')" class="py-3 rounded-xl border border-slate-200 text-sm font-bold text-slate-700 hover:bg-slate-50">✨ Compléter mon profil</button>
+                    <button onclick="onbFinish('interview')" class="py-3 rounded-xl border border-slate-200 text-sm font-bold text-slate-700 hover:bg-slate-50">🤖 M'entraîner</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= FICHE OFFRE ================= -->
+    <div id="iv-modal" class="modal-backdrop fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-end sm:items-center justify-center z-50 sm:p-4" onclick="if(event.target===this) closeModal('iv-modal')">
+        <div class="modal-panel bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl relative max-h-[94vh] overflow-y-auto p-6 sm:p-8" role="dialog" aria-modal="true" aria-labelledby="iv-title">
+            <button onclick="closeModal('iv-modal')" aria-label="Fermer" class="absolute top-4 right-4 w-9 h-9 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 grid place-items-center">✕</button>
+            <h3 id="iv-title" class="text-xl font-extrabold text-slate-900 pr-10">📅 Entretien</h3>
+            <p id="iv-sub" class="text-sm text-slate-500 mb-4"></p>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="col-span-2 sm:col-span-1"><label for="iv-at" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Date et heure</label><input type="datetime-local" id="iv-at" class="field"></div>
+                <div class="col-span-2 sm:col-span-1"><label for="iv-duration" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Durée</label>
+                    <select id="iv-duration" class="field"><option value="30">30 min</option><option value="45">45 min</option><option value="60" selected>1 h</option><option value="90">1 h 30</option><option value="120">2 h</option></select></div>
+                <div class="col-span-2"><label for="iv-kind" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Format</label>
+                    <select id="iv-kind" class="field"><option value="onsite">🏢 Sur place</option><option value="video">💻 Visio</option><option value="phone">📞 Téléphone</option></select></div>
+                <div class="col-span-2"><label for="iv-place" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Adresse ou lien de visio</label><input type="text" id="iv-place" maxlength="300" class="field" placeholder="Ex : 10 avenue Jean Mabuse, Maubeuge"></div>
+                <div class="col-span-2"><label for="iv-contact" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Interlocuteur (facultatif)</label><input type="text" id="iv-contact" maxlength="150" class="field" placeholder="Ex : Mme Durand, RH"></div>
+            </div>
+            <div class="grid grid-cols-2 gap-2 mt-5">
+                <button onclick="saveInterview()" id="iv-save" class="btn-primary col-span-2 py-3 rounded-xl text-sm font-bold">Enregistrer</button>
+                <div id="iv-cal" class="col-span-2 hidden grid grid-cols-2 gap-2">
+                    <button onclick="downloadIcs([ivAppId])" class="btn-ghost py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-700">📥 Fichier agenda (.ics)</button>
+                    <a id="iv-google" target="_blank" rel="noopener" class="btn-ghost py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-700 text-center">Google Agenda ↗</a>
+                    <button onclick="removeInterview()" class="col-span-2 text-xs font-semibold text-slate-400 hover:text-rose-600 py-1">Supprimer cet entretien de l'agenda</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="li-modal" class="modal-backdrop fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-end sm:items-center justify-center z-50 sm:p-4" onclick="if(event.target===this) closeModal('li-modal')">
+        <div class="modal-panel bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl relative max-h-[94vh] overflow-y-auto p-6 sm:p-8" role="dialog" aria-modal="true" aria-labelledby="li-title">
+            <button onclick="closeModal('li-modal')" aria-label="Fermer" class="absolute top-4 right-4 w-9 h-9 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 grid place-items-center">✕</button>
+            <h3 id="li-title" class="text-xl font-extrabold text-slate-900 pr-10">⬆️ Importer depuis LinkedIn</h3>
+            <ol class="text-sm text-slate-600 space-y-1.5 my-4 list-decimal pl-5">
+                <li>Sur LinkedIn : <strong>Moi → Préférences → Confidentialité des données → Obtenir une copie de vos données</strong>.</li>
+                <li>Cochez <strong>Candidatures</strong>, <strong>Postes</strong>, <strong>Formation</strong> et <strong>Compétences</strong>, puis demandez l'archive.</li>
+                <li>LinkedIn vous l'envoie par e-mail (quelques minutes à 24 h). Déposez ici le fichier <strong>ZIP</strong> tel quel, ou les fichiers CSV.</li>
+            </ol>
+            <label for="li-files" class="block rounded-2xl border-2 border-dashed border-slate-200 hover:border-emerald-300 hover:bg-emerald-50 p-5 text-center cursor-pointer transition">
+                <span class="text-2xl">📦</span><span class="block text-sm font-bold text-slate-700 mt-1" id="li-files-label">Choisir le ZIP ou les CSV</span>
+                <input type="file" id="li-files" accept=".zip,.csv" multiple class="sr-only" onchange="previewLinkedin()">
+            </label>
+            <div id="li-preview" class="mt-4"></div>
+            <p class="text-[11px] text-slate-400 mt-3">Seuls ces 4 fichiers sont lus ; le reste de l'archive est ignoré et rien n'est conservé à part ce que vous importez.</p>
+        </div>
+    </div>
+
+    <div id="compare-bar" class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-40 card shadow-2xl px-4 py-3 flex items-center gap-3 max-w-[calc(100%-2rem)]">
+        <span id="compare-count" class="text-sm font-bold text-slate-900 whitespace-nowrap"></span>
+        <button onclick="openCompare()" id="compare-open" class="btn-primary px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap">⇄ Comparer</button>
+        <button onclick="clearCompare()" class="text-xs font-semibold text-slate-500 hover:text-rose-600 whitespace-nowrap">Vider</button>
+    </div>
+    <div id="compare-modal" class="modal-backdrop fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-end sm:items-center justify-center z-50 sm:p-4" onclick="if(event.target===this) closeCompare()">
+        <div class="modal-panel bg-white w-full sm:max-w-5xl rounded-t-3xl sm:rounded-3xl shadow-2xl relative max-h-[94vh] overflow-auto p-5 sm:p-8" role="dialog" aria-modal="true" aria-labelledby="compare-title">
+            <button onclick="closeCompare()" aria-label="Fermer" class="absolute top-4 right-4 w-9 h-9 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 grid place-items-center">✕</button>
+            <h3 id="compare-title" class="text-xl font-extrabold text-slate-900 mb-4 pr-10">⇄ Comparer les offres</h3>
+            <div id="compare-body" class="overflow-x-auto"></div>
+        </div>
+    </div>
+
+    <div id="fu-modal" class="modal-backdrop fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-end sm:items-center justify-center z-50 sm:p-4" onclick="if(event.target===this) closeFollowUp()">
+        <div class="modal-panel bg-white w-full sm:max-w-xl rounded-t-3xl sm:rounded-3xl shadow-2xl relative max-h-[94vh] overflow-y-auto p-6 sm:p-8" role="dialog" aria-modal="true" aria-labelledby="fu-title">
+            <button onclick="closeFollowUp()" aria-label="Fermer" class="absolute top-4 right-4 w-9 h-9 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 grid place-items-center">✕</button>
+            <h3 id="fu-title" class="text-xl font-extrabold text-slate-900 pr-10">✉️ E-mail de relance</h3>
+            <p id="fu-sub" class="text-sm text-slate-500 mb-4"></p>
+            <div id="fu-loading" class="space-y-2"><div class="skeleton h-3 w-2/3"></div><div class="skeleton h-3 w-full"></div><div class="skeleton h-3 w-5/6"></div><p class="text-xs text-slate-400">L'IA rédige votre e-mail…</p></div>
+            <div id="fu-result" class="hidden">
+                <label for="fu-to" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Destinataire (facultatif)</label>
+                <input type="email" id="fu-to" placeholder="recrutement@entreprise.fr" class="field mb-3">
+                <label for="fu-subject" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Objet</label>
+                <input type="text" id="fu-subject" class="field mb-3">
+                <label for="fu-body" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Message</label>
+                <textarea id="fu-body" rows="10" class="field leading-relaxed mb-4"></textarea>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="copyFollowUp()" class="btn-ghost py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-700">📋 Copier</button>
+                    <button onclick="mailFollowUp()" class="btn-primary py-2.5 rounded-xl text-sm font-bold">📨 Ouvrir ma messagerie</button>
+                    <button onclick="openFollowUp(fuAppId, fuKind, true)" class="btn-ghost py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-700">↺ Autre version</button>
+                    <button onclick="markFollowedUp()" class="btn-ghost py-2.5 rounded-xl border border-emerald-200 bg-emerald-50 text-sm font-bold text-emerald-700">✓ C'est envoyé</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="job-modal" class="modal-backdrop fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-end sm:items-center justify-center z-50 sm:p-4" onclick="if(event.target===this) closeJobModal(true)">
+        <div role="dialog" aria-modal="true" aria-label="Détail de l’offre" class="modal-panel bg-white w-full sm:max-w-2xl rounded-t-3xl sm:rounded-3xl shadow-2xl relative max-h-[94vh] flex flex-col overflow-hidden">
+            <button onclick="closeJobModal(true)" aria-label="Fermer" class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-white/80 text-slate-400 hover:bg-slate-100 hover:text-slate-700 grid place-items-center transition">✕</button>
+            <div id="job-modal-body" class="overflow-y-auto p-6 sm:p-8"></div>
+            <div id="job-modal-actions" class="border-t border-slate-100 p-4 sm:px-8 bg-white grid grid-cols-2 sm:flex gap-2"></div>
+        </div>
+    </div>
+
+    <div id="offline-banner" role="status" class="hidden fixed bottom-0 inset-x-0 z-[55] bg-slate-900 text-white text-xs sm:text-sm font-semibold text-center px-4 py-2.5"></div>
+    <div id="toast-container" role="status" aria-live="polite" class="fixed bottom-5 right-5 left-5 sm:left-auto z-[60] flex flex-col items-end gap-2 pointer-events-none"></div>
+
+    <script src="/js/i18n.js?v=0"></script>
+    <script src="/js/app-core.js?v=cdfab7d3"></script>
+    <script src="/js/interview.js?v=52093995"></script>
+    <script src="/js/job-detail.js?v=c4303216"></script>
+    <script src="/js/tracker.js?v=74c94435"></script>
+    <script src="/js/account.js?v=9e3fc56e"></script>
+    <script src="/js/navigation.js?v=d739d3ae"></script>
+    <script src="/js/ui.js?v=c49f5fe1"></script>
+    <script src="/js/badges.js?v=ab9d6313"></script>
+    <script src="/js/rights.js?v=af882565"></script>
+    <script src="/js/recruiter.js?v=6f6505d6"></script>
+    <script src="/js/messages.js?v=829fd1d2"></script>
+    <script src="/js/community.js?v=678fe1dd"></script>
+    <script src="/js/search.js?v=15d51b16"></script>
+</body>
+</html>

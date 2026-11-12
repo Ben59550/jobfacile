@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "jobfacile", "runtimeExecutable": "node", "runtimeArgs": ["jobfacile/server.js"], "port": 3000 }
+  ]
+}
