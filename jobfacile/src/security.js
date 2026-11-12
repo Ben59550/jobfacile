@@ -88,4 +88,42 @@ function ipLimit(kind) {
     };
 }
 
-module.exports = { ipLimit, attempts, publicUser, requireAuth, tooManyAttempts, hashPassword, verifyPassword, genCode, sha256, createSession, clientIp };
+// ---------- Appareils de confiance (double authentification) ----------
+// Le navigateur garde un jeton aléatoire ; la base n'en garde que l'empreinte (sha256), avec un nom lisible
+// tiré du navigateur (ex. « Chrome · Windows »). Pas d'empreinte technique de la machine : un jeton suffit et respecte la vie privée.
+const TRUST_DAYS = 30;
+function deviceLabel(ua) {
+    ua = String(ua || '');
+    const browser = /Edg\//.test(ua) ? 'Edge' : /OPR\/|Opera/.test(ua) ? 'Opera' : /SamsungBrowser/.test(ua) ? 'Samsung Internet'
+        : /Firefox\//.test(ua) ? 'Firefox' : /Chrome\//.test(ua) ? 'Chrome' : /Safari\//.test(ua) ? 'Safari' : 'Navigateur';
+    const os = /iPhone/.test(ua) ? 'iPhone' : /iPad/.test(ua) ? 'iPad' : /Android/.test(ua) ? 'Android' : /Windows/.test(ua) ? 'Windows'
+        : /Mac OS X|Macintosh/.test(ua) ? 'Mac' : /CrOS/.test(ua) ? 'Chromebook' : /Linux/.test(ua) ? 'Linux' : 'appareil inconnu';
+    return `${browser} · ${os}`;
+}
+// Jetons envoyés par le navigateur (en-tête X-Device-Token, plusieurs séparés par des virgules s'il y a plusieurs comptes)
+function sentDeviceTokens(req) { return String(req.headers['x-device-token'] || '').split(',').map(s => s.trim()).filter(t => /^[a-f0-9]{16,128}$/i.test(t) || t.length >= 8).slice(0, 10); }
+function findTrustedDevice(user, req) {
+    const now = new Date();
+    const hashes = new Set(sentDeviceTokens(req).map(sha256));
+    const plain = new Set(sentDeviceTokens(req));
+    return (user.trustedDevices || []).find(d => new Date(d.expiresAt) > now && ((d.hash && hashes.has(d.hash)) || (d.token && plain.has(d.token)))) || null;
+}
+// Connexion depuis un appareil de confiance : on note la dernière utilisation
+function isTrustedDevice(user, req) {
+    const d = findTrustedDevice(user, req);
+    if (d) d.lastUsedAt = new Date().toISOString();
+    return !!d;
+}
+function trustDevice(user, req) {
+    const now = new Date();
+    user.trustedDevices = (user.trustedDevices || []).filter(d => new Date(d.expiresAt) > now).slice(-19); // 20 appareils au plus
+    const token = crypto.randomBytes(24).toString('hex');
+    user.trustedDevices.push({
+        id: crypto.randomBytes(6).toString('hex'), hash: sha256(token), label: deviceLabel(req.headers['user-agent']),
+        addedAt: now.toISOString(), lastUsedAt: now.toISOString(), expiresAt: new Date(Date.now() + TRUST_DAYS * 24 * 3600 * 1000).toISOString()
+    });
+    return token;
+}
+
+module.exports = { ipLimit, attempts, publicUser, requireAuth, tooManyAttempts, hashPassword, verifyPassword, genCode, sha256, createSession, clientIp,
+    deviceLabel, findTrustedDevice, isTrustedDevice, trustDevice };

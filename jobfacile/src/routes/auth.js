@@ -5,7 +5,7 @@ const router = require('express').Router();
 require('../config');
 const { getUsers, saveUsers } = require('../db');
 const { sendCodeEmail } = require('../mailer');
-const { ipLimit, hashPassword, verifyPassword, genCode, publicUser, sha256, createSession, requireAuth, clientIp, tooManyAttempts } = require('../security');
+const { ipLimit, hashPassword, verifyPassword, genCode, publicUser, sha256, createSession, requireAuth, clientIp, tooManyAttempts, isTrustedDevice, trustDevice } = require('../security');
 const { normEmail, findUserIndex } = require('../utils');
 
 router.post('/api/check-email', (req, res) => {
@@ -80,8 +80,6 @@ router.post('/api/verify-code', ipLimit('verify'), (req, res) => {
 router.post('/api/login', ipLimit('login'), async (req, res) => {
     const { email, password } = req.body;
     if (tooManyAttempts('login:' + normEmail(email))) return res.status(429).json({ success: false, message: 'Trop de tentatives, réessayez dans 15 minutes.' });
-    const deviceToken = req.headers['x-device-token'];
-
     const users = getUsers();
     const idx = findUserIndex(users, email);
     const user = idx === -1 ? null : users[idx];
@@ -95,8 +93,8 @@ router.post('/api/login', ipLimit('login'), async (req, res) => {
         return res.json({ success: true, requireVerification: true, email: user.email, message: 'Compte non vérifié : un nouveau code vous a été envoyé.' });
     }
 
-    const isTrusted = deviceToken && (user.trustedDevices || []).some(d => d.token === deviceToken && new Date(d.expiresAt) > new Date());
-    if (user.isTwoFactorEnabled && !isTrusted) {
+    // Navigateur inconnu : code de double authentification ; appareil enregistré (30 jours) : connexion directe
+    if (user.isTwoFactorEnabled && !isTrustedDevice(user, req)) {
         saveUsers(users); // conserve une éventuelle migration du mot de passe
         return res.json({ success: true, require2FA: true, email: user.email });
     }
@@ -110,7 +108,6 @@ router.post('/api/login', ipLimit('login'), async (req, res) => {
 router.post('/api/login-2fa', ipLimit('login'), (req, res) => {
     const { email, password, token, rememberDevice } = req.body;
     if (tooManyAttempts('2fa:' + normEmail(email))) return res.status(429).json({ success: false, message: 'Trop de tentatives, réessayez dans 15 minutes.' });
-    const userAgent = req.headers['user-agent'] || 'Navigateur standard';
 
     const users = getUsers();
     const idx = findUserIndex(users, email);
@@ -125,12 +122,8 @@ router.post('/api/login-2fa', ipLimit('login'), (req, res) => {
     const verified = speakeasy.totp.verify({ secret: user.twoFactorSecret, encoding: 'base32', token: String(token || '').trim(), window: 1 });
     if (!verified) return res.status(400).json({ success: false, message: 'Code d’authentification invalide.' });
 
-    let newDeviceToken = null;
-    if (rememberDevice) {
-        user.trustedDevices = (user.trustedDevices || []).filter(d => new Date(d.expiresAt) > new Date());
-        newDeviceToken = crypto.randomBytes(24).toString('hex');
-        user.trustedDevices.push({ token: newDeviceToken, userAgent, expiresAt: new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString() });
-    }
+    // « Enregistrer cet appareil » : plus de code demandé sur ce navigateur pendant 30 jours
+    const newDeviceToken = rememberDevice ? trustDevice(user, req) : null;
 
     user.google2fa = null;
     user.ipAddress = clientIp(req);
@@ -182,9 +175,7 @@ router.post('/api/auth/google', async (req, res) => {
         require('./referral').attachReferrer(users, user, req.body.referralCode);
         users.push(user);
     }
-    const deviceToken = req.headers['x-device-token'];
-    const isTrusted = deviceToken && (user.trustedDevices || []).some(d => d.token === deviceToken && new Date(d.expiresAt) > new Date());
-    if (user.isTwoFactorEnabled && !isTrusted) {
+    if (user.isTwoFactorEnabled && !isTrustedDevice(user, req)) {
         const t = crypto.randomBytes(24).toString('hex');
         user.google2fa = { hash: sha256(t), expiresAt: new Date(Date.now() + 5 * 60 * 1000).toISOString() };
         saveUsers(users);

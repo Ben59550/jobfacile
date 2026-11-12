@@ -39,7 +39,7 @@
             } }
         };
     </script>
-    <link rel="stylesheet" href="/css/app.css?v=684f4b96">
+    <link rel="stylesheet" href="/css/app.css?v=e5230d9c">
     <script>
         // Abonnés Premium : aucune publicité (les demandes de pub sont mises en pause avant le chargement d'AdSense)
         try { if (localStorage.getItem('jobfacile_premium') === '1') { (window.adsbygoogle = window.adsbygoogle || []).pauseAdRequests = 1; document.documentElement.classList.add('is-premium'); } } catch (e) {}
@@ -1058,7 +1058,11 @@
                 <h3 class="text-2xl font-extrabold text-slate-900 mb-2">Double authentification</h3>
                 <p class="text-sm text-slate-500 mb-6">Saisissez le code affiché dans votre application d'authentification.</p>
                 <input type="text" id="twofa-code-input" maxlength="6" inputmode="numeric" placeholder="••••••" onkeydown="if(event.key==='Enter') submit2FA()" class="field w-56 mx-auto text-center text-2xl tracking-[.5em] font-mono font-bold mb-4">
-                <label class="flex items-center justify-center gap-2 text-sm text-slate-600 mb-5 cursor-pointer"><input type="checkbox" id="twofa-remember" class="accent-emerald-600 w-4 h-4"> Se souvenir de cet appareil 30 jours</label>
+                <label class="flex items-start gap-3 text-left rounded-2xl border border-slate-200 bg-slate-50 p-3.5 mb-5 cursor-pointer hover:border-emerald-300 transition">
+                    <input type="checkbox" id="twofa-remember" checked class="accent-emerald-600 w-5 h-5 mt-0.5 shrink-0">
+                    <span><span class="block text-sm font-bold text-slate-800">Enregistrer cet appareil pendant 30 jours</span>
+                    <span class="block text-xs text-slate-500 mt-0.5">Le code ne sera plus demandé sur ce navigateur. À décocher sur un ordinateur partagé.</span></span>
+                </label>
                 <button onclick="submit2FA()" class="btn-primary w-full py-3.5 font-bold rounded-xl">Valider</button>
             </div>
         </div>
@@ -1238,11 +1242,11 @@
     <div id="toast-container" role="status" aria-live="polite" class="fixed bottom-5 right-5 left-5 sm:left-auto z-[60] flex flex-col items-end gap-2 pointer-events-none"></div>
 
     <script src="/js/i18n.js?v=79744383"></script>
-    <script src="/js/app-core.js?v=6818dc95"></script>
+    <script src="/js/app-core.js?v=d23c613c"></script>
     <script src="/js/interview.js?v=52093995"></script>
     <script src="/js/job-detail.js?v=66d7063d"></script>
     <script src="/js/tracker.js?v=74c94435"></script>
-    <script src="/js/account.js?v=9e3fc56e"></script>
+    <script src="/js/account.js?v=bf096bb6"></script>
     <script src="/js/navigation.js?v=17099618"></script>
     <script src="/js/ui.js?v=4d999972"></script>
     <script src="/js/badges.js?v=ab9d6313"></script>

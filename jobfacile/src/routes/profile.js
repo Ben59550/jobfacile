@@ -7,7 +7,7 @@ const router = require('express').Router();
 const { UPLOADS_DIR } = require('../config');
 const { saveUsers, deleteUser } = require('../db');
 const { sendCodeEmail } = require('../mailer');
-const { hashPassword, verifyPassword, genCode, publicUser, requireAuth, tooManyAttempts } = require('../security');
+const { hashPassword, verifyPassword, genCode, publicUser, requireAuth, tooManyAttempts, findTrustedDevice, deviceLabel } = require('../security');
 const { upload } = require('../uploads');
 const { normEmail, findUserIndex } = require('../utils');
 
@@ -143,6 +143,26 @@ router.post('/api/user/2fa/disable', requireAuth, (req, res) => {
     res.json({ success: true, user: publicUser(user), message: 'Double authentification désactivée.' });
 });
 
+// ---------- Appareils enregistrés (double authentification) ----------
+router.get('/api/user/devices', requireAuth, (req, res) => {
+    const now = new Date();
+    const current = findTrustedDevice(req.user, req);
+    const devices = (req.user.trustedDevices || []).filter(d => new Date(d.expiresAt) > now).map((d, i) => ({
+        id: d.id || 'ancien-' + i, label: d.label || deviceLabel(d.userAgent), addedAt: d.addedAt || null, lastUsedAt: d.lastUsedAt || null,
+        expiresAt: d.expiresAt, current: d === current
+    })).reverse();
+    res.json({ success: true, devices });
+});
+router.post('/api/user/devices/remove', requireAuth, (req, res) => {
+    const user = req.user;
+    const all = req.body.all === true;
+    const before = (user.trustedDevices || []).length;
+    user.trustedDevices = all ? [] : (user.trustedDevices || []).filter((d, i) => (d.id || 'ancien-' + i) !== String(req.body.id || ''));
+    if (!all && user.trustedDevices.length === before) return res.status(404).json({ success: false, message: 'Appareil introuvable.' });
+    saveUsers(req.users);
+    res.json({ success: true, message: all ? 'Tous les appareils ont été retirés : le code sera redemandé partout.' : 'Appareil retiré : le code y sera redemandé.' });
+});
+
 router.post('/api/user/request-password-change', requireAuth, async (req, res) => {
     const { currentPassword, newPassword, confirmPassword } = req.body;
     const user = req.user;
@@ -168,6 +188,7 @@ router.post('/api/user/confirm-password-change', requireAuth, (req, res) => {
     user.password = user.pendingPassword;
     user.pendingPassword = null;
     user.passwordChangeCode = null;
+    user.trustedDevices = []; // nouveau mot de passe : chaque appareil redemandera le code
     saveUsers(req.users);
     res.json({ success: true, user: publicUser(user), message: 'Mot de passe modifié avec succès !' });
 });

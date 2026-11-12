@@ -87,11 +87,26 @@ function showNotification(message, type = 'success') {
     setTimeout(() => { toast.classList.add('out'); setTimeout(() => toast.remove(), 300); }, 4000);
 }
 
+// Jetons « appareil enregistré » de ce navigateur (un par compte, 5 au plus) : évitent le code de double authentification pendant 30 jours
+function trustedDeviceTokens() {
+    let list = [];
+    try {
+        list = JSON.parse(localStorage.getItem('jobfacile_device_tokens') || '[]');
+        const old = localStorage.getItem('jobfacile_device_token'); // ancienne version : un seul jeton
+        if (old && !list.includes(old)) list.push(old);
+    } catch (e) {}
+    return Array.isArray(list) ? list.filter(t => typeof t === 'string').slice(-5) : [];
+}
+function rememberDeviceToken(t) {
+    store('jobfacile_device_tokens', [...trustedDeviceTokens().filter(x => x !== t), t].slice(-5));
+    store('jobfacile_device_token', null);
+}
+
 async function api(url, options = {}) {
     const headers = Object.assign({}, options.headers || {});
     if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
-    let deviceToken = null; try { deviceToken = localStorage.getItem('jobfacile_device_token'); } catch (e) {}
-    if (deviceToken) headers['X-Device-Token'] = deviceToken;
+    const deviceTokens = trustedDeviceTokens();
+    if (deviceTokens.length) headers['X-Device-Token'] = deviceTokens.join(',');
     if (options.json !== undefined) {
         headers['Content-Type'] = 'application/json';
         options.body = JSON.stringify(options.json);
@@ -582,12 +597,12 @@ async function submit2FA() {
     const data = await api('/api/login-2fa', { json: { email: pendingEmail, password: pendingPassword, googleTicket, token, rememberDevice } });
     if (data.success) {
         googleTicket = null;
-        if (data.deviceToken) store('jobfacile_device_token', data.deviceToken);
+        if (data.deviceToken) rememberDeviceToken(data.deviceToken);
         setSession(data.user, data.token);
         closeAuthModal();
         document.getElementById('twofa-code-input').value = '';
         document.getElementById('auth-password').value = '';
-        showNotification("Connecté avec succès !");
+        showNotification(data.deviceToken ? 'Connecté ! Cet appareil est enregistré pour 30 jours.' : 'Connecté avec succès !');
     } else { showNotification(data.message, "error"); }
 }
 
@@ -717,17 +732,71 @@ function renderExperienceFields() {
 
 function addEducationField() { userEducation.push({ degree: '', school: '', year: '' }); renderEducationFields(); }
 function removeEducationField(i) { userEducation.splice(i, 1); renderEducationFields(); }
-// Suggestions du champ « Diplôme » (Bac STI2D, BTS, CAP…), chargées une seule fois
-let diplomesLoaded = false;
+// Champ « Diplôme » : suggestions courtes (8 au plus) à partir de 2 lettres, avec la famille du diplôme (Bac, BTS, CAP…)
+let diplomesList = null;
+let diplomesLoading = null;
+let diplomaActive = -1;
 function loadDiplomesList() {
-    if (diplomesLoaded) return;
-    diplomesLoaded = true;
-    fetch('/api/diplomes').then(r => r.json()).then(list => {
-        const dl = document.createElement('datalist');
-        dl.id = 'diplomes-list';
-        dl.innerHTML = list.map(d => `<option value="${esc(d)}"></option>`).join('');
-        document.body.appendChild(dl);
-    }).catch(() => { diplomesLoaded = false; });
+    if (diplomesList || diplomesLoading) return diplomesLoading;
+    diplomesLoading = fetch('/api/diplomes').then(r => r.json()).then(list => { diplomesList = Array.isArray(list) ? list : []; })
+        .catch(() => {}).finally(() => { diplomesLoading = null; });
+    return diplomesLoading;
+}
+const DIPLOMA_FAMILIES = [['Bac pro', 'Bac pro'], ['Bac', 'Bac'], ['BTS', 'BTS'], ['BUT', 'BUT'], ['DUT', 'DUT'], ['CAP', 'CAP'], ['BEP', 'BEP'], ['BPJEPS', 'Sport'],
+    ['BP', 'BP'], ['Licence pro', 'Licence pro'], ['Licence', 'Licence'], ['Master', 'Master'], ['Titre professionnel', 'Titre pro'], ['Diplôme d’État', 'Diplôme d’État'],
+    ['Permis', 'Permis'], ['CACES', 'CACES'], ['Doctorat', 'Doctorat'], ['Diplôme d’ingénieur', 'Ingénieur']];
+function diplomaFamily(name) { const f = DIPLOMA_FAMILIES.find(([p]) => name === p || name.startsWith(p + ' ')); return f ? f[1] : 'Diplôme'; }
+function foldDipl(s) { return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[’']/g, ' '); }
+function findDiplomas(q) {
+    const words = foldDipl(q).replace(/baccalaureat/g, 'bac').split(/\s+/).filter(Boolean);
+    if (!diplomesList || !words.length || words.join('').length < 2) return [];
+    const out = [];
+    for (const name of diplomesList) {
+        const f = foldDipl(name);
+        if (!words.every(w => f.includes(w))) continue;
+        const starts = f.split(/[\s(/-]+/);
+        const rank = f.startsWith(words.join(' ')) ? 0 : words.every(w => starts.some(s => s.startsWith(w))) ? 1 : 2;
+        out.push({ name, rank });
+    }
+    out.sort((a, b) => a.rank - b.rank || a.name.includes(' – ') - b.name.includes(' – ') || a.name.length - b.name.length);
+    // Des mots qui commencent par la saisie ? On cache les résultats où elle n'apparaît qu'au milieu d'un mot (« sti » dans « gestion »)
+    const good = out[0] && out[0].rank < 2 ? out.filter(x => x.rank < 2) : out;
+    return good.slice(0, 8).map(x => x.name);
+}
+async function suggestDiplomas(input, i) {
+    userEducation[i].degree = input.value;
+    if (!diplomesList) await loadDiplomesList();
+    const box = document.getElementById('dipl-sugg-' + i);
+    if (!box) return;
+    const found = findDiplomas(input.value);
+    diplomaActive = -1;
+    if (!found.length) { box.classList.add('hidden'); return; }
+    box.innerHTML = found.map((d, k) => `
+        <div class="suggestion-item" data-k="${k}" onmousedown="event.preventDefault(); pickDiploma(${i}, this.dataset.name)" data-name="${esc(d)}">
+            <span class="font-semibold">${esc(d)}</span>
+            <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full whitespace-nowrap">${esc(diplomaFamily(d))}</span>
+        </div>`).join('') + `<p class="px-3 pt-1.5 pb-1 text-[11px] text-slate-400">Pas dans la liste ? Écrivez simplement votre diplôme.</p>`;
+    box.classList.remove('hidden');
+}
+function pickDiploma(i, name) {
+    userEducation[i].degree = name;
+    const input = document.getElementById('dipl-input-' + i);
+    if (input) input.value = name;
+    hideDiplomaSuggest(i);
+}
+function hideDiplomaSuggest(i) { const box = document.getElementById('dipl-sugg-' + i); if (box) box.classList.add('hidden'); diplomaActive = -1; }
+// Clavier : flèches pour choisir, Entrée pour valider, Échap pour fermer
+function diplomaKey(e, i) {
+    const box = document.getElementById('dipl-sugg-' + i);
+    const items = box && !box.classList.contains('hidden') ? [...box.querySelectorAll('.suggestion-item')] : [];
+    if (!items.length) return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        diplomaActive = (diplomaActive + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
+        items.forEach((el, k) => el.classList.toggle('is-active', k === diplomaActive));
+        items[diplomaActive].scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter' && diplomaActive >= 0) { e.preventDefault(); pickDiploma(i, items[diplomaActive].dataset.name); }
+    else if (e.key === 'Escape') hideDiplomaSuggest(i);
 }
 function renderEducationFields() {
     loadDiplomesList();
@@ -739,8 +808,12 @@ function renderEducationFields() {
                 <button type="button" onclick="removeEducationField(${i})" class="text-xs font-semibold text-rose-500 hover:text-rose-700 px-2 py-1 rounded-lg hover:bg-rose-50 transition">Supprimer</button>
             </div>
             <div class="grid sm:grid-cols-3 gap-2">
-                <input type="text" placeholder="Diplôme" list="diplomes-list" value="${esc(edu.degree)}" oninput="userEducation[${i}].degree=this.value" class="field field-sm bg-white">
-                <input type="text" placeholder="École" value="${esc(edu.school)}" oninput="userEducation[${i}].school=this.value" class="field field-sm bg-white">
+                <div class="relative sm:col-span-3">
+                    <input type="text" id="dipl-input-${i}" placeholder="Diplôme (ex : Bac STI2D, BTS MCO, CAP cuisine…)" value="${esc(edu.degree)}" autocomplete="off"
+                        oninput="suggestDiplomas(this, ${i})" onkeydown="diplomaKey(event, ${i})" onblur="setTimeout(() => hideDiplomaSuggest(${i}), 120)" class="field field-sm bg-white">
+                    <div id="dipl-sugg-${i}" class="dropdown-suggestions hidden"></div>
+                </div>
+                <input type="text" placeholder="École" value="${esc(edu.school)}" oninput="userEducation[${i}].school=this.value" class="field field-sm bg-white sm:col-span-2">
                 <input type="text" placeholder="Année" value="${esc(edu.year)}" oninput="userEducation[${i}].year=this.value" class="field field-sm bg-white">
             </div>
         </div>

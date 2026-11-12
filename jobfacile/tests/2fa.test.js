@@ -109,6 +109,27 @@ describe('Connexion avec double authentification', () => {
         assert.equal(r.body.require2FA, true);
     });
 
+    test('appareil enregistré : jeton jamais gardé en clair, nom lisible, liste et retrait', async () => {
+        const acc = await userWith2FA();
+        const ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36';
+        const first = await t.api('/api/login-2fa', { body: { email: acc.email, password: acc.password, token: totp(acc.secret), rememberDevice: true }, headers: { 'User-Agent': ua } });
+        const dev = t.findUser(acc.email).trustedDevices[0];
+        assert.equal(dev.token, undefined, 'seule l’empreinte du jeton est en base');
+        assert.notEqual(dev.hash, first.body.deviceToken);
+        assert.equal(dev.label, 'Chrome · Windows');
+        // Plusieurs comptes sur le même navigateur : plusieurs jetons envoyés, le bon est reconnu
+        const both = 'jeton-d-un-autre-compte-1234,' + first.body.deviceToken;
+        const list = await t.api('/api/user/devices', { token: first.body.token, headers: { 'X-Device-Token': both } });
+        assert.equal(list.body.devices.length, 1);
+        assert.equal(list.body.devices[0].current, true);
+        assert.ok(!('hash' in list.body.devices[0]));
+        assert.ok((await t.api('/api/login', { body: { email: acc.email, password: acc.password }, headers: { 'X-Device-Token': both } })).body.token);
+        // Retrait : le code est redemandé
+        assert.equal((await t.api('/api/user/devices/remove', { token: first.body.token, body: { id: list.body.devices[0].id } })).status, 200);
+        const again = await t.api('/api/login', { body: { email: acc.email, password: acc.password }, headers: { 'X-Device-Token': first.body.deviceToken } });
+        assert.equal(again.body.require2FA, true);
+    });
+
     test('bloque après 10 essais de code en 15 minutes', async () => {
         const acc = await userWith2FA();
         let last = null;

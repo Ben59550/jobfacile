@@ -284,13 +284,43 @@ function render2FA() {
             <div class="flex flex-col sm:flex-row gap-2">
                 <input type="password" id="twofa-disable-pw" placeholder="Mot de passe pour désactiver" autocomplete="current-password" class="field flex-1">
                 <button onclick="disable2FA()" class="px-5 py-3 rounded-xl text-sm font-bold text-rose-600 border border-rose-200 hover:bg-rose-50">Désactiver</button>
+            </div>
+            <div class="mt-6">
+                <p class="text-sm font-bold text-slate-800 mb-1">💻 Appareils enregistrés</p>
+                <p class="text-xs text-slate-500 mb-3">Sur ces navigateurs, le code n’est pas redemandé pendant 30 jours. Retirez un appareil perdu ou que vous ne reconnaissez pas.</p>
+                <div id="trusted-devices" class="text-sm text-slate-400">Chargement…</div>
             </div>`;
+        loadTrustedDevices();
     } else {
         box.innerHTML = `
             <p class="inline-flex items-center gap-2 text-sm font-bold text-slate-600 bg-slate-100 rounded-full px-3 py-1.5 mb-4">Désactivée</p>
             <div><button onclick="setup2FA()" class="btn-primary px-5 py-3 rounded-xl text-sm font-bold">Activer la double authentification</button></div>
             <div id="twofa-setup"></div>`;
     }
+}
+async function loadTrustedDevices() {
+    const box = document.getElementById('trusted-devices');
+    if (!box) return;
+    const d = await api('/api/user/devices', { silent: true });
+    if (!d.success) { box.textContent = 'Liste indisponible pour le moment.'; return; }
+    const day = (iso) => iso ? new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+    if (!d.devices.length) { box.innerHTML = '<p class="text-sm text-slate-500">Aucun appareil enregistré : le code est demandé à chaque connexion.</p>'; return; }
+    box.innerHTML = `<ul class="space-y-2">${d.devices.map(x => `
+        <li class="flex items-center gap-3 rounded-xl border border-slate-200 p-3">
+            <span class="w-9 h-9 shrink-0 rounded-lg bg-slate-100 grid place-items-center">${/iPhone|Android|iPad/.test(x.label) ? '📱' : '💻'}</span>
+            <div class="flex-1 min-w-0">
+                <p class="font-semibold text-slate-800 truncate">${esc(x.label)}${x.current ? ' <span class="ml-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">cet appareil</span>' : ''}</p>
+                <p class="text-xs text-slate-500">Ajouté le ${day(x.addedAt)} · utilisé le ${day(x.lastUsedAt)} · expire le ${day(x.expiresAt)}</p>
+            </div>
+            <button onclick="removeTrustedDevice('${esc(x.id)}')" class="shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold text-rose-600 hover:bg-rose-50">Retirer</button>
+        </li>`).join('')}</ul>
+        ${d.devices.length > 1 ? '<button onclick="removeTrustedDevice(null)" class="mt-3 text-xs font-bold text-rose-600 hover:underline">Retirer tous les appareils</button>' : ''}`;
+}
+async function removeTrustedDevice(id) {
+    if (!id && !confirm('Retirer tous les appareils ? Le code sera redemandé partout, y compris ici.')) return;
+    const d = await api('/api/user/devices/remove', { json: id ? { id } : { all: true } });
+    showNotification(d.message || 'Erreur.', d.success ? 'success' : 'error');
+    loadTrustedDevices();
 }
 async function setup2FA() {
     const data = await api('/api/user/2fa/setup', { method: 'POST' });
