@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "gray-on-color",
+        "value": "*",
+        "files": [
+          "public/js/navigation.js"
+        ],
+        "createdAt": "2026-11-17T16:46:50.154Z",
+        "reason": "Claude: L206 is a ternary — gray text only on the white unselected chip, white text on the coloured selected chip; never gray on colour"
+      }
+    ]
+  }
+}

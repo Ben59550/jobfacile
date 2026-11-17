@@ -1,0 +1,20 @@
+{
+  "appId": "fr.jobfacile.app",
+  "appName": "JobFacile",
+  "webDir": "www",
+  "server": {
+    "url": "https://REMPLACEZ-PAR-VOTRE-DOMAINE.fr",
+    "cleartext": false,
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 800,
+      "backgroundColor": "#059669",
+      "showSpinner": false
+    }
+  }
+}

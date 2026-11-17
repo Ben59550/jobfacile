@@ -1,0 +1,668 @@
+{
+  ".claude/launch.json": {
+    "mtime": 1794482015.112679,
+    "seen": 1794662505.7231152,
+    "ast_hash": "bdf8a14533f5883fce053d5e8c3bc8e2",
+    "semantic_hash": "bdf8a14533f5883fce053d5e8c3bc8e2"
+  },
+  "jobfacile/data/rome.json": {
+    "mtime": 1794447647.052289,
+    "seen": 1794662505.7231221,
+    "ast_hash": "ec1bb9245b4e35aa3d3df9bc0f01ae77",
+    "semantic_hash": "ec1bb9245b4e35aa3d3df9bc0f01ae77"
+  },
+  "jobfacile/mobile/capacitor.config.json": {
+    "mtime": 1794488623.2500226,
+    "seen": 1794662505.7231247,
+    "ast_hash": "32067dbe417117b3aac5fd147ef5e0b1",
+    "semantic_hash": "32067dbe417117b3aac5fd147ef5e0b1"
+  },
+  "jobfacile/mobile/package.json": {
+    "mtime": 1794488623.3603814,
+    "seen": 1794662505.723126,
+    "ast_hash": "4e1a1dafeb82f251a9ad995db808a24b",
+    "semantic_hash": "4e1a1dafeb82f251a9ad995db808a24b"
+  },
+  "jobfacile/package.json": {
+    "mtime": 1794489782.333335,
+    "seen": 1794662505.7231276,
+    "ast_hash": "e0994fb441611149a86090c6ebc7698a",
+    "semantic_hash": "e0994fb441611149a86090c6ebc7698a"
+  },
+  "jobfacile/public/i18n/ar.json": {
+    "mtime": 1794502913.7248018,
+    "seen": 1794662505.7231288,
+    "ast_hash": "991fe9d9c76394df549d7027411ee06c",
+    "semantic_hash": "991fe9d9c76394df549d7027411ee06c"
+  },
+  "jobfacile/public/i18n/bg.json": {
+    "mtime": 1794505124.655673,
+    "seen": 1794662505.7231302,
+    "ast_hash": "0fe4d1372fdc30f214d7be2295dfd3b3",
+    "semantic_hash": "0fe4d1372fdc30f214d7be2295dfd3b3"
+  },
+  "jobfacile/public/i18n/cs.json": {
+    "mtime": 1794505084.9918928,
+    "seen": 1794662505.7231312,
+    "ast_hash": "5bba995ba087539928d8b644e56f7a4d",
+    "semantic_hash": "5bba995ba087539928d8b644e56f7a4d"
+  },
+  "jobfacile/public/i18n/da.json": {
+    "mtime": 1794505430.523534,
+    "seen": 1794662505.7231321,
+    "ast_hash": "816a20f3041c2094fb4567f08b0132f9",
+    "semantic_hash": "816a20f3041c2094fb4567f08b0132f9"
+  },
+  "jobfacile/public/i18n/de.json": {
+    "mtime": 1794504931.6447775,
+    "seen": 1794662505.723133,
+    "ast_hash": "54bad979f95b0796c8495150869bcfef",
+    "semantic_hash": "54bad979f95b0796c8495150869bcfef"
+  },
+  "jobfacile/public/i18n/el.json": {
+    "mtime": 1794505080.020749,
+    "seen": 1794662505.7231343,
+    "ast_hash": "cc9aef1658bd3c77f32176671e7fe4bd",
+    "semantic_hash": "cc9aef1658bd3c77f32176671e7fe4bd"
+  },
+  "jobfacile/public/i18n/en.json": {
+    "mtime": 1794502908.7236483,
+    "seen": 1794662505.7231357,
+    "ast_hash": "2a7b50a6de9563aad7caa465107e85e8",
+    "semantic_hash": "2a7b50a6de9563aad7caa465107e85e8"
+  },
+  "jobfacile/public/i18n/es.json": {
+    "mtime": 1794504984.6968002,
+    "seen": 1794662505.7231367,
+    "ast_hash": "80f147e33831b0e29fb586a800ef32c1",
+    "semantic_hash": "80f147e33831b0e29fb586a800ef32c1"
+  },
+  "jobfacile/public/i18n/et.json": {
+    "mtime": 1794505825.023036,
+    "seen": 1794662505.7231379,
+    "ast_hash": "c44a9076fb65614f3234e2082373e589",
+    "semantic_hash": "c44a9076fb65614f3234e2082373e589"
+  },
+  "jobfacile/public/i18n/fi.json": {
+    "mtime": 1794505645.8134046,
+    "seen": 1794662505.7231388,
+    "ast_hash": "2939e1f6e7b5058efdc2ab4f519671c4",
+    "semantic_hash": "2939e1f6e7b5058efdc2ab4f519671c4"
+  },
+  "jobfacile/public/i18n/ga.json": {
+    "mtime": 1794506452.9742024,
+    "seen": 1794662505.72314,
+    "ast_hash": "26d81df2db4bddce2a6fe2bc4d586efb",
+    "semantic_hash": "26d81df2db4bddce2a6fe2bc4d586efb"
+  },
+  "jobfacile/public/i18n/hr.json": {
+    "mtime": 1794505143.121233,
+    "seen": 1794662505.7231412,
+    "ast_hash": "2c35fd4cf228245b3d3c052633a6c7f5",
+    "semantic_hash": "2c35fd4cf228245b3d3c052633a6c7f5"
+  },
+  "jobfacile/public/i18n/hu.json": {
+    "mtime": 1794505117.5959039,
+    "seen": 1794662505.723142,
+    "ast_hash": "8b2082d942869eeefcae123bdee6bd5a",
+    "semantic_hash": "8b2082d942869eeefcae123bdee6bd5a"
+  },
+  "jobfacile/public/i18n/it.json": {
+    "mtime": 1794505051.4745715,
+    "seen": 1794662505.7231429,
+    "ast_hash": "2cdc203b006e7c1d8e9e6c7e5b76101a",
+    "semantic_hash": "2cdc203b006e7c1d8e9e6c7e5b76101a"
+  },
+  "jobfacile/public/i18n/lt.json": {
+    "mtime": 1794506200.8999076,
+    "seen": 1794662505.7231436,
+    "ast_hash": "3763552565e57c0d4b50f77e402497a0",
+    "semantic_hash": "3763552565e57c0d4b50f77e402497a0"
+  },
+  "jobfacile/public/i18n/lv.json": {
+    "mtime": 1794506060.2268786,
+    "seen": 1794662505.7231448,
+    "ast_hash": "ef020750c38b680aaa763131f68ab005",
+    "semantic_hash": "ef020750c38b680aaa763131f68ab005"
+  },
+  "jobfacile/public/i18n/mt.json": {
+    "mtime": 1794506581.4838045,
+    "seen": 1794662505.7231462,
+    "ast_hash": "fa42835b94836007e107f6c8cd276965",
+    "semantic_hash": "fa42835b94836007e107f6c8cd276965"
+  },
+  "jobfacile/public/i18n/nl.json": {
+    "mtime": 1794505061.719013,
+    "seen": 1794662505.7231479,
+    "ast_hash": "ba72ba24c1f8de63f91e71de8e289ee5",
+    "semantic_hash": "ba72ba24c1f8de63f91e71de8e289ee5"
+  },
+  "jobfacile/public/i18n/no.json": {
+    "mtime": 1794506887.4535556,
+    "seen": 1794662505.7231488,
+    "ast_hash": "999ae5ab0dab7c504b8a910c7980fe57",
+    "semantic_hash": "999ae5ab0dab7c504b8a910c7980fe57"
+  },
+  "jobfacile/public/i18n/pl.json": {
+    "mtime": 1794502925.5081997,
+    "seen": 1794662505.7231495,
+    "ast_hash": "4d504c26dea4b348423baf3564580949",
+    "semantic_hash": "4d504c26dea4b348423baf3564580949"
+  },
+  "jobfacile/public/i18n/pt.json": {
+    "mtime": 1794505056.222068,
+    "seen": 1794662505.7231505,
+    "ast_hash": "454fe291baa221d3e740dde7681458bd",
+    "semantic_hash": "454fe291baa221d3e740dde7681458bd"
+  },
+  "jobfacile/public/i18n/ro.json": {
+    "mtime": 1794505074.1356945,
+    "seen": 1794662505.7231517,
+    "ast_hash": "fa9cefb8b32b793544bc958fd8cbccdf",
+    "semantic_hash": "fa9cefb8b32b793544bc958fd8cbccdf"
+  },
+  "jobfacile/public/i18n/sk.json": {
+    "mtime": 1794505111.345022,
+    "seen": 1794662505.7231526,
+    "ast_hash": "ed5b6d4e0cca3268d856e62fa6d4a2d5",
+    "semantic_hash": "ed5b6d4e0cca3268d856e62fa6d4a2d5"
+  },
+  "jobfacile/public/i18n/sl.json": {
+    "mtime": 1794505298.7666976,
+    "seen": 1794662505.7231538,
+    "ast_hash": "eea059fb019dd812cb13e9a42c7aa29f",
+    "semantic_hash": "eea059fb019dd812cb13e9a42c7aa29f"
+  },
+  "jobfacile/public/i18n/source.json": {
+    "mtime": 1794505509.6866858,
+    "seen": 1794662505.7231548,
+    "ast_hash": "3b1e81552e8fb34bcdc6837eed0d3339",
+    "semantic_hash": "3b1e81552e8fb34bcdc6837eed0d3339"
+  },
+  "jobfacile/public/i18n/sv.json": {
+    "mtime": 1794505543.5810628,
+    "seen": 1794662505.723156,
+    "ast_hash": "efca10190b96861dc7c27ead95a0d721",
+    "semantic_hash": "efca10190b96861dc7c27ead95a0d721"
+  },
+  "jobfacile/public/i18n/uk.json": {
+    "mtime": 1794506709.8583353,
+    "seen": 1794662505.723157,
+    "ast_hash": "65f75ced3eecda3b481c40ab25829ed3",
+    "semantic_hash": "65f75ced3eecda3b481c40ab25829ed3"
+  },
+  "jobfacile/public/js/account.js": {
+    "mtime": 1794518080.0526948,
+    "seen": 1794662505.7231581,
+    "ast_hash": "bf096bb6b3809f0dd9d18c050d3a02b8",
+    "semantic_hash": "bf096bb6b3809f0dd9d18c050d3a02b8"
+  },
+  "jobfacile/public/js/app-core.js": {
+    "mtime": 1794518173.0113015,
+    "seen": 1794662505.723159,
+    "ast_hash": "d23c613ccc5059d14b59f13f84ba2b94",
+    "semantic_hash": "d23c613ccc5059d14b59f13f84ba2b94"
+  },
+  "jobfacile/public/js/badges.js": {
+    "mtime": 1794487152.1251307,
+    "seen": 1794662505.72316,
+    "ast_hash": "b25ac8d902ce850a010480b371415f50",
+    "semantic_hash": "b25ac8d902ce850a010480b371415f50"
+  },
+  "jobfacile/public/js/community.js": {
+    "mtime": 1794489948.1632328,
+    "seen": 1794662505.7231617,
+    "ast_hash": "ddfd6fadd2414b3580f4b40f6afd5675",
+    "semantic_hash": "ddfd6fadd2414b3580f4b40f6afd5675"
+  },
+  "jobfacile/public/js/i18n.js": {
+    "mtime": 1794502190.0727625,
+    "seen": 1794662505.7231627,
+    "ast_hash": "5af53a864200f95ad8b8dee5e3083e2e",
+    "semantic_hash": "5af53a864200f95ad8b8dee5e3083e2e"
+  },
+  "jobfacile/public/js/interview.js": {
+    "mtime": 1794486240.8950918,
+    "seen": 1794662505.7231636,
+    "ast_hash": "7b18557cb95f7ae351d0a4eb9aca9456",
+    "semantic_hash": "7b18557cb95f7ae351d0a4eb9aca9456"
+  },
+  "jobfacile/public/js/job-detail.js": {
+    "mtime": 1794515543.6472409,
+    "seen": 1794662505.7231646,
+    "ast_hash": "66d7063d137293fa34cca0b7a4ae5052",
+    "semantic_hash": "66d7063d137293fa34cca0b7a4ae5052"
+  },
+  "jobfacile/public/js/messages.js": {
+    "mtime": 1794487654.8819382,
+    "seen": 1794662505.7231658,
+    "ast_hash": "a2a8a2a49b2c27d5472fa95ba65ddf88",
+    "semantic_hash": "a2a8a2a49b2c27d5472fa95ba65ddf88"
+  },
+  "jobfacile/public/js/navigation.js": {
+    "mtime": 1794502263.5715072,
+    "seen": 1794662505.7231667,
+    "ast_hash": "85238c0624ab9d98909dde247a476ec9",
+    "semantic_hash": "85238c0624ab9d98909dde247a476ec9"
+  },
+  "jobfacile/public/js/premium.js": {
+    "mtime": 1794512204.209112,
+    "seen": 1794662505.7231677,
+    "ast_hash": "45cf122dd1e5d2dfdf5254291039b641",
+    "semantic_hash": "45cf122dd1e5d2dfdf5254291039b641"
+  },
+  "jobfacile/public/js/recruiter.js": {
+    "mtime": 1794487847.4068968,
+    "seen": 1794662505.723169,
+    "ast_hash": "a8af92334dc11988f67d91e6e8b80f45",
+    "semantic_hash": "a8af92334dc11988f67d91e6e8b80f45"
+  },
+  "jobfacile/public/js/rights.js": {
+    "mtime": 1794487216.5363142,
+    "seen": 1794662505.7231705,
+    "ast_hash": "34b31bc93152761781505cd25ac35401",
+    "semantic_hash": "34b31bc93152761781505cd25ac35401"
+  },
+  "jobfacile/public/js/search.js": {
+    "mtime": 1794485581.8409684,
+    "seen": 1794662505.7231715,
+    "ast_hash": "1bc0c3f80f38816870c40de52ad3a791",
+    "semantic_hash": "1bc0c3f80f38816870c40de52ad3a791"
+  },
+  "jobfacile/public/js/tracker.js": {
+    "mtime": 1794487152.6924016,
+    "seen": 1794662505.7231727,
+    "ast_hash": "e14b6d0b8e1597e876e31b15e778551c",
+    "semantic_hash": "e14b6d0b8e1597e876e31b15e778551c"
+  },
+  "jobfacile/public/js/ui.js": {
+    "mtime": 1794504379.9928117,
+    "seen": 1794662505.7231734,
+    "ast_hash": "e4567e5aeecd355578f2637735548b3d",
+    "semantic_hash": "e4567e5aeecd355578f2637735548b3d"
+  },
+  "jobfacile/public/sw.js": {
+    "mtime": 1794506598.8752427,
+    "seen": 1794662505.7231743,
+    "ast_hash": "7366caa741897656e209dc895dbe621c",
+    "semantic_hash": "7366caa741897656e209dc895dbe621c"
+  },
+  "jobfacile/scripts/i18n-extract.js": {
+    "mtime": 1794502676.4498303,
+    "seen": 1794662505.7231755,
+    "ast_hash": "6d07c7629063ffd3df5d10840c65e768",
+    "semantic_hash": "6d07c7629063ffd3df5d10840c65e768"
+  },
+  "jobfacile/scripts/i18n-translate.js": {
+    "mtime": 1794502459.5217168,
+    "seen": 1794662505.7231765,
+    "ast_hash": "b0f87a3a0f605580f04e1204bc641590",
+    "semantic_hash": "b0f87a3a0f605580f04e1204bc641590"
+  },
+  "jobfacile/scripts/make-icons.js": {
+    "mtime": 1794506559.8936503,
+    "seen": 1794662505.7231774,
+    "ast_hash": "4fd8d9f5136d9e41223e07687f2eb6de",
+    "semantic_hash": "4fd8d9f5136d9e41223e07687f2eb6de"
+  },
+  "jobfacile/scripts/version-assets.js": {
+    "mtime": 1794485634.6369448,
+    "seen": 1794662505.7231784,
+    "ast_hash": "f43609bdaadcb043a447062511e564c9",
+    "semantic_hash": "f43609bdaadcb043a447062511e564c9"
+  },
+  "jobfacile/server.js": {
+    "mtime": 1794505415.7439032,
+    "seen": 1794662505.7231796,
+    "ast_hash": "6344e502d45b455a08866256cbef1a19",
+    "semantic_hash": "6344e502d45b455a08866256cbef1a19"
+  },
+  "jobfacile/src/config.js": {
+    "mtime": 1794485213.1456435,
+    "seen": 1794662505.7231803,
+    "ast_hash": "5c98577249ef5a7658c467100dbd36b0",
+    "semantic_hash": "5c98577249ef5a7658c467100dbd36b0"
+  },
+  "jobfacile/src/data/diplomes.js": {
+    "mtime": 1794515234.7316446,
+    "seen": 1794662505.7231812,
+    "ast_hash": "cc0773be3634622717c1c2c4766e1629",
+    "semantic_hash": "cc0773be3634622717c1c2c4766e1629"
+  },
+  "jobfacile/src/db.js": {
+    "mtime": 1794485213.1481419,
+    "seen": 1794662505.7231824,
+    "ast_hash": "975da94f6dc05344e730c14cc6b18407",
+    "semantic_hash": "975da94f6dc05344e730c14cc6b18407"
+  },
+  "jobfacile/src/httpSecurity.js": {
+    "mtime": 1794496745.890781,
+    "seen": 1794662505.7231834,
+    "ast_hash": "35d9d3268123d9db8803c077a91a1aa3",
+    "semantic_hash": "35d9d3268123d9db8803c077a91a1aa3"
+  },
+  "jobfacile/src/mailer.js": {
+    "mtime": 1794485213.1471415,
+    "seen": 1794662505.7231848,
+    "ast_hash": "183efa27a00c10407c6a70fdbe80c79e",
+    "semantic_hash": "183efa27a00c10407c6a70fdbe80c79e"
+  },
+  "jobfacile/src/referentials.js": {
+    "mtime": 1794485213.1501472,
+    "seen": 1794662505.723186,
+    "ast_hash": "bb3847d4e2d1c59a8a531b1f7581012a",
+    "semantic_hash": "bb3847d4e2d1c59a8a531b1f7581012a"
+  },
+  "jobfacile/src/routes/ai.js": {
+    "mtime": 1794505345.7419615,
+    "seen": 1794662505.723187,
+    "ast_hash": "c0692ea66472c7c10d9b2395c10594cf",
+    "semantic_hash": "c0692ea66472c7c10d9b2395c10594cf"
+  },
+  "jobfacile/src/routes/alerts.js": {
+    "mtime": 1794485356.0096502,
+    "seen": 1794662505.7231882,
+    "ast_hash": "91ef418274b83427e1d33d122cd8eeaa",
+    "semantic_hash": "91ef418274b83427e1d33d122cd8eeaa"
+  },
+  "jobfacile/src/routes/auth.js": {
+    "mtime": 1794518049.645983,
+    "seen": 1794662505.7231889,
+    "ast_hash": "0fd8be78e4416c441bc9701effdce8ae",
+    "semantic_hash": "0fd8be78e4416c441bc9701effdce8ae"
+  },
+  "jobfacile/src/routes/billing.js": {
+    "mtime": 1794513771.4430985,
+    "seen": 1794662505.72319,
+    "ast_hash": "4847f2a0a4fa7bc0a8b92150c6b1b834",
+    "semantic_hash": "4847f2a0a4fa7bc0a8b92150c6b1b834"
+  },
+  "jobfacile/src/routes/community.js": {
+    "mtime": 1794487543.8154085,
+    "seen": 1794662505.7231913,
+    "ast_hash": "d5d11e2fae9556a46d075112846e13a4",
+    "semantic_hash": "d5d11e2fae9556a46d075112846e13a4"
+  },
+  "jobfacile/src/routes/commute.js": {
+    "mtime": 1794485213.1656985,
+    "seen": 1794662505.7231922,
+    "ast_hash": "849de7a3e1a864b6c4d08c976e2897f6",
+    "semantic_hash": "849de7a3e1a864b6c4d08c976e2897f6"
+  },
+  "jobfacile/src/routes/documents.js": {
+    "mtime": 1794485213.1556697,
+    "seen": 1794662505.7231932,
+    "ast_hash": "2fbe2e4add1d8b18239eb5cd57ad449e",
+    "semantic_hash": "2fbe2e4add1d8b18239eb5cd57ad449e"
+  },
+  "jobfacile/src/routes/jobs.js": {
+    "mtime": 1794485213.1627295,
+    "seen": 1794662505.7231941,
+    "ast_hash": "e84b1c5a6f4c93e6f472663e00fa0a16",
+    "semantic_hash": "e84b1c5a6f4c93e6f472663e00fa0a16"
+  },
+  "jobfacile/src/routes/messages.js": {
+    "mtime": 1794487543.8174088,
+    "seen": 1794662505.723195,
+    "ast_hash": "78a797c4226d349bffbdf4a17b8f5fe1",
+    "semantic_hash": "78a797c4226d349bffbdf4a17b8f5fe1"
+  },
+  "jobfacile/src/routes/pages.js": {
+    "mtime": 1794488632.0587132,
+    "seen": 1794662505.7231958,
+    "ast_hash": "ad4053d58565a234fea45b0dcdacb4fc",
+    "semantic_hash": "ad4053d58565a234fea45b0dcdacb4fc"
+  },
+  "jobfacile/src/routes/profile.js": {
+    "mtime": 1794518053.169477,
+    "seen": 1794662505.723197,
+    "ast_hash": "60170b020dbf76e59188d7fe61def6df",
+    "semantic_hash": "60170b020dbf76e59188d7fe61def6df"
+  },
+  "jobfacile/src/routes/recruiter.js": {
+    "mtime": 1794489762.504665,
+    "seen": 1794662505.723198,
+    "ast_hash": "21fe8636f7127cc26a6bcc55d93105fd",
+    "semantic_hash": "21fe8636f7127cc26a6bcc55d93105fd"
+  },
+  "jobfacile/src/routes/referral.js": {
+    "mtime": 1794487097.9948854,
+    "seen": 1794662505.723199,
+    "ast_hash": "222b3f0c60e9dbbae5c431439adb6e26",
+    "semantic_hash": "222b3f0c60e9dbbae5c431439adb6e26"
+  },
+  "jobfacile/src/routes/rome.js": {
+    "mtime": 1794515257.6612773,
+    "seen": 1794662505.7232003,
+    "ast_hash": "2fe987b8708ef7f6244d550b6d2352ac",
+    "semantic_hash": "2fe987b8708ef7f6244d550b6d2352ac"
+  },
+  "jobfacile/src/routes/status.js": {
+    "mtime": 1794489922.8916483,
+    "seen": 1794662505.7232013,
+    "ast_hash": "e295436cf27e040f8ed5a83a418e6953",
+    "semantic_hash": "e295436cf27e040f8ed5a83a418e6953"
+  },
+  "jobfacile/src/routes/tracker.js": {
+    "mtime": 1794485356.008226,
+    "seen": 1794662505.7232022,
+    "ast_hash": "1cbed3cdeccf03df4d14d2c0dfa2c9f4",
+    "semantic_hash": "1cbed3cdeccf03df4d14d2c0dfa2c9f4"
+  },
+  "jobfacile/src/routes/voice.js": {
+    "mtime": 1794505352.1524327,
+    "seen": 1794662505.7232032,
+    "ast_hash": "8b0a4be91fe0f78113791868b36718bb",
+    "semantic_hash": "8b0a4be91fe0f78113791868b36718bb"
+  },
+  "jobfacile/src/security.js": {
+    "mtime": 1794518034.6014905,
+    "seen": 1794662505.7232041,
+    "ast_hash": "083dea5d7bde377d06bcce6353240806",
+    "semantic_hash": "083dea5d7bde377d06bcce6353240806"
+  },
+  "jobfacile/src/services/ai.js": {
+    "mtime": 1794485213.1521816,
+    "seen": 1794662505.723205,
+    "ast_hash": "aeacd9da2e349cc6099977d87985274c",
+    "semantic_hash": "aeacd9da2e349cc6099977d87985274c"
+  },
+  "jobfacile/src/services/alerts.js": {
+    "mtime": 1794485213.1668794,
+    "seen": 1794662505.723206,
+    "ast_hash": "55d3863ac1fd5592f55faa757d1af102",
+    "semantic_hash": "55d3863ac1fd5592f55faa757d1af102"
+  },
+  "jobfacile/src/services/backup.js": {
+    "mtime": 1794489857.1893141,
+    "seen": 1794662505.7232072,
+    "ast_hash": "735cbcb39ee4e4eea6fe0901ae1b284d",
+    "semantic_hash": "735cbcb39ee4e4eea6fe0901ae1b284d"
+  },
+  "jobfacile/src/services/files.js": {
+    "mtime": 1794489762.1906133,
+    "seen": 1794662505.7232082,
+    "ast_hash": "c6cd79bf6511bd4035f0ca949eaaf2c1",
+    "semantic_hash": "c6cd79bf6511bd4035f0ca949eaaf2c1"
+  },
+  "jobfacile/src/services/forum.js": {
+    "mtime": 1794487518.7133245,
+    "seen": 1794662505.723209,
+    "ast_hash": "70669c3e8179f5c3f1f059dfc7e1a66d",
+    "semantic_hash": "70669c3e8179f5c3f1f059dfc7e1a66d"
+  },
+  "jobfacile/src/services/geo.js": {
+    "mtime": 1794485213.1642115,
+    "seen": 1794662505.72321,
+    "ast_hash": "69514c3ac4d41030511c76f8b5f2bbf5",
+    "semantic_hash": "69514c3ac4d41030511c76f8b5f2bbf5"
+  },
+  "jobfacile/src/services/jobSearch.js": {
+    "mtime": 1794515511.564863,
+    "seen": 1794662505.723211,
+    "ast_hash": "ca0e8e92fe1ec46520c52bf03812b0bc",
+    "semantic_hash": "ca0e8e92fe1ec46520c52bf03812b0bc"
+  },
+  "jobfacile/src/services/localOffers.js": {
+    "mtime": 1794487344.1003711,
+    "seen": 1794662505.7232118,
+    "ast_hash": "087fe5d9bb783549d308479878dc74f2",
+    "semantic_hash": "087fe5d9bb783549d308479878dc74f2"
+  },
+  "jobfacile/src/services/messaging.js": {
+    "mtime": 1794487463.7740374,
+    "seen": 1794662505.7232127,
+    "ast_hash": "0bcf6c62d6542e89c90ebd3ca1267814",
+    "semantic_hash": "0bcf6c62d6542e89c90ebd3ca1267814"
+  },
+  "jobfacile/src/services/moderation.js": {
+    "mtime": 1794487315.5275538,
+    "seen": 1794662505.7232149,
+    "ast_hash": "bc679f6fb87346acd0abcb12b30a8f8a",
+    "semantic_hash": "bc679f6fb87346acd0abcb12b30a8f8a"
+  },
+  "jobfacile/src/services/plans.js": {
+    "mtime": 1794513749.1389406,
+    "seen": 1794662505.7232158,
+    "ast_hash": "d7381ea8c041de8d634575be9165e156",
+    "semantic_hash": "d7381ea8c041de8d634575be9165e156"
+  },
+  "jobfacile/src/services/push.js": {
+    "mtime": 1794485213.167415,
+    "seen": 1794662505.7232165,
+    "ast_hash": "ca2353617b6d59681ee69f8fa4dd7e87",
+    "semantic_hash": "ca2353617b6d59681ee69f8fa4dd7e87"
+  },
+  "jobfacile/src/services/qualifs.js": {
+    "mtime": 1794485213.154678,
+    "seen": 1794662505.7232177,
+    "ast_hash": "402377555b708065e142dd29eedaac63",
+    "semantic_hash": "402377555b708065e142dd29eedaac63"
+  },
+  "jobfacile/src/services/reminders.js": {
+    "mtime": 1794485355.4584239,
+    "seen": 1794662505.7232187,
+    "ast_hash": "4ca5c487161488b18012420845ab3eeb",
+    "semantic_hash": "4ca5c487161488b18012420845ab3eeb"
+  },
+  "jobfacile/src/services/status.js": {
+    "mtime": 1794504080.549668,
+    "seen": 1794662505.7232196,
+    "ast_hash": "be98bc69e269bd43483d1784d079d356",
+    "semantic_hash": "be98bc69e269bd43483d1784d079d356"
+  },
+  "jobfacile/src/uploads.js": {
+    "mtime": 1794485213.146147,
+    "seen": 1794662505.7232208,
+    "ast_hash": "121a6a039e5a78107d01db5eff635f7c",
+    "semantic_hash": "121a6a039e5a78107d01db5eff635f7c"
+  },
+  "jobfacile/src/utils.js": {
+    "mtime": 1794487434.5002315,
+    "seen": 1794662505.7232218,
+    "ast_hash": "3ec82565de2092be01829464a479b63c",
+    "semantic_hash": "3ec82565de2092be01829464a479b63c"
+  },
+  "jobfacile/tests/2fa.test.js": {
+    "mtime": 1794518092.592335,
+    "seen": 1794662505.7232227,
+    "ast_hash": "343a5f0a81be67503a87fc011a8b4afe",
+    "semantic_hash": "343a5f0a81be67503a87fc011a8b4afe"
+  },
+  "jobfacile/tests/auth.test.js": {
+    "mtime": 1794484894.9571185,
+    "seen": 1794662505.723224,
+    "ast_hash": "0e5e8e53d3f78336a8c679381d3f8bde",
+    "semantic_hash": "0e5e8e53d3f78336a8c679381d3f8bde"
+  },
+  "jobfacile/tests/community.test.js": {
+    "mtime": 1794487760.4711275,
+    "seen": 1794662505.7232246,
+    "ast_hash": "30244b49fd7ec1478d0594c51f3edebd",
+    "semantic_hash": "30244b49fd7ec1478d0594c51f3edebd"
+  },
+  "jobfacile/tests/helpers.js": {
+    "mtime": 1794489968.92558,
+    "seen": 1794662505.7232256,
+    "ast_hash": "efe7dd21307af50eda62e3a01539d564",
+    "semantic_hash": "efe7dd21307af50eda62e3a01539d564"
+  },
+  "jobfacile/tests/password-reset.test.js": {
+    "mtime": 1794484895.2316072,
+    "seen": 1794662505.7232265,
+    "ast_hash": "b062ab53b8ba7f944e80ef8c023d03a5",
+    "semantic_hash": "b062ab53b8ba7f944e80ef8c023d03a5"
+  },
+  "jobfacile/tests/premium.test.js": {
+    "mtime": 1794513764.5896502,
+    "seen": 1794662505.7232277,
+    "ast_hash": "fe28162d3c68360f715dbb99d738ce30",
+    "semantic_hash": "fe28162d3c68360f715dbb99d738ce30"
+  },
+  "jobfacile/tests/reminders.test.js": {
+    "mtime": 1794485406.775815,
+    "seen": 1794662505.7232287,
+    "ast_hash": "c8eb7c7f5323df5bc0ce84f9f82b90f6",
+    "semantic_hash": "c8eb7c7f5323df5bc0ce84f9f82b90f6"
+  },
+  "jobfacile/tests/security.test.js": {
+    "mtime": 1794489968.5484455,
+    "seen": 1794662505.7232296,
+    "ast_hash": "6fe0c056ebe6370f71ff81b0f1012eb2",
+    "semantic_hash": "6fe0c056ebe6370f71ff81b0f1012eb2"
+  },
+  "jobfacile/ads.txt": {
+    "mtime": 1794496746.2073107,
+    "seen": 1794662505.7232308,
+    "ast_hash": "fa366fef1b6042fd44fff535983b79e9",
+    "semantic_hash": "fa366fef1b6042fd44fff535983b79e9"
+  },
+  "jobfacile/mobile/README.md": {
+    "mtime": 1794488623.473596,
+    "seen": 1794662505.7232318,
+    "ast_hash": "1c5536a4bee6a20155cc6ad25f64d295",
+    "semantic_hash": "1c5536a4bee6a20155cc6ad25f64d295"
+  },
+  "jobfacile/public/index.html": {
+    "mtime": 1794518173.7320976,
+    "seen": 1794662505.7232327,
+    "ast_hash": "c58d44cce563efd11032a45ab3db7cab",
+    "semantic_hash": "c58d44cce563efd11032a45ab3db7cab"
+  },
+  "jobfacile/public/icons/apple-touch-icon.png": {
+    "mtime": 1794506569.5074997,
+    "seen": 1794662505.7232337,
+    "ast_hash": "8683232f2248250f55c134c1336f1c52",
+    "semantic_hash": "8683232f2248250f55c134c1336f1c52"
+  },
+  "jobfacile/public/icons/icon-192.png": {
+    "mtime": 1794506567.1458147,
+    "seen": 1794662505.723235,
+    "ast_hash": "0cb7f748f45bc70cce033672640d3ba4",
+    "semantic_hash": "0cb7f748f45bc70cce033672640d3ba4"
+  },
+  "jobfacile/public/icons/icon-512.png": {
+    "mtime": 1794506564.191372,
+    "seen": 1794662505.7232358,
+    "ast_hash": "b3d24d7eb325ec6d62ec0afe61ea319c",
+    "semantic_hash": "b3d24d7eb325ec6d62ec0afe61ea319c"
+  },
+  "jobfacile/public/icons/maskable-512.png": {
+    "mtime": 1794506571.488084,
+    "seen": 1794662505.7232368,
+    "ast_hash": "ee91d911f20fefa712f0901ca0c8e4e3",
+    "semantic_hash": "ee91d911f20fefa712f0901ca0c8e4e3"
+  },
+  "jobfacile/public/icons/premium-1024.png": {
+    "mtime": 1794514200.0649774,
+    "seen": 1794662505.723238,
+    "ast_hash": "688c1b7b7f6674fb44e43e999177d9eb",
+    "semantic_hash": "688c1b7b7f6674fb44e43e999177d9eb"
+  },
+  "jobfacile/public/icons/premium.svg": {
+    "mtime": 1794514191.9725223,
+    "seen": 1794662505.723239,
+    "ast_hash": "eb519931e0a5380d62a1e79dd8282036",
+    "semantic_hash": "eb519931e0a5380d62a1e79dd8282036"
+  }
+}

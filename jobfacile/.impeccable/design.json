@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-17T00:00:00Z",
+  "title": "Design System: JobFacile",
+  "extensions": {
+    "colorMeta": {
+      "bleu-depart": { "role": "primary", "displayName": "Bleu départ", "canonical": "rgb(var(--e-800))", "tonalRamp": ["#061b47", "#0a2a6b", "#0f3296", "#1640b4", "#2a58d2", "#567de6", "#8caaf5", "#dbe5ff"] },
+      "bleu-nuit": { "role": "primary", "displayName": "Bleu nuit", "canonical": "rgb(var(--e-900))", "tonalRamp": ["#020c26", "#04112b", "#061b47", "#0a2150", "#0a2a6b", "#1d3d78", "#567de6", "#bacdfc"] },
+      "bleu-ligne": { "role": "primary", "displayName": "Bleu ligne", "canonical": "rgb(var(--e-700))", "tonalRamp": ["#061b47", "#0a2a6b", "#0f3296", "#1640b4", "#2a58d2", "#567de6", "#bacdfc", "#eef3ff"] },
+      "bleu-pale": { "role": "primary", "displayName": "Bleu pâle", "canonical": "rgb(var(--e-200))", "tonalRamp": ["#0f3296", "#2a58d2", "#567de6", "#8caaf5", "#bacdfc", "#dbe5ff", "#eef3ff", "#ffffff"] },
+      "jaune-horaire": { "role": "secondary", "displayName": "Jaune horaire", "canonical": "rgb(var(--t-400))", "tonalRamp": ["#543c0a", "#6e4e06", "#8c6200", "#be8c00", "#f5be14", "#ffd43b", "#ffe98c", "#fffbe6"] },
+      "jaune-survol": { "role": "secondary", "displayName": "Jaune survol", "canonical": "rgb(var(--t-300))", "tonalRamp": ["#6e4e06", "#8c6200", "#be8c00", "#f5be14", "#ffd43b", "#ffde59", "#fff4c4", "#fffbe6"] },
+      "jaune-ombre": { "role": "secondary", "displayName": "Jaune ombre", "canonical": "rgb(var(--t-600))", "tonalRamp": ["#543c0a", "#6e4e06", "#8c6200", "#be8c00", "#f5be14", "#ffd43b", "#ffe98c", "#fffbe6"] },
+      "gris-quai": { "role": "neutral", "displayName": "Gris quai", "canonical": "#eef2f7", "tonalRamp": ["#0b1b3f", "#2c3a55", "#3e4f6c", "#55657f", "#cdd6e4", "#d9e0ea", "#eef2f7", "#ffffff"] },
+      "encre-marine": { "role": "neutral", "displayName": "Encre marine", "canonical": "#0b1b3f" },
+      "texte-second": { "role": "neutral", "displayName": "Texte second", "canonical": "#3e4f6c" },
+      "filet": { "role": "neutral", "displayName": "Filet", "canonical": "#d9e0ea" },
+      "contour-champ": { "role": "neutral", "displayName": "Contour champ", "canonical": "#cdd6e4" },
+      "blanc": { "role": "neutral", "displayName": "Blanc", "canonical": "#ffffff" },
+      "nuit-fond": { "role": "neutral", "displayName": "Nuit fond (sombre)", "canonical": "#04112b" },
+      "nuit-carte": { "role": "neutral", "displayName": "Nuit carte (sombre)", "canonical": "#0a2150" },
+      "nuit-filet": { "role": "neutral", "displayName": "Nuit filet (sombre)", "canonical": "#1d3d78" },
+      "plaque-chiffre": { "role": "neutral", "displayName": "Plaque chiffre", "canonical": "#020c26" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Affichage", "purpose": "Titre de l'aplat d'accueil ; Archivo étroit 75 %, capitales.", "fontStretch": "75%", "textTransform": "uppercase" },
+      "headline": { "displayName": "Titre de section", "purpose": "Titres de section et de vue (.font-display).", "fontStretch": "75%", "textTransform": "uppercase" },
+      "title": { "displayName": "Titre court", "purpose": "Noms d'arrêts de la ligne des outils.", "fontStretch": "80%", "textTransform": "uppercase" },
+      "body": { "displayName": "Texte", "purpose": "Texte courant ; 1.75 et 70ch dans les articles longs." },
+      "label": { "displayName": "Étiquette", "purpose": "En-têtes de colonnes du tableau.", "textTransform": "uppercase" },
+      "data": { "displayName": "Donnée", "purpose": "Heures, km, minutes, chiffres de l'horloge ; chiffres tabulaires.", "fontStretch": "75%" }
+    },
+    "shadows": [
+      { "name": "arete-bouton", "value": "0 2px 0 rgb(var(--t-600)), 0 8px 18px -10px rgb(var(--e-900) / .5)", "purpose": "Bouton principal jaune, comme une touche." },
+      { "name": "arete-bouton-survol", "value": "0 3px 0 rgb(var(--t-600)), 0 12px 22px -10px rgb(var(--e-900) / .55)", "purpose": "Bouton principal au survol." },
+      { "name": "tableau-pose", "value": "0 0 0 1px rgb(255 255 255 / .07), 0 32px 64px -32px rgb(0 0 0 / .75)", "purpose": "Tableau des offres sur l'aplat bleu." },
+      { "name": "bande-recherche", "value": "0 24px 48px -28px rgb(0 0 0 / .7)", "purpose": "Bande de recherche blanche sur le bleu." },
+      { "name": "carte-repos", "value": "0 1px 2px rgb(var(--e-900) / .05)", "purpose": "Cartes sur le quai." },
+      { "name": "carte-survol", "value": "0 16px 32px -18px rgb(var(--e-900) / .35)", "purpose": "Carte cliquable au survol." },
+      { "name": "focus", "value": "outline: 3px solid rgb(var(--t-400)); outline-offset: 2px; box-shadow: 0 0 0 5px rgb(var(--e-800))", "purpose": "Focus clavier global." }
+    ],
+    "motion": [
+      { "name": "flap-in", "value": "flapIn .6s cubic-bezier(.2,.75,.25,1); rotateX(-95deg) -> 6deg -> 0; transform-origin 50% 0; 70ms par rangée", "purpose": "Arrivée des rangées du tableau, puis toutes les 8 s ; pause au survol/focus ; désactivé sous prefers-reduced-motion." },
+      { "name": "flap-out", "value": "flapOut .28s cubic-bezier(.5,0,.75,0); rotateX(90deg); transform-origin 50% 100%; 50ms par rangée", "purpose": "Sortie des rangées avant le renouvellement." },
+      { "name": "flap-digit", "value": "flapDigit .5s cubic-bezier(.3,.8,.3,1); rotateX(-100deg) + brightness(.6) -> 0", "purpose": "Chiffre de l'horloge qui change." },
+      { "name": "ease-tableau", "value": "cubic-bezier(.2,.7,.2,1)", "purpose": "Transitions d'état (bouton, arrêts, apparitions)." },
+      { "name": "reduced-motion", "value": "animation/transition .01ms", "purpose": "Tout mouvement neutralisé sous prefers-reduced-motion." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "nav-complet", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Bouton principal",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Action principale : jaune horaire, encre bleu nuit, arête jaune.",
+      "html": "<button class=\"ds-btn-primary\">Rechercher</button>",
+      "css": ".ds-btn-primary { background: rgb(var(--t-400, 255 212 59)); color: rgb(var(--e-900, 6 27 71)); font-family: Archivo, system-ui, sans-serif; font-weight: 800; padding: .75rem 1.5rem; border: 0; border-radius: .5rem; box-shadow: 0 2px 0 rgb(var(--t-600, 190 140 0)), 0 8px 18px -10px rgb(6 27 71 / .5); transition: transform .2s cubic-bezier(.2,.7,.2,1), box-shadow .2s, background-color .2s; cursor: pointer; } .ds-btn-primary:hover { transform: translateY(-1px); background: rgb(var(--t-300, 255 222 89)); } .ds-btn-primary:focus-visible { outline: 3px solid rgb(255 212 59); outline-offset: 2px; box-shadow: 0 0 0 5px rgb(10 42 107); }"
+    },
+    {
+      "name": "Bouton fantôme sur tableau",
+      "kind": "button",
+      "refersTo": "button-board-ghost",
+      "description": "Action secondaire posée sur l'aplat bleu.",
+      "html": "<div style=\"background:#0a2a6b;padding:16px\"><button class=\"ds-btn-ghost\">Créer mon CV</button></div>",
+      "css": ".ds-btn-ghost { background: transparent; color: #fff; font-family: Archivo, system-ui, sans-serif; font-weight: 700; padding: .75rem 1.5rem; border: 2px solid rgb(255 255 255 / .7); border-radius: .5rem; transition: background-color .2s, color .2s; cursor: pointer; } .ds-btn-ghost:hover { background: #fff; color: #0a2a6b; } .ds-btn-ghost:focus-visible { outline: 3px solid #ffd43b; outline-offset: 2px; }"
+    },
+    {
+      "name": "Champ",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Champ de formulaire sur le quai.",
+      "html": "<label class=\"ds-label\">Ville<input class=\"ds-field\" placeholder=\"Ex : Maubeuge\"></label>",
+      "css": ".ds-label { display: block; font: 700 .75rem Archivo, system-ui, sans-serif; text-transform: uppercase; letter-spacing: .05em; color: #4f5d75; } .ds-field { display: block; margin-top: .375rem; width: 100%; padding: .75rem 1rem; border-radius: .5rem; border: 1px solid #cdd6e4; background: #fff; font-size: .875rem; color: #0b1b3f; outline: none; transition: border-color .2s, box-shadow .2s; } .ds-field:focus { border-color: rgb(42 88 210); box-shadow: 0 0 0 4px rgb(42 88 210 / .15); }"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "description": "Liens d'en-tête ; l'actif porte une barre jaune.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-link is-active\" href=\"#\">Offres</a><a class=\"ds-nav-link\" href=\"#\">Créer mon CV</a><a class=\"ds-nav-link\" href=\"#\">Conseils</a></nav>",
+      "css": ".ds-nav { display: flex; gap: .25rem; font-family: Archivo, system-ui, sans-serif; } .ds-nav-link { padding: .5rem .85rem; border-radius: .5rem; font-size: .875rem; font-weight: 600; color: #475569; text-decoration: none; transition: color .2s, background .2s; } .ds-nav-link:hover { color: rgb(15 50 150); background: rgb(238 243 255); } .ds-nav-link.is-active { color: rgb(10 42 107); border-radius: 0; box-shadow: inset 0 -3px 0 #ffd43b; } .ds-nav-link:focus-visible { outline: 3px solid #ffd43b; outline-offset: 2px; }"
+    },
+    {
+      "name": "Carte",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Conteneur blanc à filet sur le quai.",
+      "html": "<div class=\"ds-card\"><strong>Mes candidatures</strong><p>3 envoyées cette semaine</p></div>",
+      "css": ".ds-card { background: #fff; border: 1px solid #d9e0ea; border-radius: .75rem; padding: 1.25rem; box-shadow: 0 1px 2px rgb(6 27 71 / .05); font-family: Archivo, system-ui, sans-serif; color: #0b1b3f; transition: transform .3s cubic-bezier(.4,0,.2,1), box-shadow .3s, border-color .3s; } .ds-card p { margin: .35rem 0 0; color: #3e4f6c; } .ds-card:hover { transform: translateY(-3px); box-shadow: 0 16px 32px -18px rgb(6 27 71 / .35); border-color: rgb(140 170 245); }"
+    },
+    {
+      "name": "Tableau des départs",
+      "kind": "custom",
+      "refersTo": "board",
+      "description": "Signature : offres récentes en rangées, heure en jaune, horloge à palettes.",
+      "html": "<div class=\"ds-board\"><div class=\"ds-board-head\"><span class=\"ds-board-title\">Prochains départs</span><span class=\"ds-clock\"><b>0</b><b>9</b><i>:</i><b>4</b><b>2</b></span></div><button class=\"ds-row\"><span class=\"ds-time\">09:12</span><span class=\"ds-job\"><b>Préparateur de commandes</b><small>Logistique Nord</small></span><span class=\"ds-ctr\">CDI</span></button><button class=\"ds-row\"><span class=\"ds-time\">08:47</span><span class=\"ds-job\"><b>Aide-soignant</b><small>Centre hospitalier</small></span><span class=\"ds-ctr alt\">Alt.</span></button></div>",
+      "css": ".ds-board { background: #061b47; border-radius: .75rem; overflow: hidden; font-family: Archivo, system-ui, sans-serif; color: #fff; box-shadow: 0 0 0 1px rgb(255 255 255 / .07), 0 32px 64px -32px rgb(0 0 0 / .75); } .ds-board-head { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.25rem; border-bottom: 1px solid rgb(255 255 255 / .09); } .ds-board-title { font-stretch: 75%; font-weight: 800; font-size: 1.15rem; letter-spacing: .06em; text-transform: uppercase; } .ds-clock { display: flex; gap: .2rem; align-items: center; } .ds-clock b { width: 1.55rem; height: 2.15rem; line-height: 2.15rem; text-align: center; border-radius: 4px; background: #020c26; color: #ffd43b; font-stretch: 75%; font-weight: 800; font-size: 1.45rem; font-variant-numeric: tabular-nums; } .ds-clock i { color: #ffd43b; font-style: normal; font-weight: 800; } .ds-row { display: grid; grid-template-columns: 4.6rem minmax(0,1fr) 5.2rem; gap: 1rem; align-items: center; width: 100%; min-height: 3.6rem; padding: .72rem 1.25rem; background: transparent; border: 0; border-top: 1px solid rgb(255 255 255 / .07); color: #fff; text-align: left; font: inherit; cursor: pointer; transition: background-color .2s; } .ds-row:hover { background: rgb(255 255 255 / .06); } .ds-row:focus-visible { outline: none; background: rgb(255 255 255 / .08); box-shadow: inset 4px 0 0 #ffd43b; } .ds-time { color: #ffd43b; font-weight: 800; font-stretch: 75%; font-size: 1.05rem; font-variant-numeric: tabular-nums; } .ds-job b { display: block; font-weight: 800; } .ds-job small { display: block; color: #bacdfc; font-size: .8rem; } .ds-ctr { border: 1.5px solid rgb(255 255 255 / .75); border-radius: 4px; text-align: center; font-size: .72rem; font-weight: 800; text-transform: uppercase; padding: .22rem .1rem; } .ds-ctr.alt { border-color: #ffd43b; color: #ffd43b; }"
+    },
+    {
+      "name": "Ligne des outils",
+      "kind": "custom",
+      "description": "Outils présentés comme les arrêts d'une ligne ; terminus jaune.",
+      "html": "<div class=\"ds-line\"><button class=\"ds-stop-btn\"><span class=\"ds-stop\"></span><span class=\"ds-stop-name\">Mon CV</span></button><button class=\"ds-stop-btn\"><span class=\"ds-stop\"></span><span class=\"ds-stop-name\">Ma lettre</span></button><button class=\"ds-stop-btn\"><span class=\"ds-stop end\"></span><span class=\"ds-stop-name\">Postuler</span></button></div>",
+      "css": ".ds-line { position: relative; display: grid; gap: 1.5rem; font-family: Archivo, system-ui, sans-serif; } .ds-line::before { content: \"\"; position: absolute; left: 13px; top: 8px; bottom: 8px; width: 6px; border-radius: 3px; background: #0a2a6b; } .ds-stop-btn { position: relative; display: flex; align-items: center; gap: 1.1rem; background: none; border: 0; padding: 0; text-align: left; color: #0b1b3f; cursor: pointer; } .ds-stop { width: 32px; height: 32px; flex: none; border-radius: 50%; background: #fff; border: 6px solid #0a2a6b; box-sizing: border-box; z-index: 1; transition: background-color .2s, transform .25s cubic-bezier(.2,.7,.2,1); } .ds-stop.end { background: #ffd43b; } .ds-stop-name { font-stretch: 80%; font-weight: 800; font-size: 1.45rem; text-transform: uppercase; } .ds-stop-btn:hover .ds-stop, .ds-stop-btn:focus-visible .ds-stop { background: #ffd43b; transform: scale(1.12); } .ds-stop-btn:focus-visible { outline: 3px solid #ffd43b; outline-offset: 2px; }"
+    },
+    {
+      "name": "Rangées d'articles",
+      "kind": "custom",
+      "description": "Conseils en rangées filetées : minutes, titre, flèche.",
+      "html": "<div class=\"ds-articles\"><a class=\"ds-article\" href=\"#\"><span class=\"ds-min\">5 min</span><span><strong>Réussir son premier entretien</strong><span class=\"ds-desc\">Les questions qui reviennent et quoi répondre.</span></span><span class=\"ds-go\">→</span></a></div>",
+      "css": ".ds-articles { border-top: 2px solid #0b1b3f; font-family: Archivo, system-ui, sans-serif; } .ds-article { display: grid; grid-template-columns: 4.5rem minmax(0,1fr) auto; gap: 1.25rem; align-items: baseline; padding: 1.35rem 0; border-bottom: 1px solid #d9e0ea; color: #0b1b3f; text-decoration: none; } .ds-min { font-weight: 800; font-stretch: 75%; color: rgb(15 50 150); text-transform: uppercase; font-variant-numeric: tabular-nums; } .ds-article strong { display: block; font-size: 1.15rem; font-weight: 800; } .ds-desc { display: block; margin-top: .35rem; color: #3e4f6c; } .ds-go { font-weight: 800; color: rgb(15 50 150); transition: transform .2s; } .ds-article:hover strong { text-decoration: underline; text-decoration-color: #ffd43b; text-decoration-thickness: 2px; text-underline-offset: 4px; } .ds-article:hover .ds-go { transform: translateX(4px); } .ds-article:focus-visible { outline: 3px solid #ffd43b; outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Le tableau des départs",
+    "overview": "Le site se lit comme un hall de gare : des aplats bleu départ où les offres arrivent comme des trains, l'heure et l'action en jaune horaire, le reste posé sur un gris quai froid avec une encre marine. Tout ce qui est donnée (heure de publication, kilomètres, minutes de lecture) est en chiffres tabulaires, comme sur un afficheur.\n\nLa densité est celle d'un tableau d'affichage : rangées séparées par des filets fins, colonnes fixes, titres en capitales étroites. Le mouvement est mécanique et rare : des palettes qui basculent, jamais de flottement décoratif. Ni dégradés, ni taches floues, ni emojis.",
+    "keyCharacteristics": [
+      "Zones « tableau » en aplat bleu (#0a2a6b / #061b47), texte blanc, données en jaune.",
+      "Titres Archivo étroit (75 %), 800, capitales ; texte Archivo normal.",
+      "Rayons courts, filets de rangée plutôt qu'ombres.",
+      "Palettes 3D en rotation X comme seule signature animée.",
+      "Mode sombre « gare de nuit » en bleu marine, pas en ardoise."
+    ],
+    "rules": [
+      { "name": "The Deux Voix Rule", "body": "Le bleu porte les surfaces, le jaune porte l'information. Si un élément jaune n'est ni une heure, ni une distance, ni l'action principale, ni un repère de focus ou de lien, il n'a pas à être jaune.", "section": "colors" },
+      { "name": "The Thèmes Rule", "body": "Les couleurs passent toujours par les rampes `--e-*` (marque) et `--t-*` (accent) ; les utilitaires Tailwind `emerald-*` et `teal-*` y sont branchés. L'utilisateur peut choisir d'autres thèmes (`data-color` : vert, ocean, violet, corail, indigo) ; le thème par défaut (clé `emeraude`, libellé « Bleu départ ») est la palette du tableau. Ne jamais coder en dur une couleur de marque.", "section": "colors" },
+      { "name": "The Afficheur Rule", "body": "Toute donnée chiffrée alignée en colonne utilise les chiffres tabulaires (`font-variant-numeric: tabular-nums`).", "section": "typography" },
+      { "name": "The Filet Rule", "body": "On sépare par un filet de rangée avant de séparer par une ombre.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do poser les zones « tableau » en aplat bleu départ ou bleu nuit avec texte blanc et données en jaune horaire.",
+      "Do passer chaque couleur de marque par `--e-*` / `--t-*` pour que les thèmes `data-color` continuent de marcher.",
+      "Do écrire les titres en Archivo étroit 75 %, 800, capitales, et les données en chiffres tabulaires.",
+      "Do séparer les éléments répétés par des filets de rangée (1 px, `--filet` ou blanc à 7 % sur bleu).",
+      "Do couper toute rotation de palettes sous `prefers-reduced-motion` et la mettre en pause au survol et au focus.",
+      "Do garder le mode sombre en bleu marine (#04112b sol, #0a2150 cartes, #1d3d78 filets)."
+    ],
+    "donts": [
+      "Don't utiliser de dégradés, de taches floues ou d'emojis.",
+      "Don't mettre le jaune horaire en aplat de section ou en texte courant sur fond clair.",
+      "Don't utiliser de grands rayons (au-delà de 0.75rem) sur cartes, tableaux ou champs.",
+      "Don't ajouter d'animation flottante ou en boucle ; la seule signature est la palette qui bascule.",
+      "Don't passer le mode sombre en gris ardoise."
+    ]
+  }
+}
